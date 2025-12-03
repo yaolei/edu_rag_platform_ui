@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+/* 覆盖可能添加的全局 margin-left 导致内容被挤出 */
+.MuiBox-root {
+  margin-left: 0 !important;
+}
+
+/* 主内容容器防止被侧边栏遮挡（如需留出侧边栏可按需改为 padding-left） */
+.mui-main-content {
+  /* 不设置 margin-left，内容尽可能最大化显示 */
+}

@@ -1,0 +1,54 @@
+{
+  "name": "edu_rag_platform_ui",
+  "packageManager": "yarn@4.12.0+sha512.f45ab632439a67f8bc759bf32ead036a1f413287b9042726b7cc4818b7b49e14e9423ba49b18f9e06ea4941c1ad062385b1d8760a8d5091a1a31e5f6219afca8",
+  "private": true,
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --filter=\"./apps/*\"",
+    "dev:with-build": "concurrently \"yarn workspace edu-admin-app preview\" \"yarn workspace shell dev\"",
+    "build": "turbo build",
+    "preview": "turbo run preview --filter=\"./apps/*\"",
+    "lint": "turbo lint",
+    "build:preview": "yarn build && yarn preview"
+  },
+  "dependencies": {
+    "@emotion/react": "~11.14.0",
+    "@emotion/styled": "~11.14.1",
+    "@mui/icons-material": "~7.3.5",
+    "@mui/material": "~7.3.5",
+    "@mui/system": "~7.3.5",
+    "@mui/x-data-grid": "~8.20.0",
+    "@mui/x-data-grid-generator": "~8.20.0",
+    "@mui/x-date-pickers": "~8.19.0",
+    "@reduxjs/toolkit": "~2.11.0",
+    "@tailwindcss/vite": "~4.1.17",
+    "axios": "~1.13.2",
+    "dayjs": "~1.11.19",
+    "echarts": "~6.0.0",
+    "list": "~2.0.19",
+    "react": "~19.2.0",
+    "react-dom": "~19.2.0",
+    "react-markdown": "~10.1.0",
+    "react-redux": "~9.2.0",
+    "react-router": "~7.9.6",
+    "redux": "~5.0.1",
+    "rehype-katex": "~7.0.1",
+    "remark-gfm": "~4.0.1",
+    "remark-math": "~6.0.0",
+    "tailwindcss": "~4.1.17"
+  },
+  "devDependencies": {
+    "@originjs/vite-plugin-federation": "~1.4.1",
+    "@types/react": "~19.2.7",
+    "add": "^2.0.6",
+    "concurrently": "^9.2.1",
+    "turbo": "^2.6.1",
+    "vite": "~7.2.4"
+  }
+}
