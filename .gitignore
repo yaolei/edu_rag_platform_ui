@@ -45,7 +45,10 @@ coverage/
 *.temp
 *.log
 
+.pnp.*
+.pnp.loader.mjs
+.yarn/install-state.gz
 # ─── lock 文件（如想忽略，可取消注释） ───
-# package-lock.json
-# yarn.lock
-# pnpm-lock.yaml
+ package-lock.json
+ yarn.lock
+ pnpm-lock.yaml
