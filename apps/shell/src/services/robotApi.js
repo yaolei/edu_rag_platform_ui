@@ -9,7 +9,8 @@ import {get, post} from '@workspace/shared-util'
  */
 export async function askRobot(question) {
   try {
-      const res = await post('/chat', {
+      // /chat
+      const res = await post('/chat_with_knowledge', {
         "questions": question
       });
       const {content } = res.content;

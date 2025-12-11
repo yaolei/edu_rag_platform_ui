@@ -147,9 +147,9 @@ const KnowledgeManger = () => {
             }
         }
         try {
-            const response = await post('/knowledge/delete', {
+            const response = await post('/del_knowledge_items_by_id', {
                 id: itemId,
-                corpus_id: parsedCorpusId
+                corpus_ids: parsedCorpusId
             });
             if (response && response.status === 200) {
                 await fetchKnowledgeItems();

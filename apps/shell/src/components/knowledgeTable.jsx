@@ -17,7 +17,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 
 const KnowledgeTable = ({knowledgeItems, 
                         onToggleStatus, 
-                        onDeleteItem, 
+                        deleteItem, 
                         allActive, 
                         onToggleAll, 
                         isLoading = false}) => {
@@ -84,7 +84,7 @@ const KnowledgeTable = ({knowledgeItems,
                                     <IconButton
                                         color="error"
                                         title="delete"
-                                        onClick={() => onDeleteItem(item.id)}>
+                                        onClick={() => deleteItem(item.id, item.corpus_id)}>
                                         <DeleteIcon />
                                     </IconButton>
                                 </TableCell>

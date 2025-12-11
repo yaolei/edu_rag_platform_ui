@@ -15,6 +15,7 @@ export default defineConfig({
       },
       shared: {
         '@workspace/shared-util': { singleton: true, requiredVersion: '1.0.0' },
+        '@workspace/shared-components': { singleton: true, requiredVersion: '1.0.0' },
         'react': { singleton: true},
         'react-dom': { singleton: true },
       }

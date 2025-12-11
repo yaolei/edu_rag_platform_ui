@@ -6,6 +6,7 @@ import { ErrorBoundary } from '@workspace/shared-util'
 import { Layout } from './components/Layout'
 import { createRoutes } from './config/routes'
 import { getTheme } from './config/theme'
+import Login from './pages/Login'
 
 function AppContent() {
   const [errorKey, setErrorKey] = useState('root')
@@ -13,7 +14,6 @@ function AppContent() {
   const navigate = useNavigate()
   const { currentMode } = useTheme()
 
-  // 每当路由改变时，更新 errorKey
   useEffect(() => {
     setErrorKey(`error-${location.pathname}-${Date.now()}`)
   }, [location.pathname])
@@ -24,8 +24,9 @@ function AppContent() {
     <MuiThemeProvider theme={getTheme(currentMode)}>
       <CssBaseline />
       <ErrorBoundary key={errorKey}>
-        <Layout>
           <Routes>
+          <Route path='/login' element={<Login />} />
+          <Route element={<Layout />}>
             {routes.map((route) => (
               <Route
                 key={route.path}
@@ -33,8 +34,8 @@ function AppContent() {
                 element={route.element}
               />
             ))}
+          </Route>
           </Routes>
-        </Layout>
       </ErrorBoundary>
     </MuiThemeProvider>
   )
@@ -43,7 +44,7 @@ function AppContent() {
 function App() {
   return (
     <ThemeProvider>
-      <Router>
+      <Router> 
         <AppContent />
       </Router>
     </ThemeProvider>

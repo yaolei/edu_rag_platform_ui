@@ -2094,7 +2094,7 @@ const {
   mergeConfig: kn
 } = T, Y = T.create({
   baseURL: "http://localhost:8001/api",
-  timeout: 3e4,
+  timeout: 6e4,
   headers: {
     "Content-Type": "application/json"
   }

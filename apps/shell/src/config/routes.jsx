@@ -4,6 +4,7 @@ import { Dashboard } from '../pages/Dashboard'
 import { Settings } from '../pages/Settings'
 import { RobotChat } from '../pages/RobotChat'
 import KnowledgeManger from '../pages/KnowledgeManger'
+import Login from '../pages/Login'
 
 const remoteDevUrl = 'http://localhost:5002/src/eduAdminEntry.jsx'
 const remoteProdUrl = 'http://localhost:5002/assets/eduAdminEntry.js'
@@ -22,6 +23,7 @@ const LoadingFallback = () => (
 
 export function createRoutes() {
   return [
+    { path: '/login', element: <Login />, errorKey: 'login erro' },
     { path: '/', element: <Dashboard />, errorKey: 'dashboard' },
     { path: '/dashboard', element: <Dashboard />, errorKey: 'dashboard' },
     {

@@ -2,6 +2,7 @@ import React from 'react'
 import { Box, Paper, Typography, Avatar, CircularProgress } from '@mui/material'
 import PersonIcon from '@mui/icons-material/Person'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
+import {MarkdownRender} from '@workspace/shared-components'
 
 export function ChatMessageList({ messages, loading, responsesEndRef }) {
   const formatFileSize = (bytes) => {
@@ -71,9 +72,13 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
                   wordBreak: 'break-word'
                 }}
               >
+              {msg.type === 'ai' ? (
+                  <MarkdownRender content={msg.content} />
+              ) : (
                 <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
                   {msg.content}
                 </Typography>
+              )}
               </Paper>
             )}
 

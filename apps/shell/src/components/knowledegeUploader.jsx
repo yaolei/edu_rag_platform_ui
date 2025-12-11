@@ -27,7 +27,6 @@ const KnowledgeUploader = ({
                         name='file'
                         className='hidden'
                         onChange={onFileChange}
-                        accept='.pdf, .json, .txt, .jpg, .png'
                         id='knowledge-file-input'
                     />
                     <label htmlFor="knowledge-file-input">
