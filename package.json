@@ -15,7 +15,8 @@
     "build": "turbo build",
     "preview": "turbo run preview --filter=\"./apps/*\"",
     "lint": "turbo lint",
-    "build:preview": "yarn build && yarn preview"
+    "build:preview": "yarn build && yarn preview",
+    "build:pro": "BUILD_OUT_DIR=/root/www/docker_relation_server/nginx/dist vite build"
   },
   "dependencies": {
     "@emotion/react": "~11.14.0",

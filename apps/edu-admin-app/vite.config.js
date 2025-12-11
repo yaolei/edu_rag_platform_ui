@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import federation from '@originjs/vite-plugin-federation'
 
+
+const outDir = process.env.BUILD_OUT_DIR || 'dist'
 export default defineConfig({
   plugins: [
     react(),
@@ -21,12 +23,7 @@ export default defineConfig({
       }
     }),
   ],
-  build: {
-    target: 'esnext',
-    minify: false,
-    cssCodeSplit: false,
-    modulePreload: false
-  },
+
   server: {
     cors: true,
     host: true,
@@ -48,5 +45,12 @@ export default defineConfig({
   preview: {
     port: 5002,
     host: true
-  }
+  },
+  build: {
+      target: 'esnext',
+      minify: false,
+      cssCodeSplit: false,
+      modulePreload: false,
+      outDir
+  },
 })

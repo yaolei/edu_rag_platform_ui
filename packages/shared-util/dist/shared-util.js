@@ -1,7 +1,7 @@
 import rt from "react";
 var pe = { exports: {} }, ne = {};
 var De;
-function _t() {
+function kt() {
   if (De) return ne;
   De = 1;
   var e = Symbol.for("react.transitional.element"), t = Symbol.for("react.fragment");
@@ -51,11 +51,11 @@ function Nt() {
         ), l.$$typeof) {
           case b:
             return "Portal";
-          case _:
+          case k:
             return l.displayName || "Context";
           case O:
             return (l._context.displayName || "Context") + ".Consumer";
-          case v:
+          case U:
             var y = l.render;
             return l = l.displayName, l || (l = y.displayName || y.name || "", l = l !== "" ? "ForwardRef(" + l + ")" : "ForwardRef"), l;
           case ee:
@@ -116,7 +116,7 @@ function Nt() {
     }
     function c(l, y) {
       function g() {
-        U || (U = !0, console.error(
+        v || (v = !0, console.error(
           "%s: `key` is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop. (https://react.dev/link/special-props)",
           y
         ));
@@ -180,8 +180,8 @@ function Nt() {
         else m(A);
       if (H.call(y, "key")) {
         A = e(l);
-        var X = Object.keys(y).filter(function(kt) {
-          return kt !== "key";
+        var X = Object.keys(y).filter(function(_t) {
+          return _t !== "key";
         });
         R = 0 < X.length ? "{key: someKey, " + X.join(": ..., ") + ": ...}" : "{key: someKey}", de[A + R] || (X = 0 < X.length ? "{" + X.join(": ..., ") + ": ...}" : "{}", console.error(
           `A props object containing a "key" prop is being spread into JSX:
@@ -219,7 +219,7 @@ React keys must be passed directly to JSX without using spread:
     function w(l) {
       return typeof l == "object" && l !== null && l.$$typeof === f;
     }
-    var S = rt, f = Symbol.for("react.transitional.element"), b = Symbol.for("react.portal"), h = Symbol.for("react.fragment"), x = Symbol.for("react.strict_mode"), C = Symbol.for("react.profiler"), O = Symbol.for("react.consumer"), _ = Symbol.for("react.context"), v = Symbol.for("react.forward_ref"), I = Symbol.for("react.suspense"), P = Symbol.for("react.suspense_list"), ee = Symbol.for("react.memo"), $ = Symbol.for("react.lazy"), ue = Symbol.for("react.activity"), fe = Symbol.for("react.client.reference"), M = S.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, H = Object.prototype.hasOwnProperty, q = Array.isArray, K = console.createTask ? console.createTask : function() {
+    var S = rt, f = Symbol.for("react.transitional.element"), b = Symbol.for("react.portal"), h = Symbol.for("react.fragment"), x = Symbol.for("react.strict_mode"), C = Symbol.for("react.profiler"), O = Symbol.for("react.consumer"), k = Symbol.for("react.context"), U = Symbol.for("react.forward_ref"), I = Symbol.for("react.suspense"), P = Symbol.for("react.suspense_list"), ee = Symbol.for("react.memo"), $ = Symbol.for("react.lazy"), ue = Symbol.for("react.activity"), fe = Symbol.for("react.client.reference"), M = S.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, H = Object.prototype.hasOwnProperty, q = Array.isArray, K = console.createTask ? console.createTask : function() {
       return null;
     };
     S = {
@@ -227,7 +227,7 @@ React keys must be passed directly to JSX without using spread:
         return l();
       }
     };
-    var U, te = {}, L = S.react_stack_bottom_frame.bind(
+    var v, te = {}, L = S.react_stack_bottom_frame.bind(
       S,
       i
     )(), re = K(n(i)), de = {};
@@ -256,18 +256,18 @@ React keys must be passed directly to JSX without using spread:
 }
 var Ie;
 function Ct() {
-  return Ie || (Ie = 1, process.env.NODE_ENV === "production" ? pe.exports = _t() : pe.exports = Nt()), pe.exports;
+  return Ie || (Ie = 1, process.env.NODE_ENV === "production" ? pe.exports = kt() : pe.exports = Nt()), pe.exports;
 }
-var k = Ct();
-const Pt = ({ error: e, resetError: t }) => /* @__PURE__ */ k.jsx("div", { className: "min-h-screen bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950 dark:to-orange-950 flex items-center justify-center p-4", children: /* @__PURE__ */ k.jsxs("div", { className: "max-w-md w-full", children: [
-  /* @__PURE__ */ k.jsx("div", { className: "flex justify-center mb-6", children: /* @__PURE__ */ k.jsx("div", { className: "w-20 h-20 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center", children: /* @__PURE__ */ k.jsx(
+var _ = Ct();
+const Pt = ({ error: e, resetError: t }) => /* @__PURE__ */ _.jsx("div", { className: "min-h-screen bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-950 dark:to-orange-950 flex items-center justify-center p-4", children: /* @__PURE__ */ _.jsxs("div", { className: "max-w-md w-full", children: [
+  /* @__PURE__ */ _.jsx("div", { className: "flex justify-center mb-6", children: /* @__PURE__ */ _.jsx("div", { className: "w-20 h-20 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center", children: /* @__PURE__ */ _.jsx(
     "svg",
     {
       className: "w-10 h-10 text-red-600 dark:text-red-400",
       fill: "none",
       stroke: "currentColor",
       viewBox: "0 0 24 24",
-      children: /* @__PURE__ */ k.jsx(
+      children: /* @__PURE__ */ _.jsx(
         "path",
         {
           strokeLinecap: "round",
@@ -278,17 +278,17 @@ const Pt = ({ error: e, resetError: t }) => /* @__PURE__ */ k.jsx("div", { class
       )
     }
   ) }) }),
-  /* @__PURE__ */ k.jsx("h1", { className: "text-3xl font-bold text-center text-gray-900 dark:text-white mb-3", children: "Oops! Something Went Wrong" }),
-  /* @__PURE__ */ k.jsx("p", { className: "text-center text-gray-600 dark:text-gray-300 mb-6", children: "模块加载失败。你可以关闭错误提示以尝试重新渲染当前界面，或重新加载页面。" }),
-  /* @__PURE__ */ k.jsxs("div", { className: "bg-white dark:bg-gray-800 rounded-lg p-4 mb-6 border border-red-200 dark:border-red-800", children: [
-    /* @__PURE__ */ k.jsx("p", { className: "text-sm font-mono text-red-600 dark:text-red-400 break-words", children: e?.message || "Unknown error" }),
-    e?.stack && /* @__PURE__ */ k.jsxs("details", { className: "mt-3 cursor-pointer", children: [
-      /* @__PURE__ */ k.jsx("summary", { className: "text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300", children: "查看堆栈信息" }),
-      /* @__PURE__ */ k.jsx("pre", { className: "mt-2 text-xs text-gray-600 dark:text-gray-300 overflow-auto max-h-40 bg-gray-50 dark:bg-gray-900 p-2 rounded", children: e.stack })
+  /* @__PURE__ */ _.jsx("h1", { className: "text-3xl font-bold text-center text-gray-900 dark:text-white mb-3", children: "Oops! Something Went Wrong" }),
+  /* @__PURE__ */ _.jsx("p", { className: "text-center text-gray-600 dark:text-gray-300 mb-6", children: "模块加载失败。你可以关闭错误提示以尝试重新渲染当前界面，或重新加载页面。" }),
+  /* @__PURE__ */ _.jsxs("div", { className: "bg-white dark:bg-gray-800 rounded-lg p-4 mb-6 border border-red-200 dark:border-red-800", children: [
+    /* @__PURE__ */ _.jsx("p", { className: "text-sm font-mono text-red-600 dark:text-red-400 break-words", children: e?.message || "Unknown error" }),
+    e?.stack && /* @__PURE__ */ _.jsxs("details", { className: "mt-3 cursor-pointer", children: [
+      /* @__PURE__ */ _.jsx("summary", { className: "text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300", children: "查看堆栈信息" }),
+      /* @__PURE__ */ _.jsx("pre", { className: "mt-2 text-xs text-gray-600 dark:text-gray-300 overflow-auto max-h-40 bg-gray-50 dark:bg-gray-900 p-2 rounded", children: e.stack })
     ] })
   ] }),
-  /* @__PURE__ */ k.jsxs("div", { className: "flex gap-3", children: [
-    /* @__PURE__ */ k.jsx(
+  /* @__PURE__ */ _.jsxs("div", { className: "flex gap-3", children: [
+    /* @__PURE__ */ _.jsx(
       "button",
       {
         onClick: t,
@@ -296,7 +296,7 @@ const Pt = ({ error: e, resetError: t }) => /* @__PURE__ */ k.jsx("div", { class
         children: "关闭错误提示（尝试恢复）"
       }
     ),
-    /* @__PURE__ */ k.jsx(
+    /* @__PURE__ */ _.jsx(
       "button",
       {
         onClick: () => window.location.reload(),
@@ -305,9 +305,9 @@ const Pt = ({ error: e, resetError: t }) => /* @__PURE__ */ k.jsx("div", { class
       }
     )
   ] }),
-  /* @__PURE__ */ k.jsx("p", { className: "text-center text-gray-500 dark:text-gray-400 text-xs mt-4", children: "若问题持续存在，请查看控制台或联系开发人员。" })
+  /* @__PURE__ */ _.jsx("p", { className: "text-center text-gray-500 dark:text-gray-400 text-xs mt-4", children: "若问题持续存在，请查看控制台或联系开发人员。" })
 ] }) });
-class ln extends rt.Component {
+class un extends rt.Component {
   constructor(t) {
     super(t), this.state = { hasError: !1, error: null, errorInfo: null };
   }
@@ -321,7 +321,7 @@ class ln extends rt.Component {
     this.setState({ hasError: !1, error: null, errorInfo: null });
   };
   render() {
-    return this.state.hasError ? /* @__PURE__ */ k.jsx(Pt, { error: this.state.error, resetError: this.resetError }) : this.props.children;
+    return this.state.hasError ? /* @__PURE__ */ _.jsx(Pt, { error: this.state.error, resetError: this.resetError }) : this.props.children;
   }
 }
 function nt(e, t) {
@@ -341,7 +341,7 @@ function Ft(e) {
   let t;
   return typeof ArrayBuffer < "u" && ArrayBuffer.isView ? t = ArrayBuffer.isView(e) : t = e && e.buffer && ot(e.buffer), t;
 }
-const vt = Re("string"), j = Re("function"), it = Re("number"), ae = (e) => e !== null && typeof e == "object", Ut = (e) => e === !0 || e === !1, me = (e) => {
+const Ut = Re("string"), j = Re("function"), it = Re("number"), ae = (e) => e !== null && typeof e == "object", vt = (e) => e === !0 || e === !1, me = (e) => {
   if (ge(e) !== "object")
     return !1;
   const t = Fe(e);
@@ -508,9 +508,9 @@ const dr = (e) => {
   isBuffer: ie,
   isFormData: Mt,
   isArrayBufferView: Ft,
-  isString: vt,
+  isString: Ut,
   isNumber: it,
-  isBoolean: Ut,
+  isBoolean: vt,
   isObject: ae,
   isPlainObject: me,
   isEmptyObject: Lt,
@@ -661,10 +661,10 @@ function Se(e, t, r) {
       if (a.endsWith(b, "{}"))
         b = n ? b : b.slice(0, -2), f = JSON.stringify(f);
       else if (a.isArray(f) && Er(f) || (a.isFileList(f) || a.endsWith(b, "[]")) && (x = a.toArray(f)))
-        return b = pt(b), x.forEach(function(O, _) {
+        return b = pt(b), x.forEach(function(O, k) {
           !(a.isUndefined(O) || O === null) && t.append(
             // eslint-disable-next-line no-nested-ternary
-            o === !0 ? $e([b], _, i) : o === null ? b : b + "[]",
+            o === !0 ? $e([b], k, i) : o === null ? b : b + "[]",
             d(O)
           );
         }), !1;
@@ -709,10 +709,10 @@ function Me(e) {
     return t[n];
   });
 }
-function ve(e, t) {
+function Ue(e, t) {
   this._pairs = [], e && Se(e, this, t);
 }
-const ht = ve.prototype;
+const ht = Ue.prototype;
 ht.append = function(t, r) {
   this._pairs.push([t, r]);
 };
@@ -736,7 +736,7 @@ function mt(e, t, r) {
   });
   const s = r && r.serialize;
   let i;
-  if (s ? i = s(t, r) : i = a.isURLSearchParams(t) ? t.toString() : new ve(t, r).toString(n), i) {
+  if (s ? i = s(t, r) : i = a.isURLSearchParams(t) ? t.toString() : new Ue(t, r).toString(n), i) {
     const o = e.indexOf("#");
     o !== -1 && (e = e.slice(0, o)), e += (e.indexOf("?") === -1 ? "?" : "&") + i;
   }
@@ -800,7 +800,7 @@ const bt = {
   silentJSONParsing: !0,
   forcedJSONParsing: !0,
   clarifyTimeoutError: !1
-}, Rr = typeof URLSearchParams < "u" ? URLSearchParams : ve, Sr = typeof FormData < "u" ? FormData : null, xr = typeof Blob < "u" ? Blob : null, Tr = {
+}, Rr = typeof URLSearchParams < "u" ? URLSearchParams : Ue, Sr = typeof FormData < "u" ? FormData : null, xr = typeof Blob < "u" ? Blob : null, Tr = {
   isBrowser: !0,
   classes: {
     URLSearchParams: Rr,
@@ -808,16 +808,16 @@ const bt = {
     Blob: xr
   },
   protocols: ["http", "https", "file", "blob", "url", "data"]
-}, Ue = typeof window < "u" && typeof document < "u", Pe = typeof navigator == "object" && navigator || void 0, Or = Ue && (!Pe || ["ReactNative", "NativeScript", "NS"].indexOf(Pe.product) < 0), Ar = typeof WorkerGlobalScope < "u" && // eslint-disable-next-line no-undef
-self instanceof WorkerGlobalScope && typeof self.importScripts == "function", kr = Ue && window.location.href || "http://localhost", _r = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+}, ve = typeof window < "u" && typeof document < "u", Pe = typeof navigator == "object" && navigator || void 0, Or = ve && (!Pe || ["ReactNative", "NativeScript", "NS"].indexOf(Pe.product) < 0), Ar = typeof WorkerGlobalScope < "u" && // eslint-disable-next-line no-undef
+self instanceof WorkerGlobalScope && typeof self.importScripts == "function", _r = ve && window.location.href || "http://localhost", kr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  hasBrowserEnv: Ue,
+  hasBrowserEnv: ve,
   hasStandardBrowserEnv: Or,
   hasStandardBrowserWebWorkerEnv: Ar,
   navigator: Pe,
-  origin: kr
+  origin: _r
 }, Symbol.toStringTag, { value: "Module" })), N = {
-  ..._r,
+  ...kr,
   ...Tr
 };
 function Nr(e, t) {
@@ -952,7 +952,7 @@ const Fr = a.toObjectSet([
   "referer",
   "retry-after",
   "user-agent"
-]), vr = (e) => {
+]), Ur = (e) => {
   const t = {};
   let r, n, s;
   return e && e.split(`
@@ -966,7 +966,7 @@ function oe(e) {
 function be(e) {
   return e === !1 || e == null ? e : a.isArray(e) ? e.map(be) : String(e);
 }
-function Ur(e) {
+function vr(e) {
   const t = /* @__PURE__ */ Object.create(null), r = /([^\s,;=]+)\s*(?:=\s*([^,;]+))?/g;
   let n;
   for (; n = r.exec(e); )
@@ -1015,7 +1015,7 @@ let F = class {
     if (a.isPlainObject(t) || t instanceof this.constructor)
       o(t, r);
     else if (a.isString(t) && (t = t.trim()) && !Lr(t))
-      o(vr(t), r);
+      o(Ur(t), r);
     else if (a.isObject(t) && a.isIterable(t)) {
       let c = {}, p, d;
       for (const u of t) {
@@ -1036,7 +1036,7 @@ let F = class {
         if (!r)
           return s;
         if (r === !0)
-          return Ur(s);
+          return vr(s);
         if (a.isFunction(r))
           return r.call(this, s, n);
         if (a.isRegExp(r))
@@ -1135,7 +1135,7 @@ a.reduceDescriptors(F.prototype, ({ value: e }, t) => {
   };
 });
 a.freezeMethods(F);
-function ke(e, t) {
+function _e(e, t) {
   const r = this || le, n = t || r, s = F.from(n.headers);
   let i = n.data;
   return a.forEach(e, function(c) {
@@ -1363,7 +1363,7 @@ const Rt = (e) => {
         return;
       const O = F.from(
         "getAllResponseHeaders" in h && h.getAllResponseHeaders()
-      ), v = {
+      ), U = {
         data: !c || c === "text" || c === "json" ? h.responseText : h.response,
         status: h.status,
         statusText: h.statusText,
@@ -1375,26 +1375,26 @@ const Rt = (e) => {
         r(P), b();
       }, function(P) {
         n(P), b();
-      }, v), h = null;
+      }, U), h = null;
     }
     "onloadend" in h ? h.onloadend = x : h.onreadystatechange = function() {
       !h || h.readyState !== 4 || h.status === 0 && !(h.responseURL && h.responseURL.indexOf("file:") === 0) || setTimeout(x);
     }, h.onabort = function() {
       h && (n(new E("Request aborted", E.ECONNABORTED, e, h)), h = null);
-    }, h.onerror = function(_) {
-      const v = _ && _.message ? _.message : "Network Error", I = new E(v, E.ERR_NETWORK, e, h);
-      I.event = _ || null, n(I), h = null;
+    }, h.onerror = function(k) {
+      const U = k && k.message ? k.message : "Network Error", I = new E(U, E.ERR_NETWORK, e, h);
+      I.event = k || null, n(I), h = null;
     }, h.ontimeout = function() {
-      let _ = s.timeout ? "timeout of " + s.timeout + "ms exceeded" : "timeout exceeded";
-      const v = s.transitional || bt;
-      s.timeoutErrorMessage && (_ = s.timeoutErrorMessage), n(new E(
-        _,
-        v.clarifyTimeoutError ? E.ETIMEDOUT : E.ECONNABORTED,
+      let k = s.timeout ? "timeout of " + s.timeout + "ms exceeded" : "timeout exceeded";
+      const U = s.transitional || bt;
+      s.timeoutErrorMessage && (k = s.timeoutErrorMessage), n(new E(
+        k,
+        U.clarifyTimeoutError ? E.ETIMEDOUT : E.ECONNABORTED,
         e,
         h
       )), h = null;
-    }, i === void 0 && o.setContentType(null), "setRequestHeader" in h && a.forEach(o.toJSON(), function(_, v) {
-      h.setRequestHeader(v, _);
+    }, i === void 0 && o.setContentType(null), "setRequestHeader" in h && a.forEach(o.toJSON(), function(k, U) {
+      h.setRequestHeader(U, k);
     }), a.isUndefined(s.withCredentials) || (h.withCredentials = !!s.withCredentials), c && c !== "json" && (h.responseType = s.responseType), d && ([w, f] = Ee(d, !0), h.addEventListener("progress", w)), p && h.upload && ([m, S] = Ee(p), h.upload.addEventListener("progress", m), h.upload.addEventListener("loadend", S)), (s.cancelToken || s.signal) && (u = (O) => {
       h && (n(!O || O.type ? new Q(null, e, h) : O), h.abort(), h = null);
     }, s.cancelToken && s.cancelToken.subscribe(u), s.signal && (s.signal.aborted ? u() : s.signal.addEventListener("abort", u)));
@@ -1550,8 +1550,8 @@ const Rt = (e) => {
       data: x,
       signal: C,
       cancelToken: O,
-      timeout: _,
-      onDownloadProgress: v,
+      timeout: k,
+      onDownloadProgress: U,
       onUploadProgress: I,
       responseType: P,
       headers: ee,
@@ -1559,7 +1559,7 @@ const Rt = (e) => {
       fetchOptions: ue
     } = Rt(f), fe = t || fetch;
     P = P ? (P + "").toLowerCase() : "text";
-    let M = Yr([C, O && O.toAbortSignal()], _), H = null;
+    let M = Yr([C, O && O.toAbortSignal()], k), H = null;
     const q = M && M.unsubscribe && (() => {
       M.unsubscribe();
     });
@@ -1580,26 +1580,26 @@ const Rt = (e) => {
         }
       }
       a.isString($) || ($ = $ ? "include" : "omit");
-      const U = i && "credentials" in r.prototype, te = {
+      const v = i && "credentials" in r.prototype, te = {
         ...ue,
         signal: M,
         method: h.toUpperCase(),
         headers: ee.normalize().toJSON(),
         body: x,
         duplex: "half",
-        credentials: U ? $ : void 0
+        credentials: v ? $ : void 0
       };
       H = i && new r(b, te);
       let L = await (i ? fe(H, ue) : fe(b, te));
       const re = u && (P === "stream" || P === "response");
-      if (u && (v || re && q)) {
+      if (u && (U || re && q)) {
         const l = {};
         ["status", "statusText", "headers"].forEach((z) => {
           l[z] = L[z];
         });
-        const y = a.toFiniteNumber(L.headers.get("content-length")), [g, R] = v && Je(
+        const y = a.toFiniteNumber(L.headers.get("content-length")), [g, R] = U && Je(
           y,
-          Ee(We(v), !0)
+          Ee(We(U), !0)
         ) || [];
         L = new n(
           Ye(L.body, Ke, g, () => {
@@ -1620,13 +1620,13 @@ const Rt = (e) => {
           request: H
         });
       });
-    } catch (U) {
-      throw q && q(), U && U.name === "TypeError" && /Load failed|fetch/i.test(U.message) ? Object.assign(
+    } catch (v) {
+      throw q && q(), v && v.name === "TypeError" && /Load failed|fetch/i.test(v.message) ? Object.assign(
         new E("Network Error", E.ERR_NETWORK, f, H),
         {
-          cause: U.cause || U
+          cause: v.cause || v
         }
-      ) : E.from(U, U && U.code, f, H);
+      ) : E.from(v, v && v.code, f, H);
     }
   };
 }, en = /* @__PURE__ */ new Map(), St = (e) => {
@@ -1699,22 +1699,22 @@ const xt = {
    */
   adapters: Le
 };
-function _e(e) {
+function ke(e) {
   if (e.cancelToken && e.cancelToken.throwIfRequested(), e.signal && e.signal.aborted)
     throw new Q(null, e);
 }
 function et(e) {
-  return _e(e), e.headers = F.from(e.headers), e.data = ke.call(
+  return ke(e), e.headers = F.from(e.headers), e.data = _e.call(
     e,
     e.transformRequest
   ), ["post", "put", "patch"].indexOf(e.method) !== -1 && e.headers.setContentType("application/x-www-form-urlencoded", !1), xt.getAdapter(e.adapter || le.adapter, e)(e).then(function(n) {
-    return _e(e), n.data = ke.call(
+    return ke(e), n.data = _e.call(
       e,
       e.transformResponse,
       n
     ), n.headers = F.from(n.headers), n;
   }, function(n) {
-    return Et(n) || (_e(e), n && n.response && (n.response.data = ke.call(
+    return Et(n) || (ke(e), n && n.response && (n.response.data = _e.call(
       e,
       e.transformResponse,
       n.response
@@ -2076,24 +2076,24 @@ T.getAdapter = xt.getAdapter;
 T.HttpStatusCode = je;
 T.default = T;
 const {
-  Axios: dn,
-  AxiosError: pn,
-  CanceledError: hn,
-  isCancel: mn,
-  CancelToken: bn,
-  VERSION: yn,
-  all: En,
-  Cancel: wn,
-  isAxiosError: gn,
-  spread: Rn,
-  toFormData: Sn,
-  AxiosHeaders: xn,
-  HttpStatusCode: Tn,
-  formToJSON: On,
-  getAdapter: An,
+  Axios: pn,
+  AxiosError: hn,
+  CanceledError: mn,
+  isCancel: bn,
+  CancelToken: yn,
+  VERSION: En,
+  all: wn,
+  Cancel: gn,
+  isAxiosError: Rn,
+  spread: Sn,
+  toFormData: xn,
+  AxiosHeaders: Tn,
+  HttpStatusCode: On,
+  formToJSON: An,
+  getAdapter: _n,
   mergeConfig: kn
-} = T, Y = T.create({
-  baseURL: "http://localhost:8001/api",
+} = T, cn = "http://106.12.58.7:8000/api", Y = T.create({
+  baseURL: cn,
   timeout: 6e4,
   headers: {
     "Content-Type": "application/json"
@@ -2153,19 +2153,19 @@ Y.interceptors.response.use(
     return Promise.reject(e);
   }
 );
-function _n(e, t = {}, r = {}) {
+function Nn(e, t = {}, r = {}) {
   return Y.get(e, { params: t, ...r });
 }
-function Nn(e, t = {}, r = {}) {
+function Cn(e, t = {}, r = {}) {
   return Y.post(e, t, r);
 }
-function Cn(e, t = {}, r = {}) {
+function Pn(e, t = {}, r = {}) {
   return Y.put(e, t, r);
 }
-function Pn(e, t = {}, r = {}) {
+function jn(e, t = {}, r = {}) {
   return Y.delete(e, { params: t, ...r });
 }
-function jn(e, t, r) {
+function Fn(e, t, r) {
   return Y.post(e, t, {
     headers: {
       "Content-Type": "multipart/form-data"
@@ -2176,10 +2176,10 @@ function jn(e, t, r) {
   });
 }
 export {
-  ln as ErrorBoundary,
-  Pn as del,
-  _n as get,
-  Nn as post,
-  Cn as put,
-  jn as uploadFile
+  un as ErrorBoundary,
+  jn as del,
+  Nn as get,
+  Cn as post,
+  Pn as put,
+  Fn as uploadFile
 };

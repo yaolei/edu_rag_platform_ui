@@ -1,6 +1,6 @@
 
 [36mvite v7.2.4 [32mbuilding client environment for production...[36m[39m
 [2K[1Gtransforming (1) [2msrc/index.js[22m[2K[1G[32m✓[39m 62 modules transformed.
-[2K[1Grendering chunks (1)...[2K[1G[2K[1Gcomputing gzip size (0)...[2K[1Gcomputing gzip size (1)...[2K[1G[2mdist/[22m[36mshared-util.js  [39m[1m[2m66.20 kB[22m[1m[22m[2m │ gzip: 21.88 kB[22m
-[2K[1Grendering chunks (1)...[2K[1G[2K[1Gcomputing gzip size (1)...[2K[1G[2mdist/[22m[36mshared-util.cjs  [39m[1m[2m46.80 kB[22m[1m[22m[2m │ gzip: 18.62 kB[22m
-[32m✓ built in 133ms[39m
+[2K[1Grendering chunks (1)...[2K[1G[2K[1Gcomputing gzip size (0)...[2K[1Gcomputing gzip size (1)...[2K[1G[2mdist/[22m[36mshared-util.js  [39m[1m[2m66.22 kB[22m[1m[22m[2m │ gzip: 21.89 kB[22m
+[2K[1Grendering chunks (1)...[2K[1G[2K[1Gcomputing gzip size (1)...[2K[1G[2mdist/[22m[36mshared-util.cjs  [39m[1m[2m46.81 kB[22m[1m[22m[2m │ gzip: 18.64 kB[22m
+[32m✓ built in 136ms[39m

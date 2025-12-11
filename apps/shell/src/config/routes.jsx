@@ -6,9 +6,9 @@ import { RobotChat } from '../pages/RobotChat'
 import KnowledgeManger from '../pages/KnowledgeManger'
 import Login from '../pages/Login'
 
-const remoteDevUrl = 'http://localhost:5002/src/eduAdminEntry.jsx'
-const remoteProdUrl = 'http://localhost:5002/assets/eduAdminEntry.js'
-const remoteUrl = import.meta.env.DEV ? remoteDevUrl : remoteProdUrl
+const remoteUrl =  import.meta.env.PROD
+            ? 'http://106.12.58.7:5002/assets/eduAdminEntry.js'
+            : 'http://localhost:5002/src/eduAdminEntry.js'
 
 const EduAdmin = React.lazy(() => import(/* @vite-ignore */ remoteUrl))
 
