@@ -9,13 +9,14 @@ import { navigationItems } from '../config/navigation'
 const drawerWidth = 240
 const collapsedWidth = 72
 
-export function Sidebar({ collapsed, onToggleCollapse }) {
+export function Sidebar({className, collapsed, onToggleCollapse }) {
   const navigate = useNavigate()
   const location = useLocation()
 
   return (
     <Drawer
       variant="permanent"
+      className={className}
       sx={{
         width: collapsed ? collapsedWidth : drawerWidth,
         flexShrink: 0,

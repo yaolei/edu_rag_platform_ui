@@ -3,9 +3,9 @@ import axios from 'axios'
 
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ||
-                     (import.meta.env.PROD
+                     (import.meta.env.DEV
                        ? 'http://106.12.58.7:8000/api'
-                       : 'http://localhost:8000/api')
+                       : 'http://localhost:8001/api')
 
 const service = axios.create({
   baseURL: API_BASE_URL,
@@ -14,18 +14,18 @@ const service = axios.create({
     'Content-Type': 'application/json'
   }
 })
-service.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
+// service.interceptors.request.use(
+//   (config) => {
+//     const token = localStorage.getItem('token')
+//     if (token) {
+//       config.headers.Authorization = `Bearer ${token}`
+//     }
+//     return config
+//   },
+//   (error) => {
+//     return Promise.reject(error)
+//   }
+// )
 
 service.interceptors.response.use(
   (response) => {

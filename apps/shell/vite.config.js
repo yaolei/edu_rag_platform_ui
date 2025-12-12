@@ -6,7 +6,7 @@ import federation from '@originjs/vite-plugin-federation'
 // https://vite.dev/config/
 export default defineConfig((mode) => {
   const isProd = mode === 'production'
-  const outDir = process.env.BUILD_OUT_DIR || '/app/dist'
+  const outDir = process.env.BUILD_OUT_DIR || 'dist'
   return {
     plugins: [
       react(), 

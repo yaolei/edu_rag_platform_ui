@@ -180,10 +180,10 @@ function Nt() {
         else m(A);
       if (H.call(y, "key")) {
         A = e(l);
-        var X = Object.keys(y).filter(function(_t) {
+        var K = Object.keys(y).filter(function(_t) {
           return _t !== "key";
         });
-        R = 0 < X.length ? "{key: someKey, " + X.join(": ..., ") + ": ...}" : "{key: someKey}", de[A + R] || (X = 0 < X.length ? "{" + X.join(": ..., ") + ": ...}" : "{}", console.error(
+        R = 0 < K.length ? "{key: someKey, " + K.join(": ..., ") + ": ...}" : "{key: someKey}", de[A + R] || (K = 0 < K.length ? "{" + K.join(": ..., ") + ": ...}" : "{}", console.error(
           `A props object containing a "key" prop is being spread into JSX:
   let props = %s;
   <%s {...props} />
@@ -192,7 +192,7 @@ React keys must be passed directly to JSX without using spread:
   <%s key={someKey} {...props} />`,
           R,
           A,
-          X,
+          K,
           A
         ), de[A + R] = !0);
       }
@@ -219,7 +219,7 @@ React keys must be passed directly to JSX without using spread:
     function w(l) {
       return typeof l == "object" && l !== null && l.$$typeof === f;
     }
-    var S = rt, f = Symbol.for("react.transitional.element"), b = Symbol.for("react.portal"), h = Symbol.for("react.fragment"), x = Symbol.for("react.strict_mode"), C = Symbol.for("react.profiler"), O = Symbol.for("react.consumer"), k = Symbol.for("react.context"), U = Symbol.for("react.forward_ref"), I = Symbol.for("react.suspense"), P = Symbol.for("react.suspense_list"), ee = Symbol.for("react.memo"), $ = Symbol.for("react.lazy"), ue = Symbol.for("react.activity"), fe = Symbol.for("react.client.reference"), M = S.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, H = Object.prototype.hasOwnProperty, q = Array.isArray, K = console.createTask ? console.createTask : function() {
+    var S = rt, f = Symbol.for("react.transitional.element"), b = Symbol.for("react.portal"), h = Symbol.for("react.fragment"), x = Symbol.for("react.strict_mode"), C = Symbol.for("react.profiler"), O = Symbol.for("react.consumer"), k = Symbol.for("react.context"), U = Symbol.for("react.forward_ref"), I = Symbol.for("react.suspense"), P = Symbol.for("react.suspense_list"), ee = Symbol.for("react.memo"), $ = Symbol.for("react.lazy"), ue = Symbol.for("react.activity"), fe = Symbol.for("react.client.reference"), M = S.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, H = Object.prototype.hasOwnProperty, q = Array.isArray, Y = console.createTask ? console.createTask : function() {
       return null;
     };
     S = {
@@ -230,7 +230,7 @@ React keys must be passed directly to JSX without using spread:
     var v, te = {}, L = S.react_stack_bottom_frame.bind(
       S,
       i
-    )(), re = K(n(i)), de = {};
+    )(), re = Y(n(i)), de = {};
     se.Fragment = h, se.jsx = function(l, y, g) {
       var R = 1e4 > M.recentlyCreatedOwnerStacks++;
       return u(
@@ -239,7 +239,7 @@ React keys must be passed directly to JSX without using spread:
         g,
         !1,
         R ? Error("react-stack-top-frame") : L,
-        R ? K(n(l)) : re
+        R ? Y(n(l)) : re
       );
     }, se.jsxs = function(l, y, g) {
       var R = 1e4 > M.recentlyCreatedOwnerStacks++;
@@ -249,7 +249,7 @@ React keys must be passed directly to JSX without using spread:
         g,
         !0,
         R ? Error("react-stack-top-frame") : L,
-        R ? K(n(l)) : re
+        R ? Y(n(l)) : re
       );
     };
   })()), se;
@@ -332,9 +332,9 @@ function nt(e, t) {
 const { toString: jt } = Object.prototype, { getPrototypeOf: Fe } = Object, { iterator: we, toStringTag: st } = Symbol, ge = /* @__PURE__ */ ((e) => (t) => {
   const r = jt.call(t);
   return e[r] || (e[r] = r.slice(8, -1).toLowerCase());
-})(/* @__PURE__ */ Object.create(null)), D = (e) => (e = e.toLowerCase(), (t) => ge(t) === e), Re = (e) => (t) => typeof t === e, { isArray: Z } = Array, G = Re("undefined");
+})(/* @__PURE__ */ Object.create(null)), D = (e) => (e = e.toLowerCase(), (t) => ge(t) === e), Re = (e) => (t) => typeof t === e, { isArray: G } = Array, X = Re("undefined");
 function ie(e) {
-  return e !== null && !G(e) && e.constructor !== null && !G(e.constructor) && j(e.constructor.isBuffer) && e.constructor.isBuffer(e);
+  return e !== null && !X(e) && e.constructor !== null && !X(e.constructor) && j(e.constructor.isBuffer) && e.constructor.isBuffer(e);
 }
 const ot = D("ArrayBuffer");
 function Ft(e) {
@@ -363,7 +363,7 @@ function ce(e, t, { allOwnKeys: r = !1 } = {}) {
   if (e === null || typeof e > "u")
     return;
   let n, s;
-  if (typeof e != "object" && (e = [e]), Z(e))
+  if (typeof e != "object" && (e = [e]), G(e))
     for (n = 0, s = e.length; n < s; n++)
       t.call(null, e[n], n, e);
   else {
@@ -386,11 +386,11 @@ function at(e, t) {
       return s;
   return null;
 }
-const J = typeof globalThis < "u" ? globalThis : typeof self < "u" ? self : typeof window < "u" ? window : global, ct = (e) => !G(e) && e !== J;
+const J = typeof globalThis < "u" ? globalThis : typeof self < "u" ? self : typeof window < "u" ? window : global, ct = (e) => !X(e) && e !== J;
 function Ne() {
   const { caseless: e, skipUndefined: t } = ct(this) && this || {}, r = {}, n = (s, i) => {
     const o = e && at(r, i) || i;
-    me(r[o]) && me(s) ? r[o] = Ne(r[o], s) : me(s) ? r[o] = Ne({}, s) : Z(s) ? r[o] = s.slice() : (!t || !G(s)) && (r[o] = s);
+    me(r[o]) && me(s) ? r[o] = Ne(r[o], s) : me(s) ? r[o] = Ne({}, s) : G(s) ? r[o] = s.slice() : (!t || !X(s)) && (r[o] = s);
   };
   for (let s = 0, i = arguments.length; s < i; s++)
     arguments[s] && ce(arguments[s], n);
@@ -418,7 +418,7 @@ const Kt = (e, t, r, { allOwnKeys: n } = {}) => (ce(t, (s, i) => {
   return n !== -1 && n === r;
 }, er = (e) => {
   if (!e) return null;
-  if (Z(e)) return e;
+  if (G(e)) return e;
   let t = e.length;
   if (!it(t)) return null;
   const r = new Array(t);
@@ -470,7 +470,7 @@ const Kt = (e, t, r, { allOwnKeys: n } = {}) => (ce(t, (s, i) => {
       r[i] = !0;
     });
   };
-  return Z(e) ? n(e) : n(String(e).split(t)), r;
+  return G(e) ? n(e) : n(String(e).split(t)), r;
 }, lr = () => {
 }, ur = (e, t) => e != null && Number.isFinite(e = +e) ? e : t;
 function fr(e) {
@@ -485,10 +485,10 @@ const dr = (e) => {
         return n;
       if (!("toJSON" in n)) {
         t[s] = n;
-        const i = Z(n) ? [] : {};
+        const i = G(n) ? [] : {};
         return ce(n, (o, c) => {
           const p = r(o, s + 1);
-          !G(p) && (i[c] = p);
+          !X(p) && (i[c] = p);
         }), t[s] = void 0, i;
       }
     }
@@ -503,7 +503,7 @@ const dr = (e) => {
   typeof setImmediate == "function",
   j(J.postMessage)
 ), mr = typeof queueMicrotask < "u" ? queueMicrotask.bind(J) : typeof process < "u" && process.nextTick || ut, br = (e) => e != null && j(e[we]), a = {
-  isArray: Z,
+  isArray: G,
   isArrayBuffer: ot,
   isBuffer: ie,
   isFormData: Mt,
@@ -518,7 +518,7 @@ const dr = (e) => {
   isRequest: Jt,
   isResponse: Wt,
   isHeaders: Vt,
-  isUndefined: G,
+  isUndefined: X,
   isDate: Dt,
   isFile: Bt,
   isBlob: It,
@@ -1145,10 +1145,10 @@ function _e(e, t) {
 function Et(e) {
   return !!(e && e.__CANCEL__);
 }
-function Q(e, t, r) {
+function Z(e, t, r) {
   E.call(this, e ?? "canceled", E.ERR_CANCELED, t, r), this.name = "CanceledError";
 }
-a.inherits(Q, E, {
+a.inherits(Z, E, {
   __CANCEL__: !0
 });
 function wt(e, t, r) {
@@ -1396,7 +1396,7 @@ const Rt = (e) => {
     }, i === void 0 && o.setContentType(null), "setRequestHeader" in h && a.forEach(o.toJSON(), function(k, U) {
       h.setRequestHeader(U, k);
     }), a.isUndefined(s.withCredentials) || (h.withCredentials = !!s.withCredentials), c && c !== "json" && (h.responseType = s.responseType), d && ([w, f] = Ee(d, !0), h.addEventListener("progress", w)), p && h.upload && ([m, S] = Ee(p), h.upload.addEventListener("progress", m), h.upload.addEventListener("loadend", S)), (s.cancelToken || s.signal) && (u = (O) => {
-      h && (n(!O || O.type ? new Q(null, e, h) : O), h.abort(), h = null);
+      h && (n(!O || O.type ? new Z(null, e, h) : O), h.abort(), h = null);
     }, s.cancelToken && s.cancelToken.subscribe(u), s.signal && (s.signal.aborted ? u() : s.signal.addEventListener("abort", u)));
     const C = Ir(s.url);
     if (C && N.protocols.indexOf(C) === -1) {
@@ -1413,7 +1413,7 @@ const Rt = (e) => {
       if (!s) {
         s = !0, c();
         const u = d instanceof Error ? d : this.reason;
-        n.abort(u instanceof E ? u : new Q(u instanceof Error ? u.message : u));
+        n.abort(u instanceof E ? u : new Z(u instanceof Error ? u.message : u));
       }
     };
     let o = t && setTimeout(() => {
@@ -1563,9 +1563,9 @@ const Rt = (e) => {
     const q = M && M.unsubscribe && (() => {
       M.unsubscribe();
     });
-    let K;
+    let Y;
     try {
-      if (I && d && h !== "get" && h !== "head" && (K = await S(ee, x)) !== 0) {
+      if (I && d && h !== "get" && h !== "head" && (Y = await S(ee, x)) !== 0) {
         let l = new r(b, {
           method: "POST",
           body: x,
@@ -1573,7 +1573,7 @@ const Rt = (e) => {
         }), y;
         if (a.isFormData(x) && (y = l.headers.get("content-type")) && ee.setContentType(y), l.body) {
           const [g, R] = Je(
-            K,
+            Y,
             Ee(We(I))
           );
           x = Ye(l.body, Ke, g, R);
@@ -1701,7 +1701,7 @@ const xt = {
 };
 function ke(e) {
   if (e.cancelToken && e.cancelToken.throwIfRequested(), e.signal && e.signal.aborted)
-    throw new Q(null, e);
+    throw new Z(null, e);
 }
 function et(e) {
   return ke(e), e.headers = F.from(e.headers), e.data = _e.call(
@@ -1918,7 +1918,7 @@ let sn = class Ot {
         n.unsubscribe(i);
       }, o;
     }, t(function(i, o, c) {
-      n.reason || (n.reason = new Q(i, o, c), r(n.reason));
+      n.reason || (n.reason = new Z(i, o, c), r(n.reason));
     });
   }
   /**
@@ -2057,7 +2057,7 @@ function At(e) {
 }
 const T = At(le);
 T.Axios = W;
-T.CanceledError = Q;
+T.CanceledError = Z;
 T.CancelToken = sn;
 T.isCancel = Et;
 T.VERSION = Tt;
@@ -2092,21 +2092,14 @@ const {
   formToJSON: An,
   getAdapter: _n,
   mergeConfig: kn
-} = T, cn = "http://106.12.58.7:8000/api", Y = T.create({
+} = T, cn = "http://localhost:8001/api", Q = T.create({
   baseURL: cn,
   timeout: 6e4,
   headers: {
     "Content-Type": "application/json"
   }
 });
-Y.interceptors.request.use(
-  (e) => {
-    const t = localStorage.getItem("token");
-    return t && (e.headers.Authorization = `Bearer ${t}`), e;
-  },
-  (e) => Promise.reject(e)
-);
-Y.interceptors.response.use(
+Q.interceptors.response.use(
   (e) => {
     const t = e.data;
     if (t.code === 0 || t.code === 200) {
@@ -2154,19 +2147,19 @@ Y.interceptors.response.use(
   }
 );
 function Nn(e, t = {}, r = {}) {
-  return Y.get(e, { params: t, ...r });
+  return Q.get(e, { params: t, ...r });
 }
 function Cn(e, t = {}, r = {}) {
-  return Y.post(e, t, r);
+  return Q.post(e, t, r);
 }
 function Pn(e, t = {}, r = {}) {
-  return Y.put(e, t, r);
+  return Q.put(e, t, r);
 }
 function jn(e, t = {}, r = {}) {
-  return Y.delete(e, { params: t, ...r });
+  return Q.delete(e, { params: t, ...r });
 }
 function Fn(e, t, r) {
-  return Y.post(e, t, {
+  return Q.post(e, t, {
     headers: {
       "Content-Type": "multipart/form-data"
     },

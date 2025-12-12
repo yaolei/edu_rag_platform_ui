@@ -1,11 +1,9 @@
 import axios from 'axios'
 
-// 获取基础 URL（从环境变量或默认值）
-
 const API_BASE_URL = import.meta.env.VITE_API_URL ||
-                     (import.meta.env.PROD
+                     (import.meta.env.DEV
                        ? 'http://106.12.58.7:8000/api'
-                       : 'http://localhost:8000/api')
+                       : 'http://localhost:8001/api')
 
 
 // 创建 axios 实例

@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 import federation from '@originjs/vite-plugin-federation'
 
 
-const outDir = process.env.BUILD_OUT_DIR || '/app/dist'
+const outDir = process.env.BUILD_OUT_DIR || 'dist'
 export default defineConfig({
   plugins: [
     react(),

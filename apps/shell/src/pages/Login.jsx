@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import {useNavigate} from 'react-router'
+import {useNavigate, useLocation} from 'react-router'
 import {styled} from '@mui/material/styles'
 import Snow from '../components/Snow'
 import {post} from '@workspace/shared-util'
@@ -39,32 +39,36 @@ const LoginPaper = styled(Paper)(({theme}) => ({
 
 const Login = () => {
     const [username, setUsername] = useState('')
-    const [passwrod, setPassword] = useState('')
+    const [password, setPassword] = useState('')
     const [errorInfo, setErrorInfo] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate()
+    const location = useLocation();
 
     const handleLogin  = async(e) => {
         e.preventDefault()
         setIsLoading(true)
         setErrorInfo("please approve on your phone")
+        localStorage.setItem('token', 'success');
+        const from = location.state?.from?.pathname || '/';
+        navigate(from, { replace: true });
 
         try {
-            const response = await post('//', {
-                username:username,
-                passwrod:passwrod
-            }, {timeout:150000})
+            // const response = await post('//', {
+            //     username:username,
+            //     password:password
+            // }, {timeout:150000})
 
-            if (response && response.request.state != 200) {
-                console.log(`login fail with ${response.message}`)
-                setIsLoading(false)
-                setErrorInfo(response.message)
-            } else {
-                console.log('Login successful')
-                setIsLoading(false)
-                setErrorInfo('')
-                navigate('/')
-            }
+            // if (response && response.request.state != 200) {
+            //     console.log(`login fail with ${response.message}`)
+            //     setIsLoading(false)
+            //     setErrorInfo(response.message)
+            // } else {
+            //     console.log('Login successful')
+            //     setIsLoading(false)
+            //     setErrorInfo('')
+            //     navigate('/')
+            // }
 
 
         } catch (error){
@@ -91,34 +95,60 @@ const Login = () => {
             <Snow />
             <LoginContainer>
                 <LoginPaper elevation={3}>
-                    <Typography variant="h4" component="h1" gutterBottom>
-                            Accurate DID
+                    <Typography variant="h4" component="h1" gutterBottom sx={{ width: '100%', textAlign: 'center', fontWeight: 600 }}>
+                            Accurate Did
                     </Typography>
-                    <Box component="form" onSubmit={handleLogin} sx={{mt:1, width: '100%'}}>
+                    <Box component="form" onSubmit={handleLogin} sx={{mt:1, width: '100%'}} noValidate>
                         <TextField
                           margin="normal"
                           required
                           fullWidth
                           id="username"
-                          labe="User Name"
+                          label="User Name"
                           name="username"
                           autoComplete="username"
                           autoFocus
                           value={username}
+                          InputLabelProps={{ shrink: true }} 
                           onChange={(e) => setUsername(e.target.value)}
+                          sx={{
+                                '& .MuiOutlinedInput-root': {
+                                borderRadius: 2,
+                                backgroundColor: 'rgba(255,255,255,0.08)',
+                                '& fieldset': { borderColor: 'rgba(255,255,255,0.35)' },
+                                '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.65)' },
+                                '&.Mui-focused fieldset': { borderColor: 'rgba(255,255,255,0.9)' },
+                                },
+                                '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.7)' },
+                                '& .MuiInputLabel-root.Mui-focused': { color: 'rgba(255,255,255,0.9)' },
+                                '& .MuiOutlinedInput-input': {color: '#000'},
+                          }}
                         />
                       <TextField
                           margin="normal"
                           required
                           fullWidth
                           id="password"
-                          labe="Password"
+                          label="Password"
                           type="password"
-                          name="passwrod"
+                          name="password"
                           autoComplete="current-password"
                           autoFocus
-                          value={passwrod}
+                          value={password}
+                          InputLabelProps={{ shrink: true }} 
                           onChange={(e) => setPassword(e.target.value)}
+                          sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    borderRadius: 2,
+                                    backgroundColor: 'rgba(255,255,255,0.08)',
+                                    '& fieldset': { borderColor: 'rgba(255,255,255,0.35)' },
+                                    '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.65)' },
+                                    '&.Mui-focused fieldset': { borderColor: 'rgba(255,255,255,0.9)' },
+                                },
+                                '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.7)' },
+                                '& .MuiInputLabel-root.Mui-focused': { color: 'rgba(255,255,255,0.9)' },
+                                '& .MuiOutlinedInput-input': {color: '#000'},
+                          }}
                         />
                         <OptionsContainer>
                             <div>Remember me</div>
@@ -127,16 +157,23 @@ const Login = () => {
                         {errorInfo !=='' && (
                             <div className='text-red-500'>{errorInfo}</div>
                         )}
-                     <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{
-                                mt:3,
-                                md:2, 
-                                borderRadius:"20px",
-                                backgroundColor:'rgba(255, 255, 255, 0.5'
-                            }}
+                        <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{
+                            mt: 3,
+                            borderRadius: '20px',
+                            fontWeight: 600,
+                            textTransform: 'none',
+                            color: '#fff',                                   
+                            backgroundColor: 'rgba(255, 255, 255, 0.15)',    
+                            backdropFilter: 'blur(4px)',                     
+                            border: '1px solid rgba(255, 255, 255, 0.25)',
+                            '&:hover': {
+                            backgroundColor: 'rgba(255, 255, 255, 0.25)',
+                            },
+                        }}
                         >
                         {isLoading ? <CircularProgress color="inherit" />: 'Login'}
                      </Button>

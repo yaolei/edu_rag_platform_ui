@@ -18,7 +18,7 @@ const KnowledgeUploader = ({
 }) => {
    return (
     <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 flex-col-mobile">
             <div className="flex-1">
                 <div className="flex items-center gap-2">
                     <input
@@ -33,9 +33,23 @@ const KnowledgeUploader = ({
                         <Button 
                             variant="contained" 
                             component="span" 
-                            className="bg-blue-600 hover:bg-blue-700"
-                            startIcon={<CloudUploadIcon />}>
-                            Select knowledge File
+                            className="bg-blue-600 hover:bg-blue-700 upload-btn"
+                            sx={{
+                                mt: 3,
+                                borderRadius: '20px',
+                                fontWeight: 600,
+                                textTransform: 'none',
+                                color: '#fff',                                   
+                                backgroundColor: 'rgba(255, 255, 255, 0.15)',    
+                                backdropFilter: 'blur(4px)',                     
+                                border: '1px solid rgba(255, 255, 255, 0.25)',
+                                '&:hover': {
+                                backgroundColor: 'rgba(255, 255, 255, 0.25)',
+                                },
+                            }}
+                            startIcon={<CloudUploadIcon />}
+                        >
+                            Select File
                         </Button>
                     </label>
                     </div>
@@ -70,9 +84,22 @@ const KnowledgeUploader = ({
                     color="primary"
                     onClick={submitFiles}
                     disabled={!isUploadingButtonEnabled()}
-                    className="h-12 self-center md:self-auto bg-green-600 hover:bg-green-700"
+                    sx={{
+                        mt: 3,
+                        borderRadius: '20px',
+                        fontWeight: 600,
+                        textTransform: 'none',
+                        color: '#fff',                                   
+                        backgroundColor: 'rgba(255, 255, 255, 0.15)',    
+                        backdropFilter: 'blur(4px)',                     
+                        border: '1px solid rgba(255, 255, 255, 0.25)',
+                        '&:hover': {
+                        backgroundColor: 'rgba(255, 255, 255, 0.25)',
+                        },
+                    }}
+                    className="h-12 upload-btn self-center md:self-auto bg-green-600 hover:bg-green-700"
                 >
-                    {isUploading ? 'Uploading...' : 'Upload Knowledge'}
+                    {isUploading ? 'Uploading...' : 'Upload file'}
                 </Button>
         </div>
         
