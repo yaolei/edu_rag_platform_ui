@@ -14,9 +14,9 @@ export function Sidebar({className, collapsed, onToggleCollapse }) {
   const location = useLocation()
 
   return (
+    <div className={className}>
     <Drawer
       variant="permanent"
-      className={className}
       sx={{
         width: collapsed ? collapsedWidth : drawerWidth,
         flexShrink: 0,
@@ -116,5 +116,7 @@ export function Sidebar({className, collapsed, onToggleCollapse }) {
         }
       `}</style>
     </Drawer>
+    </div>
+
   )
 }
