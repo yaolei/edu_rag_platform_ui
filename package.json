@@ -16,7 +16,8 @@
     "preview": "turbo run preview --filter=\"./apps/*\"",
     "lint": "turbo lint",
     "build:preview": "yarn build && yarn preview",
-    "build:pro": "turbo build"
+    "build:pro": "turbo build && yarn copy:dist",
+    "copy:dist": "mkdir -p /app/dist && cp -r apps/shell/dist/* /app/dist/ && cp -r apps/edu-admin-app/dist/* /app/dist/"
   },
   "dependencies": {
     "@emotion/react": "~11.14.0",
