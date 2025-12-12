@@ -17,8 +17,7 @@
     "lint": "turbo lint",
     "build:preview": "yarn build && yarn preview",
     "build:pro": "turbo build && yarn copy:dist",
-    "copy:dist": "mkdir -p /app/dist && cp -r apps/shell/dist/* /app/dist/ && cp -r apps/edu-admin-app/dist/* /app/dist/ && mv /app/dist/index.html /app/dist/index.html"
-
+    "copy:dist": "mkdir -p /app/dist && cp -r apps/shell/dist/* /app/dist/ && mkdir -p /app/dist/admin && cp -r apps/edu-admin-app/dist/* /app/dist/admin/"
   },
   "dependencies": {
     "@emotion/react": "~11.14.0",
