@@ -14,9 +14,10 @@ export function Sidebar({className, collapsed, onToggleCollapse }) {
   const location = useLocation()
 
   return (
-    <div className={className}>
+    <div className='desktop-only'>
     <Drawer
       variant="permanent"
+       classes={{ paper: className }} 
       sx={{
         width: collapsed ? collapsedWidth : drawerWidth,
         flexShrink: 0,
@@ -114,9 +115,16 @@ export function Sidebar({className, collapsed, onToggleCollapse }) {
         .MuiListItemButton-root:hover {
           transform: translateX(4px);
         }
+        .@media (max-width: 600px) {
+          .desktop-only { display: none !important; }
+          .mobile-only  { display: block !important; }
+        }
+        @media (min-width: 601px) {
+        .desktop-only { display: block !important; }
+        .mobile-only  { display: none !important; }
+        }
       `}</style>
     </Drawer>
     </div>
-
   )
 }
