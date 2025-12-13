@@ -84,7 +84,7 @@ const Login = () => {
             maxWidth={false}
             disableGutters={true}
             sx={{
-                backgroundImage:`url("/static/images/bg/bg1.jpg")`,
+                backgroundImage:`url("/images/bg1.jpg")`,
                 backgroundSize:'cover',
                 backgroundPosition:'center',
                 minHeight: '100vh',

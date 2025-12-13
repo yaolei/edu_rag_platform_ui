@@ -3,4 +3,4 @@
 [2K[1Gtransforming (1) [2msrc/index.js[22m[2K[1G[32m✓[39m 62 modules transformed.
 [2K[1Grendering chunks (1)...[2K[1G[2K[1Gcomputing gzip size (0)...[2K[1Gcomputing gzip size (1)...[2K[1G[2mdist/[22m[36mshared-util.js  [39m[1m[2m66.03 kB[22m[1m[22m[2m │ gzip: 21.84 kB[22m
 [2K[1Grendering chunks (1)...[2K[1G[2K[1Gcomputing gzip size (1)...[2K[1G[2mdist/[22m[36mshared-util.cjs  [39m[1m[2m46.67 kB[22m[1m[22m[2m │ gzip: 18.58 kB[22m
-[32m✓ built in 205ms[39m
+[32m✓ built in 121ms[39m
