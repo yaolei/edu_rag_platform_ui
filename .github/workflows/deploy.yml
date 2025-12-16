@@ -49,14 +49,14 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             echo "✅ Pull code successful. Current commit:"
-            git log -1 --oneline
-            cd /root/www/docker_relation_server/nodejs
+            git log -1 --oneline    
 
       - name: Build & Deploy
         run: |
+          cd /root/www/docker_relation_server/nodejs
           echo "🚀 Building with cache flag: ${{ steps.cache.outputs.cache_flag }}"
           # 使用你本地的 docker-compose 文件（在 /root/www/docker_relation_server/nodejs/ 下）
-          docker compose -f /root/www/docker_relation_server/nodejs/build.docker-compose.yml build ${{ steps.cache.outputs.cache_flag }}
+          docker compose -f build.docker-compose.yml build ${{ steps.cache.outputs.cache_flag }}
           echo "✅ Build successful. "
           echo "🚀 Start Deloy "
           docker compose -f build.docker-compose.yml up -d --force-recreate
