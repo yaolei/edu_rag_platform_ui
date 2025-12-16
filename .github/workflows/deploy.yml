@@ -20,8 +20,7 @@ jobs:
       - name: Detect dependency changes
         id: deps
         run: |
-          # 若本次 push 包含依赖文件，强制无缓存
-          if git diff --name-only HEAD^ HEAD | grep -E '(requirements\.txt|package\.json|yarn\.lock|Dockerfile|build\.docker-compose\.yml)'; then
+          if git diff --name-only HEAD^ HEAD | grep -E '(package\.json|yarn\.lock|build\.docker-compose\.yml)'; then
             echo "force_no_cache=true" >> $GITHUB_OUTPUT
           else
             echo "force_no_cache=false" >> $GITHUB_OUTPUT
@@ -38,26 +37,24 @@ jobs:
             echo "cache_flag=" >> $GITHUB_OUTPUT
           fi
 
-      - name: Pull & Merger code
+      - name: Pull & Build & Deploy on server
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ env.SSH_HOST }}
           username: ${{ env.SSH_USER }}
           key: ${{ env.SSH_KEY }}
           script: |
+            set -e
+            echo "🔄 Pulling latest code..."
             cd /root/www/edu_rag_platform_ui
             git fetch origin main
             git reset --hard origin/main
-            echo "✅ Pull code successful. Current commit:"
-            git log -1 --oneline    
+            echo "✅ Code updated to $(git rev-parse --short HEAD)"
 
-      - name: Build & Deploy
-        run: |
-          cd /root/www/docker_relation_server/nodejs
-          echo "🚀 Building with cache flag: ${{ steps.cache.outputs.cache_flag }}"
-          # 使用你本地的 docker-compose 文件（在 /root/www/docker_relation_server/nodejs/ 下）
-          docker compose -f build.docker-compose.yml build ${{ steps.cache.outputs.cache_flag }}
-          echo "✅ Build successful. "
-          echo "🚀 Start Deloy "
-          docker compose -f build.docker-compose.yml up -d --force-recreate
-          echo "✅ Deploy  Successful.😊 "
+            echo "🐳 Building frontend image..."
+            cd /root/www/docker_relation_server/nodejs
+            docker compose -f build.docker-compose.yml build ${{ steps.cache.outputs.cache_flag }}
+
+            echo "🚀 Deploying containers..."
+            docker compose -f build.docker-compose.yml up -d --force-recreate
+            echo "✅ Deploy completed successfully!"
