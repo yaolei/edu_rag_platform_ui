@@ -1,4 +1,4 @@
-name: Docker Build & Deploy
+name: Front End Docker Build & Deploy
 
 on:
   push:
@@ -46,9 +46,10 @@ jobs:
           key: ${{ env.SSH_KEY }}
           script: |
             cd /root/www/edu_rag_platform_ui
-            git pull origin main
-            echo "✅ Pull code successful.
-            echo "🚀 Go to execute docke compose.
+            git fetch origin main
+            git reset --hard origin/main
+            echo "✅ Pull code successful. Current commit:"
+            git log -1 --oneline
             cd /root/www/docker_relation_server/nodejs
 
       - name: Build & Deploy
@@ -59,4 +60,4 @@ jobs:
           echo "✅ Build successful. "
           echo "🚀 Start Deloy "
           docker compose -f docker-compose.prod.yml up -d --force-recreate
-           echo "✅ Deploy  Successful.😊 "
+          echo "✅ Deploy  Successful.😊 "
