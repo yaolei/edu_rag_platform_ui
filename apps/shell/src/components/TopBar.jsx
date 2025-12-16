@@ -59,7 +59,7 @@ export function TopBar({ onOpenSettings }) {
 
           <Box component="img" src="/rag.png" alt="RAG" sx={{ height: 36, width: 36 }} className="desktop-only"/>
           <Typography variant="h6" component="div" sx={{ fontWeight: 600 }} className="desktop-only">
-            Edu RAG Platform
+            RAG Platform
           </Typography>
         </Box>
 
