@@ -38,21 +38,25 @@ jobs:
             echo "cache_flag=" >> $GITHUB_OUTPUT
           fi
 
-      - name: Build & push images
-        run: |
-          echo "🚀 Building with cache flag: ${{ steps.cache.outputs.cache_flag }}"
-          # 使用你本地的 docker-compose 文件（在 /root/www/docker_relation_server 下）
-          docker compose -f /root/www/docker_relation_server/docker-compose.prod.yml build ${{ steps.cache.outputs.cache_flag }}
-          docker compose -f /root/www/docker_relation_server/docker-compose.prod.yml push
-
-      - name: Deploy to server
+      - name: Pull & Merger code
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ env.SSH_HOST }}
           username: ${{ env.SSH_USER }}
           key: ${{ env.SSH_KEY }}
           script: |
-            cd /root/www/docker_relation_server
+            cd /root/www/edu_rag_platform_ui
             git pull origin main
-            docker compose -f docker-compose.prod.yml pull
-            docker compose -f docker-compose.prod.yml up -d --force-recreate
+            echo "✅ Pull code successful.
+            echo "🚀 Go to execute docke compose.
+            cd /root/www/docker_relation_server/nodejs
+
+      - name: Build & Deploy
+        run: |
+          echo "🚀 Building with cache flag: ${{ steps.cache.outputs.cache_flag }}"
+          # 使用你本地的 docker-compose 文件（在 /root/www/docker_relation_server/nodejs/ 下）
+          docker compose -f /root/www/docker_relation_server/nodejs/docker-compose.prod.yml build ${{ steps.cache.outputs.cache_flag }}
+          echo "✅ Build successful. "
+          echo "🚀 Start Deloy "
+          docker compose -f docker-compose.prod.yml up -d --force-recreate
+           echo "✅ Deploy  Successful.😊 "
