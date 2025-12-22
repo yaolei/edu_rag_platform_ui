@@ -15,7 +15,7 @@ export default defineConfig((mode) => {
         name: 'shell',
         remotes: {
             eduAdmin: isProd
-            ? 'http://106.12.58.7:5002/assets/eduAdminEntry.js'
+            ? 'http://106.12.58.7:5002/admin/assets/eduAdminEntry.js'
             : 'http://localhost:5002/assets/eduAdminEntry.js',
         },
       shared: {
