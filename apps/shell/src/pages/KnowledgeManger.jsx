@@ -133,7 +133,23 @@ const KnowledgeManger = () => {
             showNotice('Error toggling item status', 'error');
         }
     }
+    const deleteAllItems = async () => {
+        console.log("deleteAllItems called");
+        try {
+            const response = await get('/del_knowledge_items');
+            if (response && response.status === 200) {
+                setKnowledgeItems([]);
+                setAllActive(false);
+                showNotice('All knowledge items deleted', 'success');
+            } else {
+                showNotice('Failed to delete all knowledge items', 'error');
+            }
+        } catch (error) {
+            console.error('Error deleting all knowledge items:', error);
+            showNotice('Error deleting all knowledge items' + (error.message), 'error');
+        }
 
+    }
     const deleteItem = async (itemId, corpus_id) => {
         if (!confirm('Are you sure you want to delete this knowledge item?')) {
             return;
@@ -224,6 +240,7 @@ const KnowledgeManger = () => {
                 isLoading={isloading}
                 onToggleStatus={toggleItemStatus}
                 deleteItem={deleteItem}
+                deleteAllItems={deleteAllItems}
                 allActive={allActive}
                 onToggleAll={toggleAllItems}
             />
