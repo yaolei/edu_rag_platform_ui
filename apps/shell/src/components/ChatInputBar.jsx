@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{ useRef } from 'react'
 import { Box, TextField, IconButton, CircularProgress } from '@mui/material'
 import SendIcon from '@mui/icons-material/Send'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
@@ -14,9 +14,26 @@ export function ChatInputBar({
   loading,
   uploadedFile,
   uploadedImage,
-  fileInputRef,
-  imageInputRef
 }) {
+  const inputRef = useRef(null);
+  const handleClick = () => inputRef.current?.click();
+
+    const handleChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const pseudoEvent = { target: { files: e.target.files } };
+
+    if (file.type.startsWith('image/')) {
+      onImageUpload(pseudoEvent);
+    } else {
+      onFileUpload(pseudoEvent);
+    }
+    e.target.value = '';
+  };
+
+
+
   return (
     <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-end' }}>
       <TextField
@@ -35,23 +52,13 @@ export function ChatInputBar({
 
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, pb: 0.5 }}>
         <IconButton
-          onClick={() => fileInputRef.current?.click()}
+          onClick={handleClick}
           disabled={loading}
           size="small"
           title="Upload file"
           color={uploadedFile ? 'success' : 'default'}
         >
           <AttachFileIcon />
-        </IconButton>
-
-        <IconButton
-          onClick={() => imageInputRef.current?.click()}
-          disabled={loading}
-          size="small"
-          title="Upload image"
-          color={uploadedImage ? 'success' : 'default'}
-        >
-          <ImageIcon />
         </IconButton>
 
         <IconButton
@@ -69,9 +76,14 @@ export function ChatInputBar({
           {loading ? <CircularProgress size={20} /> : <SendIcon />}
         </IconButton>
       </Box>
+      <input
+        ref={inputRef}
+        type="file"
+        hidden
+        onChange={handleChange}
+        accept="*/*"
+      />
 
-      <input ref={fileInputRef} type="file" hidden onChange={onFileUpload} accept="*/*" />
-      <input ref={imageInputRef} type="file" hidden onChange={onImageUpload} accept="image/*" />
     </Box>
   )
 }

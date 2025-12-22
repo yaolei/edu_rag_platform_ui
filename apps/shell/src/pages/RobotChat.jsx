@@ -20,8 +20,6 @@ export function RobotChat() {
   const [uploadedFile, setUploadedFile] = useState(null)
   const [uploadedImage, setUploadedImage] = useState(null)
   const responsesEndRef = useRef(null)
-  const fileInputRef = useRef(null)
-  const imageInputRef = useRef(null)
 
   useEffect(() => {
     const loadHistory = async () => {
@@ -125,8 +123,6 @@ export function RobotChat() {
         loading={loading}
         uploadedFile={uploadedFile}
         uploadedImage={uploadedImage}
-        fileInputRef={fileInputRef}
-        imageInputRef={imageInputRef}
       />
     </Box>
   )

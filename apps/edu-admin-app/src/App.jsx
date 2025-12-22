@@ -8,7 +8,7 @@ function App() {
 
   return (
     <>
-      <div> Second View </div>
+      <div className='w-full h-full flex flex-col items-center justify-center p-8 bg-amber-500'> Second View </div>
     </>
   )
 }

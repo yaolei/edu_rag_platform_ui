@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "dev": "turbo run dev --filter=\"./apps/*\"",
-    "dev:with-build": "concurrently \"yarn workspace edu-admin-app preview\" \"yarn workspace shell dev\"",
+    "dev:with-build": "concurrently \"yarn workspace shell dev\"  \"yarn workspace edu-admin-app preview\"",
     "build": "turbo build",
     "preview": "turbo run preview --filter=\"./apps/*\"",
     "lint": "turbo lint",

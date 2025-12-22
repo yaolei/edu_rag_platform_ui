@@ -8,11 +8,7 @@ import Login from '../pages/Login';
 import { RequireAuth } from '../components/RequireAuth.jsx';
 import { LayoutWithErrorBoundary } from '../components/LayoutWithErrorBoundary.jsx';
 
-const remoteUrl = import.meta.env.PROD
-  ? 'http://106.12.58.7:5002/assets/eduAdminEntry.js'
-  : 'http://localhost:5002/src/eduAdminEntry.js';
-
-const EduAdmin = React.lazy(() => import(/* @vite-ignore */ remoteUrl));
+const EduAdmin = React.lazy(() => import('eduAdmin/AdminApp'))
 
 const LoadingFallback = () => (
   <div className="flex items-center justify-center h-full">
@@ -35,7 +31,7 @@ export function createRoutes() {
       ),
       children: [
         { index: true, element: <Dashboard /> },
-        { path: 'dashboard', element: <Dashboard /> },   // 相对路径
+        { path: 'dashboard', element: <Dashboard /> },
         { path: 'admin',    element: <Suspense fallback={<LoadingFallback />}><EduAdmin /></Suspense> },
         { path: 'robot',    element: <RobotChat /> },
         { path: 'klg_magement', element: <KnowledgeManger /> },
