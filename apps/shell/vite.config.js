@@ -100,10 +100,6 @@ export default defineConfig((mode) => {
             manualChunks(id) {
               /* ===== 1. 把巨大的第三方库先拆出去 ===== */
               if (id.includes('node_modules')) {
-                // React 全家桶
-                if (id.includes('react-dom')) return 'react-dom';
-                if (id.includes('react-router')) return 'react-router';
-
                 // MUI 体系（icons + material + system + x-data-grid）
                 if (id.includes('@mui')) return 'mui';
                 if (id.includes('@mui/icons-material')) return 'mui-icons';
