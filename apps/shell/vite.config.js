@@ -104,13 +104,8 @@ export default defineConfig((mode) => {
                 if (id.includes('echarts')) return 'echarts';
                 return 'vendor';
               }
-            
             if (id.includes('/src/pages/Dashboard')) return 'page-dashboard';
             if (id.includes('/src/pages/Login')) return 'page-login';
-
-            // 大模块——访问时再拉
-            if (id.includes('/src/pages/KnowledgeManger')) return 'page-knowledge';
-            if (id.includes('/src/pages/RobotChat')) return 'page-chat';
             if (id.includes('/src/pages/Settings')) return 'page-settings';
             },
           },
