@@ -51,9 +51,6 @@ jobs:
             git reset --hard origin/main
             echo "✅ Code updated to $(git rev-parse --short HEAD)"
 
-            echo "🧹 clear remain dist"
-            rm -rf /root/www/docker_relation_server/nginx/dist/*
-
             echo "🐳 Building frontend image..."
             cd /root/www/docker_relation_server/nodejs
             docker compose -f build.docker-compose.yml build ${{ steps.cache.outputs.cache_flag }}
