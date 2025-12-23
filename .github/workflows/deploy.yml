@@ -53,8 +53,6 @@ jobs:
 
             echo "🐳 Building frontend image..."
             cd /root/www/docker_relation_server/nodejs
-            docker compose -f build.docker-compose.yml build ${{ steps.cache.outputs.cache_flag }}
-
-            echo "🚀 Deploying containers..."
-            docker compose -f build.docker-compose.yml up -d --force-recreate
+            docker compose -f build.docker-compose.yml build --no-cache
+            docker compose -f build.docker-compose.yml up --exit-code-from node-builder node-builder
             echo "✅ Deploy completed successfully!"
