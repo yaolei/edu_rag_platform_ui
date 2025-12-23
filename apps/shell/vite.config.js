@@ -95,19 +95,6 @@ export default defineConfig((mode) => {
         modulePreload: { polyfill: true },
         emptyOutDir: true,
         outDir,
-        rollupOptions: {
-          output: {
-            manualChunks(id) {
-              /* ===== 1. 把巨大的第三方库先拆出去 ===== */
-              if (id.includes('node_modules')) {
-                // MUI 体系（icons + material + system + x-data-grid）
-                if (id.includes('echarts')) return 'echarts';
-                return 'vendor';
-              }
-            },
-          },
-        },
-        chunkSizeWarningLimit: 600,
       },
   }
 })
