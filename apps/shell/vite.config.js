@@ -101,10 +101,7 @@ export default defineConfig((mode) => {
               /* ===== 1. 把巨大的第三方库先拆出去 ===== */
               if (id.includes('node_modules')) {
                 // MUI 体系（icons + material + system + x-data-grid）
-                if (id.includes('@mui')) return 'mui';
                 if (id.includes('@mui/icons-material')) return 'mui-icons';
-                if (id.includes('@mui/x-data-grid')) return 'mui-x';
-                // 可视化
                 if (id.includes('echarts')) return 'echarts';
                 return 'vendor';
               }
