@@ -15,7 +15,6 @@ export default defineConfig({
       external: [
         'react',
         'react-dom',
-        /^@mui.*/,
         'axios',
         'react-markdown',
         'react-syntax-highlighter',
