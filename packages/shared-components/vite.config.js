@@ -8,11 +8,22 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, 'src/index.js'),
       name: 'SharedComponents',
-      formats: ['es', 'cjs'],
+      formats: ['es'],
       fileName: (format) => `shared-components.${format === 'es' ? 'js' : 'cjs'}`
     },
     rollupOptions: {
-      external: ['react', 'react-dom'],
+      external: [
+        'react',
+        'react-dom',
+        /^@mui.*/,
+        'axios',
+        'react-markdown',
+        'react-syntax-highlighter',
+        'rehype-katex',
+        'remark-gfm',
+        'remark-math',
+        'katex'
+      ],
       output: {
         globals: {
           react: 'React',
