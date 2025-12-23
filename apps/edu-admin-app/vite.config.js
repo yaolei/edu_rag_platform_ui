@@ -84,12 +84,12 @@ export default defineConfig({
 
     // chunkSizeWarningLimit: 600,
     // },
-        build: {
+    build: {
       target: 'esnext',
-      minify: false,
-      cssCodeSplit: false,
-      modulePreload: false,
-      emptyOutDir: false,
+      minify: 'esbuild',
+      cssCodeSplit: true,
+      modulePreload: { polyfill: true },
+      emptyOutDir: true,
       outDir
     },
 })

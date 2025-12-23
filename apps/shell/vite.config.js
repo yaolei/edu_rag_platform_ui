@@ -88,13 +88,13 @@ export default defineConfig((mode) => {
     // // 把警告阈值先提高到 600 kB，等拆完再降回来
     // chunkSizeWarningLimit: 800,
     // },
-    build: {
-      target: 'esnext',
-      minify: false,
-      cssCodeSplit: false,
-      modulePreload: false,
-      emptyOutDir: false,
-      outDir
-    },
+      build: {
+        target: 'esnext',
+        minify: 'esbuild',
+        cssCodeSplit: true,
+        modulePreload: { polyfill: true },
+        emptyOutDir: true,
+        outDir
+      },
   }
 })
