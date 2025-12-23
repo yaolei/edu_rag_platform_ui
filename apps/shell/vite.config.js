@@ -18,12 +18,12 @@ export default defineConfig((mode) => {
             ? 'http://106.12.58.7/admin/assets/eduAdminEntry.js'
             : 'http://localhost:5002/assets/eduAdminEntry.js',
         },
-      shared: {
+        shared: {
           '@workspace/shared-util': { singleton: true, requiredVersion: '1.0.0' },
           '@workspace/shared-components': { singleton: true, requiredVersion: '1.0.0' },
-          react: { singleton: true, requiredVersion: '19.2.0', version: '19.2.0' },
-          'react-dom': { singleton: true, requiredVersion: '19.2.0', version: '19.2.0' },
-          'react-router': { singleton: true, requiredVersion: '7.9.6', version: '7.9.6' },
+          'react': { singleton: true },
+          'react-dom': { singleton: true },
+          'react-router': { singleton: true },
         }
       }),
     ],
