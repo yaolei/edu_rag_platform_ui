@@ -8,7 +8,7 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, 'src/index.js'),
       name: 'SharedComponents',
-      formats: ['es'],
+      formats: ['es', 'cjs'],
       fileName: (format) => `shared-components.${format === 'es' ? 'js' : 'cjs'}`
     },
     rollupOptions: {
