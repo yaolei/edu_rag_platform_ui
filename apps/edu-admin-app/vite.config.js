@@ -46,42 +46,50 @@ export default defineConfig({
     port: 5002,
     host: true
   },
-    build: {
+    // build: {
+    //   target: 'esnext',
+    //   minify: 'esbuild',
+    //   cssCodeSplit: false,
+    //   modulePreload: { polyfill: true },
+    //   emptyOutDir: true,
+    //   outDir,
+    //   rollupOptions: {
+    //     output: {
+    //       manualChunks(id) {
+    //         /* ===== 1. 把巨大的第三方库先拆出去 ===== */
+    //         if (id.includes('node_modules')) {
+    //           // React 全家桶
+    //           if (id.includes('react-dom')) return 'react-dom';
+    //           if (id.includes('react-router')) return 'react-router';
+
+    //           // MUI 体系（icons + material + system + x-data-grid）
+    //           if (id.includes('@mui')) return 'mui';
+    //           if (id.includes('@mui/icons-material')) return 'mui-icons';
+    //           if (id.includes('@mui/x-data-grid')) return 'mui-x';
+
+    //           // 可视化
+    //           if (id.includes('echarts')) return 'echarts';
+
+    //           // Markdown + 语法高亮（> 500 kB）
+    //           if (id.includes('react-markdown') ||
+    //               id.includes('react-syntax-highlighter') ||
+    //               id.includes('rehype-katex') ||
+    //               id.includes('remark-gfm') ||
+    //               id.includes('remark-math')) return 'markdown';
+    //           return 'vendor';
+    //         }
+    //       },
+    //     },
+    //   },
+
+    // chunkSizeWarningLimit: 600,
+    // },
+        build: {
       target: 'esnext',
-      minify: 'esbuild',
+      minify: false,
       cssCodeSplit: false,
-      modulePreload: { polyfill: true },
-      emptyOutDir: true,
-      outDir,
-      rollupOptions: {
-        output: {
-          manualChunks(id) {
-            /* ===== 1. 把巨大的第三方库先拆出去 ===== */
-            if (id.includes('node_modules')) {
-              // React 全家桶
-              if (id.includes('react-dom')) return 'react-dom';
-              if (id.includes('react-router')) return 'react-router';
-
-              // MUI 体系（icons + material + system + x-data-grid）
-              if (id.includes('@mui')) return 'mui';
-              if (id.includes('@mui/icons-material')) return 'mui-icons';
-              if (id.includes('@mui/x-data-grid')) return 'mui-x';
-
-              // 可视化
-              if (id.includes('echarts')) return 'echarts';
-
-              // Markdown + 语法高亮（> 500 kB）
-              if (id.includes('react-markdown') ||
-                  id.includes('react-syntax-highlighter') ||
-                  id.includes('rehype-katex') ||
-                  id.includes('remark-gfm') ||
-                  id.includes('remark-math')) return 'markdown';
-              return 'vendor';
-            }
-          },
-        },
-      },
-
-    chunkSizeWarningLimit: 600,
+      modulePreload: false,
+      emptyOutDir: false,
+      outDir
     },
 })
