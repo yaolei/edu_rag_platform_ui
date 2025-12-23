@@ -18,8 +18,8 @@ export default defineConfig({
       shared: {
         '@workspace/shared-util': { singleton: true, requiredVersion: '1.0.0' },
         '@workspace/shared-components': { singleton: true, requiredVersion: '1.0.0' },
-        'react': { singleton: true},
-        'react-dom': { singleton: true },
+          react: { singleton: true, requiredVersion: '19.2.0', version: '19.2.0' },
+          'react-dom': { singleton: true, requiredVersion: '19.2.0', version: '19.2.0' },
       }
     }),
   ],
