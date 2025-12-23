@@ -104,9 +104,6 @@ export default defineConfig((mode) => {
                 if (id.includes('echarts')) return 'echarts';
                 return 'vendor';
               }
-            if (id.includes('/src/pages/Dashboard')) return 'page-dashboard';
-            if (id.includes('/src/pages/Login')) return 'page-login';
-            if (id.includes('/src/pages/Settings')) return 'page-settings';
             },
           },
         },
