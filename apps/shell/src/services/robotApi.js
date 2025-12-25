@@ -18,7 +18,7 @@ export async function askOCR(question, files = []) {
     };
 
   } catch (error) {
-    console.error('askRobot error:', error);
+    console.error('ask ORC Robot error:', error);
     if (error.response) {
           console.error("错误响应数据:", error.response.data);
     }
