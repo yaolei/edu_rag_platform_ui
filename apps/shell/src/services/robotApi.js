@@ -1,5 +1,31 @@
 // 预留 API 接口，后续连接真实后端
-import {get, post} from '@workspace/shared-util'
+import {uploadFile, post} from '@workspace/shared-util'
+
+
+export async function askOCR(question, files = []) {
+  try {
+    const formData = new FormData();
+    formData.append('questions', question);
+    files.forEach((file) => {
+      formData.append('files', file);
+    });
+
+    const res = await uploadFile('/chat_by_files', formData);
+    if (res.status !== 200) throw new Error(`HTTP ${res.status}`);
+    return {
+      response: res.content,
+      timestamp: new Date().toISOString()
+    };
+
+  } catch (error) {
+    console.error('askRobot error:', error);
+    if (error.response) {
+          console.error("错误响应数据:", error.response.data);
+    }
+    throw error;
+  }
+}
+
 
 
 /**
@@ -19,46 +45,8 @@ export async function askRobot(question) {
         response: content,
         timestamp: new Date().toISOString()
       };
-      return{}
   } catch (error) {
       console.error('askRobot error:', error)
     throw error
-  }
-}
-
-/**
- * 获取对话历史记录
- * @returns {Promise<Array>}
- */
-export async function getChatHistory() {
-  try {
-    const res = await fetch('/robot/history', {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-      }
-    })
-
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    return await res.json()
-  } catch (error) {
-    console.error('getChatHistory error:', error)
-    return []
-  }
-}
-
-/**
- * 清空对话历史
- * @returns {Promise<void>}
- */
-export async function clearChatHistory() {
-  try {
-    await fetch('/robot/history', {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-      }
-    })
-  } catch (error) {
-    console.error('clearChatHistory error:', error)
   }
 }

@@ -2,7 +2,7 @@ import React,{ useRef } from 'react'
 import { Box, TextField, IconButton, CircularProgress } from '@mui/material'
 import SendIcon from '@mui/icons-material/Send'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
-import ImageIcon from '@mui/icons-material/Image'
+import DeleteIcon from '@mui/icons-material/Delete'
 
 export function ChatInputBar({
   input,
@@ -13,26 +13,27 @@ export function ChatInputBar({
   onImageUpload,
   loading,
   uploadedFile,
-  uploadedImage,
+  uploadedImages,
+  onClearHistory,
+  showClearButton
+
 }) {
   const inputRef = useRef(null);
   const handleClick = () => inputRef.current?.click();
 
     const handleChange = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
 
-    const pseudoEvent = { target: { files: e.target.files } };
-
-    if (file.type.startsWith('image/')) {
-      onImageUpload(pseudoEvent);
-    } else {
-      onFileUpload(pseudoEvent);
-    }
-    e.target.value = '';
+     const files = Array.from(e.target.files || [])
+     if (files.length === 0) return
+  
+     const hasImage = files.some(f => f.type.startsWith('image/'))
+     if (hasImage) {
+       onImageUpload({ target: { files: e.target.files } })
+     } else {
+       onFileUpload({ target: { files: e.target.files } })
+     }
+     e.target.value = ''
   };
-
-
 
   return (
     <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-end' }}>
@@ -51,6 +52,18 @@ export function ChatInputBar({
       />
 
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, pb: 0.5 }}>
+
+        {showClearButton && (
+            <IconButton
+              onClick={onClearHistory}
+              disabled={loading}
+              size="small"
+              color="error"
+            >
+              <DeleteIcon />
+            </IconButton>
+        )}
+
         <IconButton
           onClick={handleClick}
           disabled={loading}
@@ -63,7 +76,7 @@ export function ChatInputBar({
 
         <IconButton
           onClick={onSend}
-          disabled={(!input.trim() && !uploadedFile && !uploadedImage) || loading}
+          disabled={(!input.trim() && !uploadedFile && uploadedImages.length === 0) || loading}
           color="primary"
           size="small"
           title="Send question (Enter)"
@@ -82,8 +95,8 @@ export function ChatInputBar({
         hidden
         onChange={handleChange}
         accept="*/*"
+        multiple
       />
-
     </Box>
   )
 }

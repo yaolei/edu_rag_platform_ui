@@ -2,13 +2,17 @@ import React from 'react'
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import { vs } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import remarkMath from 'remark-math'
 import remarkGfm from 'remark-gfm'
 import rehypeKatex from 'rehype-katex'
 import 'katex/dist/katex.min.css'
-import { styled } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
+import { Box } from '@mui/material'
 
-const MarkdownContainer = styled('div')(({ theme }) => ({
+const MarkdownContainer = styled('div', {
+  shouldForwardProp: (prop) => prop !== 'isDarkMode'
+})(({ theme, isDarkMode }) => ({
   width: '100%',
   '& h1, & h2, & h3, & h4, & h5, & h6': {
     margin: theme.spacing(1, 0),
@@ -20,16 +24,24 @@ const MarkdownContainer = styled('div')(({ theme }) => ({
   '& p': { margin: theme.spacing(1, 0), textAlign: 'left' },
   '& ul, & ol': { margin: theme.spacing(3), textAlign: 'left' },
   '& li': { margin: theme.spacing(0.5, 0) },
-  '& code': {
-    backgroundColor: theme.palette.mode === 'light' ? '#f5f5f5' : '#2d2d2d',
+  '& code:not([class*="language-"])': {
+    backgroundColor: isDarkMode ? 'rgba(255,255,255,0.1)' : '#f5f5f5',
     padding: theme.spacing(0.25, 0.5),
-    borderRadius: 4
+    borderRadius: 4,
+    fontFamily: 'monospace'
   },
-  '& pre': {
-    backgroundColor: theme.palette.mode === 'light' ? '#f5f5f5' : '#2d2d2d',
+  '& pre:not([class*="prism-"])': {
+    backgroundColor: isDarkMode ? '#2d2d2d' : '#f5f5f5',
     padding: theme.spacing(1),
     borderRadius: 4,
     overflow: 'auto'
+  },
+  '& pre[class*="language-"]': {
+    margin: 0,
+    borderRadius: 4,
+    '& code': {
+      background: 'transparent !important'
+    }
   },
   '& blockquote': {
     borderLeft: `4px solid ${theme.palette.divider}`,
@@ -51,14 +63,14 @@ const MarkdownContainer = styled('div')(({ theme }) => ({
     verticalAlign: 'top'
   },
   '& th': {
-    backgroundColor: theme.palette.mode === 'light' ? '#f0f0f0' : '#3d3d3d',
+    backgroundColor: isDarkMode ? '#3d3d3d' : '#f0f0f0',
     fontWeight: 600
   },
   '& tr:nth-of-type(even)': {
-    backgroundColor: theme.palette.mode === 'light' ? '#fafafa' : '#2a2a2a'
+    backgroundColor: isDarkMode ? '#2a2a2a' : '#fafafa'
   },
   '& tr:hover': {
-    backgroundColor: theme.palette.mode === 'light' ? '#f1f1f1' : '#3a3a3a'
+    backgroundColor: isDarkMode ? '#3a3a3a' : '#f1f1f1'
   },
   '& a': {
     color: theme.palette.primary.main,
@@ -73,28 +85,80 @@ const MarkdownContainer = styled('div')(({ theme }) => ({
   }
 }))
 
-const MarkdownRender = ({ content }) => {
+const MarkdownRender = ({ content, isDarkMode: propIsDarkMode }) => {
+  // 使用传入的 isDarkMode，如果没有传入则使用 MUI theme
+  const muiTheme = useTheme()
+  const isDarkMode = propIsDarkMode !== undefined 
+    ? propIsDarkMode 
+    : muiTheme.palette.mode === 'dark'
+  
   const processedContent = (content || '').replace(/\\n/g, '\n')
+  
+  // 根据主题选择语法高亮样式
+  const codeStyle = isDarkMode ? vscDarkPlus : vs
 
   return (
-    <MarkdownContainer>
+    <MarkdownContainer isDarkMode={isDarkMode}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[rehypeKatex]}
         components={{
           code({ inline, className, children, ...props }) {
             const match = /language-(\w+)/.exec(className || '')
-            return !inline && match ? (
-              <SyntaxHighlighter
-                style={vscDarkPlus}
-                language={match[1]}
-                PreTag="div"
+            
+            // 代码块（多行代码）
+            if (!inline && match) {
+              return (
+                <Box
+                  component="div"
+                  sx={{
+                    backgroundColor: isDarkMode ? '#292929' : '#f5f5f5',
+                    borderRadius: 1,
+                    p: 2,
+                    overflow: 'auto',
+                    '& pre': {
+                      margin: 0,
+                      padding: 0,
+                      background: 'transparent !important'
+                    }
+                  }}
+                >
+                  <SyntaxHighlighter
+                    style={codeStyle}
+                    language={match[1]}
+                    PreTag="div"
+                    customStyle={{
+                      margin: 0,
+                      padding: 0,
+                      background: 'transparent',
+                      fontSize: '0.875rem'
+                    }}
+                    codeTagProps={{
+                      style: {
+                        fontFamily: 'Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace',
+                        background: 'transparent'
+                      }
+                    }}
+                    {...props}
+                  >
+                    {String(children).replace(/\n$/, '')}
+                  </SyntaxHighlighter>
+                </Box>
+              )
+            }
+            
+            // 内联代码
+            return (
+              <code 
+                className={className} 
+                style={{
+                  backgroundColor: isDarkMode ? 'rgba(255,255,255,0.1)' : '#f5f5f5',
+                  padding: '2px 4px',
+                  borderRadius: 4,
+                  fontFamily: 'monospace'
+                }}
                 {...props}
               >
-                {String(children).replace(/\n$/, '')}
-              </SyntaxHighlighter>
-            ) : (
-              <code className={className} {...props}>
                 {children}
               </code>
             )
@@ -105,6 +169,11 @@ const MarkdownRender = ({ content }) => {
       </ReactMarkdown>
     </MarkdownContainer>
   )
+}
+
+// 设置默认 props
+MarkdownRender.defaultProps = {
+  isDarkMode: undefined
 }
 
 export { MarkdownRender }

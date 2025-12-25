@@ -1,10 +1,26 @@
-import React from 'react'
-import { Box, Paper, Typography, Avatar, CircularProgress } from '@mui/material'
+import React, {useState} from 'react'
+import { Box, Paper, Typography, Avatar, CircularProgress, IconButton} from '@mui/material'
 import PersonIcon from '@mui/icons-material/Person'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import {MarkdownRender} from '@workspace/shared-components'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import BrokenImageIcon from '@mui/icons-material/BrokenImage'
+import { useTheme } from '../context/ThemeContext' 
+
 
 export function ChatMessageList({ messages, loading, responsesEndRef }) {
+  const [imageErrors, setImageErrors] = useState({})
+  const themeContext = useTheme() 
+  const isDarkMode = themeContext.currentMode === 'dark'
+
+  const handleImageError = (messageIndex) => {
+    setImageErrors(prev => ({ ...prev, [messageIndex]: true }))
+  }
+
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text)
+  }
+
   const formatFileSize = (bytes) => {
     if (bytes < 1024) return bytes + ' B'
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB'
@@ -73,7 +89,7 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
                 }}
               >
               {msg.type === 'ai' ? (
-                  <MarkdownRender content={msg.content} />
+                  <MarkdownRender content={msg.content} isDarkMode={isDarkMode}/>
               ) : (
                 <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
                   {msg.content}
@@ -82,13 +98,64 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
               </Paper>
             )}
 
+            {/* Image Display with Error Handling */}
             {msg.image && (
-              <Box
-                component="img"
-                src={msg.image.src}
-                alt={msg.image.name}
-                sx={{ maxWidth: 200, maxHeight: 200, borderRadius: 2, objectFit: 'cover' }}
-              />
+              <Box sx={{ mt: 1, mb: 1, position: 'relative' }}>
+                {imageErrors[idx] || !msg.image.src ? (
+                  // Fallback when image fails to load or has no src
+                  <Box
+                    sx={{
+                      width: 100,
+                      height: 100,
+                      border: '1px dashed',
+                      borderColor: 'grey.400',
+                      borderRadius: 1,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'grey.600',
+                      bgcolor: 'grey.100',
+                    }}
+                  >
+                    <Box sx={{ 
+                        display: 'flex-c', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        mb: 0.5 
+                      }}>
+                    <BrokenImageIcon sx={{ 
+                      fontSize: 48, 
+                      color: 'grey.400',
+                      position: 'relative',
+                      top: '2px'
+                    }} />
+                    </Box>
+                  </Box>
+                ) : (
+                  // Display image if it loads successfully
+                  <>
+                    <img
+                      src={msg.image.src}
+                      alt={msg.image.name || 'Uploaded image'}
+                      onError={() => handleImageError(idx)}
+                      style={{
+                        maxWidth: '100%',
+                        maxHeight: 300,
+                        objectFit: 'contain',
+                        borderRadius: 4,
+                        border: '1px solid #e0e0e0',
+                      }}
+                    />
+                    {/* Image actions */}
+                    <Box sx={{ display: 'flex', gap: 1, mt: 1, alignItems: 'center' }}>
+                      <Typography variant="caption" color="textSecondary">
+                        {msg.image.name}
+                      </Typography>
+                    </Box>
+                  </>
+                )}
+              </Box>
             )}
 
             {msg.file && (
@@ -104,6 +171,22 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
                 </Box>
               </Paper>
             )}
+
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+              <Typography variant="caption" color="textSecondary">
+                {new Date(msg.timestamp).toLocaleTimeString([], { 
+                  hour: '2-digit', 
+                  minute: '2-digit' 
+                })}
+              </Typography>
+              
+              {msg.type === 'ai' && msg.content && (
+                  <IconButton size="small" onClick={() => handleCopy(msg.content)}>
+                    <ContentCopyIcon fontSize="small" />
+                  </IconButton>
+              )}
+            </Box>
+
           </Box>
 
           {msg.type === 'user' && (
