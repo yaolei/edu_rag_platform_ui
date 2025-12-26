@@ -98,14 +98,11 @@ export function RobotChat({ channelId = 'default' }) {
     const firstNonImageFile = files.find(f => !f.type.startsWith('image/'));
 
     if (firstImageFile) {
-      const blobUrl = URL.createObjectURL(firstImageFile);
       userMsg.image = {
-        src: blobUrl,
+        src: URL.createObjectURL(firstImageFile),
         name: firstImageFile.name,
         id: `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       };
-      // 缓存 blob URL
-      setImageUrls(prev => ({ ...prev, [userMsg.image.id]: blobUrl }));
     }
 
     if (firstNonImageFile) {
@@ -176,7 +173,8 @@ export function RobotChat({ channelId = 'default' }) {
         name: file.name, 
         size: file.size, 
         type: file.type,
-        file: file  // 保留原始文件对象
+        file: file,  // 保留原始文件对象
+        id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       })
     }
     e.target.value = ''
@@ -193,11 +191,10 @@ const handleImageUpload = useCallback((e) => {
   
   // 创建预览对象，包含原始文件对象和预览URL
   const newImages = imageFiles.map(file => ({
-    file: file, // 保留原始文件对象
+    file: file, // 只保存原始文件对象
     name: file.name,
     size: file.size,
     type: file.type,
-    previewUrl: URL.createObjectURL(file), // 创建预览URL
     id: `preview-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
   }))
   

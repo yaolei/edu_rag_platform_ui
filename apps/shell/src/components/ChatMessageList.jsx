@@ -1,4 +1,4 @@
-import React, {useState, useMemo} from 'react'
+import React, {useState, useMemo, useEffect} from 'react'
 import { Box, Paper, Typography, Avatar, CircularProgress, IconButton} from '@mui/material'
 import PersonIcon from '@mui/icons-material/Person'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
@@ -16,7 +16,16 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
   const handleImageError = (messageIndex) => {
     setImageErrors(prev => ({ ...prev, [messageIndex]: true }))
   }
-
+  useEffect(() => {
+    return () => {
+      // 清理所有 blob URLs
+      messages.forEach(msg => {
+        if (msg.type === 'user' && msg.image && msg.image.src) {
+          URL.revokeObjectURL(msg.image.src)
+        }
+      })
+    }
+  }, [])
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text)
   }
