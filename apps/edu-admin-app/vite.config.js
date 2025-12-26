@@ -21,11 +21,6 @@ export default defineConfig({
             requiredVersion: '1.0.0',
             eager: false
           },
-          '@workspace/shared-components': { 
-            singleton: true, 
-            requiredVersion: '1.0.0',
-            eager: false
-          },
           'react': { 
             singleton: true,
             eager: true
