@@ -1,3 +1,4 @@
+// apps/shell/vite.config.js
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
@@ -19,49 +20,40 @@ export default defineConfig(({ mode }) => {
             : 'http://localhost:5002/assets/eduAdminEntry.js',
         },
         shared: {
-          'react': { singleton: true },
-          'react-dom': { singleton: true },
-          'react-router': { singleton: true },
-          '@workspace/shared-util': { singleton: true, requiredVersion: '1.0.0' },
+          'react': { singleton: true, eager: true },
+          'react-dom': { singleton: true, eager: true },
+          'react-router': { singleton: true, eager: true },
+          '@workspace/shared-util': { singleton: true, requiredVersion: '1.0.0', eager: true },
         }
       }),
     ],
+    optimizeDeps: {
+      exclude: ['eduAdmin/AdminApp'],
+    },
+    server: {
+      port: 5100,
+      host: true
+    },
+    preview: {
+      port: 5100,
+      host: true
+    },
     build: {
       target: 'esnext',
       minify: 'esbuild',
       cssCodeSplit: true,
       rollupOptions: {
         output: {
-          // 强制拆包，不依赖任何分析
           manualChunks(id) {
-            if (id.includes('node_modules')) {
-              // 1. 将MUI拆成单独包
-              if (id.includes('@mui/material') || 
-                  id.includes('@mui/icons-material') ||
-                  id.includes('@mui/x-data-grid') ||
-                  id.includes('@mui/x-date-pickers') ||
-                  id.includes('@emotion')) {
-                return 'vendor-mui'
-              }
-              // 2. 将ECharts拆成单独包
-              if (id.includes('echarts')) {
-                return 'vendor-echarts'
-              }
-              // 3. 将React相关拆成单独包
-              if (id.includes('react') || id.includes('react-dom')) {
-                return 'vendor-react'
-              }
-              // 4. 将Redux相关拆成单独包
-              if (id.includes('redux') || id.includes('@reduxjs')) {
-                return 'vendor-redux'
-              }
-              // 5. 将其他依赖拆成vendor包
-              return 'vendor-other'
+            // 只拆分 MUI，其他全部保持原样
+            if (id.includes('node_modules') && id.includes('@mui')) {
+              return 'vendor-mui'
             }
+            // 其他所有依赖都留在主包中
           }
         }
       },
-      chunkSizeWarningLimit: 2000,
+      chunkSizeWarningLimit: 1000,
       outDir,
     },
   }
