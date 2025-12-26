@@ -14,35 +14,54 @@ export default defineConfig(({ mode }) => {
       federation({
         name: 'shell',
         remotes: {
-            eduAdmin: isProd
+          eduAdmin: isProd
             ? 'http://106.12.58.7/admin/assets/eduAdminEntry.js'
             : 'http://localhost:5002/assets/eduAdminEntry.js',
         },
         shared: {
-          '@workspace/shared-util': { singleton: true, requiredVersion: '1.0.0' },
           'react': { singleton: true },
           'react-dom': { singleton: true },
           'react-router': { singleton: true },
+          '@workspace/shared-util': { singleton: true, requiredVersion: '1.0.0' },
         }
       }),
     ],
-    optimizeDeps:{
-      exclude:['eduAdmin/AdminApp'],
-    },
-    server:{
-      port: 5100,
-      host:true
-    },
-    preview:{
-      port: 5100,
-      host:true
-    },
     build: {
       target: 'esnext',
       minify: 'esbuild',
       cssCodeSplit: true,
-      modulePreload: { polyfill: true },
-      emptyOutDir: true,
+      rollupOptions: {
+        output: {
+          // 强制拆包，不依赖任何分析
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              // 1. 将MUI拆成单独包
+              if (id.includes('@mui/material') || 
+                  id.includes('@mui/icons-material') ||
+                  id.includes('@mui/x-data-grid') ||
+                  id.includes('@mui/x-date-pickers') ||
+                  id.includes('@emotion')) {
+                return 'vendor-mui'
+              }
+              // 2. 将ECharts拆成单独包
+              if (id.includes('echarts')) {
+                return 'vendor-echarts'
+              }
+              // 3. 将React相关拆成单独包
+              if (id.includes('react') || id.includes('react-dom')) {
+                return 'vendor-react'
+              }
+              // 4. 将Redux相关拆成单独包
+              if (id.includes('redux') || id.includes('@reduxjs')) {
+                return 'vendor-redux'
+              }
+              // 5. 将其他依赖拆成vendor包
+              return 'vendor-other'
+            }
+          }
+        }
+      },
+      chunkSizeWarningLimit: 2000,
       outDir,
     },
   }
