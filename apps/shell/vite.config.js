@@ -42,17 +42,6 @@ export default defineConfig(({ mode }) => {
       target: 'esnext',
       minify: 'esbuild',
       cssCodeSplit: true,
-      rollupOptions: {
-        output: {
-          manualChunks(id) {
-            // 只拆分 MUI，其他全部保持原样
-            if (id.includes('node_modules') && id.includes('@mui')) {
-              return 'vendor-mui'
-            }
-            // 其他所有依赖都留在主包中
-          }
-        }
-      },
       chunkSizeWarningLimit: 1000,
       outDir,
     },
