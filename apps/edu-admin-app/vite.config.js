@@ -15,15 +15,39 @@ export default defineConfig({
       exposes: {
         './AdminApp': './src/App.jsx',
       },
-      shared: {
-        '@workspace/shared-util': { singleton: true, requiredVersion: '1.0.0' },
-        '@workspace/shared-components': { singleton: true, requiredVersion: '1.0.0' },
-        'react': { singleton: true},
-        'react-dom': { singleton: true },
-      }
+        shared: {
+           '@workspace/shared-util': { 
+            singleton: true, 
+            requiredVersion: '1.0.0',
+            eager: false
+          },
+          '@workspace/shared-components': { 
+            singleton: true, 
+            requiredVersion: '1.0.0',
+            eager: false
+          },
+          'react': { 
+            singleton: true,
+            eager: false
+          },
+          'react-dom': { 
+            singleton: true,
+            eager: false 
+          },
+        }
     }),
   ],
-
+  optimizeDeps:{
+      include: [
+        'react',
+        'react-dom',
+        'react-router-dom',
+        '@mui/material',
+        '@mui/icons-material',
+        '@emotion/react',
+        '@emotion/styled',
+      ],
+    },
   server: {
     cors: true,
     host: true,

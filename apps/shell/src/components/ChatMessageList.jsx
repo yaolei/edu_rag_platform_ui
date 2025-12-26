@@ -1,12 +1,15 @@
-import React, {useState, useMemo, useEffect} from 'react'
+import React, {useState, useMemo, useEffect, lazy, Suspense} from 'react'
 import { Box, Paper, Typography, Avatar, CircularProgress, IconButton} from '@mui/material'
 import PersonIcon from '@mui/icons-material/Person'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
-import {MarkdownRender} from '@workspace/shared-components'
+// import {MarkdownRender} from '@workspace/shared-components'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import BrokenImageIcon from '@mui/icons-material/BrokenImage'
 import { useTheme } from '../context/ThemeContext' 
 
+const MarkdownRender = lazy(() => import('@workspace/shared-components').then(module => ({
+  default: module.MarkdownRender
+})))
 
 export function ChatMessageList({ messages, loading, responsesEndRef }) {
   const [imageErrors, setImageErrors] = useState({})
@@ -106,7 +109,9 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
                 }}
               >
               {msg.type === 'ai' ? (
+                <Suspense fallback={<div>Loading...</div>}>
                   <MarkdownRender content={msg.content} isDarkMode={isDarkMode}/>
+                </Suspense>
               ) : (
                 <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
                   {msg.content}
