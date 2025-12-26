@@ -1,5 +1,13 @@
 import React from 'react'
-import { Button, Paper, LinearProgress, Box, Typography, IconButton, TextField} from '@mui/material'
+
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+import LinearProgress from '@mui/material/LinearProgress';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import TextField from '@mui/material/TextField';
+
 import DeleteIcon from '@mui/icons-material/Delete'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 

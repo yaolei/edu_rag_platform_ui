@@ -8,7 +8,7 @@ import remarkGfm from 'remark-gfm'
 import rehypeKatex from 'rehype-katex'
 import 'katex/dist/katex.min.css'
 import { styled, useTheme } from '@mui/material/styles'
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
 
 const MarkdownContainer = styled('div', {
   shouldForwardProp: (prop) => prop !== 'isDarkMode'

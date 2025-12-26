@@ -1,5 +1,12 @@
-import React, {useState, useMemo, useEffect, lazy, Suspense} from 'react'
-import { Box, Paper, Typography, Avatar, CircularProgress, IconButton} from '@mui/material'
+import React, {useState, useMemo, useEffect} from 'react'
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import Avatar from '@mui/material/Avatar';
+import CircularProgress from '@mui/material/CircularProgress';
+import IconButton from '@mui/material/IconButton';
+
+
 import PersonIcon from '@mui/icons-material/Person'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import {MarkdownRender} from '../components/markdown'
@@ -106,9 +113,7 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
                 }}
               >
               {msg.type === 'ai' ? (
-                <Suspense fallback={<div>Loading...</div>}>
                   <MarkdownRender content={msg.content} isDarkMode={isDarkMode}/>
-                </Suspense>
               ) : (
                 <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
                   {msg.content}

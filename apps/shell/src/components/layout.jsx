@@ -1,6 +1,6 @@
 // shell/components/Layout.jsx
 import React, { useState } from 'react';
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 import { TopBar } from './TopBar';
 import { Sidebar } from './Sidebar';
 import { SettingsDrawer } from './SettingsDrawer';

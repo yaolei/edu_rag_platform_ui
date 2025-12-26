@@ -1,5 +1,9 @@
 import React, { useRef, useCallback, memo } from 'react'
-import { Box, TextField, IconButton, CircularProgress } from '@mui/material'
+import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
+import IconButton from '@mui/material/IconButton'
+import CircularProgress from '@mui/material/CircularProgress'
+
 import SendIcon from '@mui/icons-material/Send'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 import DeleteIcon from '@mui/icons-material/Delete'

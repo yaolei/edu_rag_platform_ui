@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { useDispatch } from 'react-redux';
-import { Box, Divider, Alert} from '@mui/material'
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Alert from '@mui/material/Alert';
+
 import { ChatMessageList } from '../components/ChatMessageList'
 import { UploadPreview } from '../components/UploadPreview'
 import { ChatInputBar } from '../components/ChatInputBar'

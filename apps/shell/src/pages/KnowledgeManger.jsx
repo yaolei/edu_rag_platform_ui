@@ -1,5 +1,5 @@
 import {useState, useRef, useEffect} from 'react'
-import { Typography } from '@mui/material'
+import Typography from '@mui/material/Typography';
 import ResponseNotice from '../components/responseNotice'
 import KnowledegeUploader from '../components/knowledegeUploader'
 import KnowledgeTable from '../components/knowledgeTable'

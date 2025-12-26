@@ -2,9 +2,13 @@ import {useState} from 'react'
 import {useNavigate, useLocation} from 'react-router'
 import {styled} from '@mui/material/styles'
 import Snow from '../components/Snow'
-import {post} from '@workspace/shared-util'
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
 
-import {Box, Paper, TextField, Button, Typography, Container} from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
 
 const LoginContainer = styled(Container)({
@@ -54,23 +58,7 @@ const Login = () => {
         navigate(from, { replace: true });
 
         try {
-            // const response = await post('//', {
-            //     username:username,
-            //     password:password
-            // }, {timeout:150000})
-
-            // if (response && response.request.state != 200) {
-            //     console.log(`login fail with ${response.message}`)
-            //     setIsLoading(false)
-            //     setErrorInfo(response.message)
-            // } else {
-            //     console.log('Login successful')
-            //     setIsLoading(false)
-            //     setErrorInfo('')
-            //     navigate('/')
-            // }
-
-
+            // check by backend in feature
         } catch (error){
             setIsLoading(error)
             console.log("Error sending message")

@@ -1,5 +1,8 @@
 import React from 'react'
-import { Box, Typography, Container, Paper } from '@mui/material'
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
 
 export function Settings() {
   return (
