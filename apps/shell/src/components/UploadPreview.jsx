@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, { useCallback } from 'react'
 import { Box, IconButton, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
@@ -6,32 +6,27 @@ import AttachFileIcon from '@mui/icons-material/AttachFile'
 export function UploadPreview({ uploadedImages = [], uploadedFile, onRemoveImage, onRemoveFile }) {
   if (uploadedImages.length === 0 && !uploadedFile) return null
 
-  const formatFileSize = (bytes) => {
+  const formatFileSize = useCallback((bytes) => {
     if (bytes < 1024) return bytes + ' B'
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB'
     return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
-  }
+  }, [])
 
+  const handleRemoveImage = useCallback((idx) => {
+    onRemoveImage(idx);
+  }, [onRemoveImage]);
 
-  useEffect(() => {
-    return () => {
-      uploadedImages.forEach(f => {
-        if (f instanceof File || f instanceof Blob) URL.revokeObjectURL(f)
-      })
-      if (uploadedFile instanceof File || uploadedFile instanceof Blob) {
-        URL.revokeObjectURL(uploadedFile)
-      }
-    }
-  }, [uploadedImages, uploadedFile])
-
+  const handleRemoveFile = useCallback(() => {
+    onRemoveFile();
+  }, [onRemoveFile]);
 
   return (
     <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start', flexWrap: 'wrap' }}>
       {uploadedImages.map((img, idx) => (
-        <Box key={idx} sx={{ position: 'relative', width: 80, height: 80 }}>
+        <Box key={img.id || idx} sx={{ position: 'relative', width: 80, height: 80 }}>
           <Box
             component="img"
-            src={URL.createObjectURL(img)}
+            src={img.previewUrl}
             sx={{
               width: '100%',
               height: '100%',
@@ -42,7 +37,7 @@ export function UploadPreview({ uploadedImages = [], uploadedFile, onRemoveImage
             }}
           />
           <IconButton
-            onClick={() => onRemoveImage(idx)}
+            onClick={() => handleRemoveImage(idx)}
             size="small"
             sx={{
               position: 'absolute',
@@ -86,7 +81,7 @@ export function UploadPreview({ uploadedImages = [], uploadedFile, onRemoveImage
               {formatFileSize(uploadedFile.size)}
             </Typography>
           </Box>
-          <IconButton onClick={onRemoveFile} size="small">
+          <IconButton onClick={handleRemoveFile} size="small">
             <CloseIcon fontSize="small" />
           </IconButton>
         </Box>

@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useMemo} from 'react'
 import { Box, Paper, Typography, Avatar, CircularProgress, IconButton} from '@mui/material'
 import PersonIcon from '@mui/icons-material/Person'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
@@ -27,6 +27,14 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
     return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
   }
 
+  // 使用 useMemo 记忆化消息列表
+  const memoizedMessages = useMemo(() => {
+    return messages.map((msg, idx) => ({
+      ...msg,
+      id: msg.id || `${msg.type}-${msg.timestamp}-${idx}` // 为每个消息创建唯一ID
+    }));
+  }, [messages]);
+
   return (
     <Paper
       variant="outlined"
@@ -49,9 +57,9 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
         }
       }}
     >
-      {messages.map((msg, idx) => (
+      {memoizedMessages.map((msg, idx) => (
         <Box
-          key={idx}
+          key={msg.id}
           sx={{
             display: 'flex',
             gap: 1.5,
@@ -102,7 +110,6 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
             {msg.image && (
               <Box sx={{ mt: 1, mb: 1, position: 'relative' }}>
                 {imageErrors[idx] || !msg.image.src ? (
-                  // Fallback when image fails to load or has no src
                   <Box
                     sx={{
                       width: 100,
@@ -133,9 +140,9 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
                     </Box>
                   </Box>
                 ) : (
-                  // Display image if it loads successfully
                   <>
                     <img
+                      key={`image-${msg.image.id || msg.timestamp}-${idx}`}
                       src={msg.image.src}
                       alt={msg.image.name || 'Uploaded image'}
                       onError={() => handleImageError(idx)}
@@ -147,7 +154,6 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
                         border: '1px solid #e0e0e0',
                       }}
                     />
-                    {/* Image actions */}
                     <Box sx={{ display: 'flex', gap: 1, mt: 1, alignItems: 'center' }}>
                       <Typography variant="caption" color="textSecondary">
                         {msg.image.name}
