@@ -28,11 +28,11 @@ export default defineConfig({
           },
           'react': { 
             singleton: true,
-            eager: false
+            eager: true
           },
           'react-dom': { 
             singleton: true,
-            eager: false 
+            eager: true 
           },
         }
     }),

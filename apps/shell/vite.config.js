@@ -34,15 +34,15 @@ export default defineConfig(({ mode }) => {
           },
           'react': { 
             singleton: true,
-            eager: false
+            eager: true
           },
           'react-dom': { 
             singleton: true,
-            eager: false 
+            eager: true 
           },
           'react-router': { 
             singleton: true,
-            eager: false 
+            eager: true 
           },
         }
       }),
@@ -94,6 +94,11 @@ export default defineConfig(({ mode }) => {
         output: {
           // 手动分块配置 - 这是减少主包大小的关键
           manualChunks: (id) => {
+            if (id.includes('node_modules/react') || 
+                id.includes('node_modules/react-dom') ||
+                id.includes('node_modules/react-router')) {
+              return undefined // 不拆分 React 相关
+            }
             if (id.includes('node_modules')) {
               // MUI 相关
               if (id.includes('@mui') || id.includes('@emotion')) {
