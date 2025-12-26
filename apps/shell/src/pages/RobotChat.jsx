@@ -80,9 +80,9 @@ export function RobotChat({ channelId = 'default' }) {
 
     if (!input.trim() && !uploadedFile && uploadedImages.length === 0) return
     
-    const files = [
-      ...(uploadedFile ? [uploadedFile.file] : []),
-      ...uploadedImages.map(img => img.file)
+   const files = [
+    ...(uploadedFile ? [uploadedFile.file] : []), 
+    ...uploadedImages.map(img => img.file)
     ]
     
     const userMsg = {
@@ -182,27 +182,28 @@ export function RobotChat({ channelId = 'default' }) {
     e.target.value = ''
   }, [])
 
-  const handleImageUpload = useCallback((e) => {
-    const files = Array.from(e.target.files || [])
-    const imageFiles = files.filter(f => f.type.startsWith('image/'))
-    
-    if (uploadedImages.length + imageFiles.length > 5) {
-      setError('最多只能上传 5 张图片 或 一个附件')
-      return
-    }
-    
-    const newImages = imageFiles.map(file => ({
-      file,
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      previewUrl: URL.createObjectURL(file),
-      id: `preview-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-    }))
-    
-    setUploadedImages(prev => [...prev, ...newImages])
-    e.target.value = ''
-  }, [uploadedImages.length])
+const handleImageUpload = useCallback((e) => {
+  const files = Array.from(e.target.files || [])
+  const imageFiles = files.filter(f => f.type.startsWith('image/'))
+  
+  if (uploadedImages.length + imageFiles.length > 5) {
+    setError('最多只能上传 5 张图片 或 一个附件')
+    return
+  }
+  
+  // 创建预览对象，包含原始文件对象和预览URL
+  const newImages = imageFiles.map(file => ({
+    file: file, // 保留原始文件对象
+    name: file.name,
+    size: file.size,
+    type: file.type,
+    previewUrl: URL.createObjectURL(file), // 创建预览URL
+    id: `preview-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+  }))
+  
+  setUploadedImages(prev => [...prev, ...newImages])
+  e.target.value = ''
+}, [uploadedImages.length])
 
   const handleRemoveImage = useCallback((idx) => {
     const imageToRemove = uploadedImages[idx];

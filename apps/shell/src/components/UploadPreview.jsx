@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { Box, IconButton, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
@@ -20,10 +20,40 @@ export function UploadPreview({ uploadedImages = [], uploadedFile, onRemoveImage
     onRemoveFile();
   }, [onRemoveFile]);
 
+  // 使用 useMemo 缓存图片预览 URL
+  const imagePreviews = useMemo(() => {
+    return uploadedImages.map((img, idx) => {
+      // 如果已经有 previewUrl，直接使用
+      if (img.previewUrl) {
+        return {
+          ...img,
+          previewUrl: img.previewUrl,
+          id: img.id || `preview-${idx}-${Date.now()}`
+        };
+      }
+      
+      // 如果没有 previewUrl 但是有 file 对象，创建预览 URL
+      if (img.file) {
+        return {
+          ...img,
+          previewUrl: URL.createObjectURL(img.file),
+          id: img.id || `preview-${idx}-${Date.now()}`
+        };
+      }
+      
+      // 如果是原始文件对象
+      return {
+        ...img,
+        previewUrl: URL.createObjectURL(img),
+        id: img.id || `preview-${idx}-${Date.now()}`
+      };
+    });
+  }, [uploadedImages]);
+
   return (
     <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start', flexWrap: 'wrap' }}>
-      {uploadedImages.map((img, idx) => (
-        <Box key={img.id || idx} sx={{ position: 'relative', width: 80, height: 80 }}>
+      {imagePreviews.map((img, idx) => (
+        <Box key={img.id} sx={{ position: 'relative', width: 80, height: 80 }}>
           <Box
             component="img"
             src={img.previewUrl}
