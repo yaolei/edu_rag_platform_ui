@@ -1,24 +1,19 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/react@19.2.0/umd/react.production.min.js" integrity="sha256-...（可选）"></script>
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@19.2.0/umd/react-dom.production.min.js" integrity="sha256-...（可选）"></script>
+
+    <!-- 2. Emotion (MUI 的样式引擎) -->
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/@emotion/react@11.14.0/dist/emotion-react.umd.min.js"></script>
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/@emotion/styled@11.14.1/dist/emotion-styled.umd.min.js"></script>
+
+    <!-- 3. Material-UI 核心库 (UMD) - 这是唯一有标准UMD包的MUI库 -->
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/@mui/material@7.3.5/umd/material-ui.production.min.js"></script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Accurate Did</title>
-      <!-- 1. React & ReactDOM (UMD， 生产环境请使用 .production.min.js) -->
-      <script crossorigin src="https://unpkg.com/react@19/umd/react.production.min.js"></script>
-      <script crossorigin src="https://unpkg.com/react-dom@19/umd/react-dom.production.min.js"></script>
-
-      <!-- 2. Emotion (MUI的样式引擎，必须在MUI之前) -->
-      <script crossorigin src="https://unpkg.com/@emotion/react@11/dist/emotion-react.umd.min.js"></script>
-      <script crossorigin src="https://unpkg.com/@emotion/styled@11/dist/emotion-styled.umd.min.js"></script>
-
-      <!-- 3. Material-UI 核心库 (UMD) -->
-      <script crossorigin src="https://unpkg.com/@mui/material@5.15.0/umd/material-ui.production.min.js"></script>
-      <!-- 4. Material-UI 图标库 (UMD) -->
-      <script crossorigin src="https://unpkg.com/@mui/icons-material@5.15.0/umd/material-icons.production.min.js"></script>
-      <!-- 5. (可选) 如果你在组件中直接使用了 `@mui/system`，也需要引入 -->
-      <script crossorigin src="https://unpkg.com/@mui/system@5.15.0/umd/material-system.production.min.js"></script>
         <script>
       // 开启 Federation 调试模式
       window.federationDebug = true;

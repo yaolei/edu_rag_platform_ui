@@ -52,36 +52,38 @@ build: {
   modulePreload: { polyfill: true },
   outDir,
   rollupOptions: {
-    // 关键配置：告诉 Rollup 哪些模块是外部的，以及如何找到它们
-    external: ['react', 'react-dom', 'react-router', '@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
+    // 1. 外部化依赖：只列出你通过CDN引入了UMD包的库
+    external: [
+      'react',
+      'react-dom',
+      // 'react-router', // v6 无UMD，务必移除或注释掉！
+      '@mui/material',
+      '@emotion/react',
+      '@emotion/styled'
+    ],
     output: {
-      // 为这些外部依赖提供全局变量名，让代码知道从 window 的哪个属性上获取
+      // 2. 全局变量映射：告诉打包后的代码，从哪里找这些外部库
       globals: {
-        'react': 'React',
-        'react-dom': 'ReactDOM',
-        'react-router': 'ReactRouter', // 注意：React Router v6 可能没有现成UMD，需调整
-        '@mui/material': 'window["@mui/material"]',
-        '@mui/icons-material': 'window["@mui/icons-material"]',
-        '@emotion/react': 'window["@emotion/react"]',
-        '@emotion/styled': 'window["@emotion/styled"]'
+        'react': 'React', // 对应 window.React
+        'react-dom': 'ReactDOM', // 对应 window.ReactDOM
+        '@mui/material': 'window["mui"]', // 关键！MUI UMD 包暴露在 window.mui
+        '@emotion/react': 'window["emotionReact"]', // 对应 window.emotionReact
+        '@emotion/styled': 'window["emotionStyled"]' // 对应 window.emotionStyled
       },
       manualChunks(id) {
         // 1. 保护 Federation 运行时
         if (id.includes('@originjs/vite-plugin-federation') || id.includes('virtual:__federation')) {
           return;
         }
-        // 2. 现在 React 和 MUI 已是外部依赖，可以安全地拆分其他大型库
+        // 2. 现在可以安全拆分其他大型库
         if (id.includes('/node_modules/echarts/')) {
           return 'vendor-echarts';
         }
-        // 可以将 dayjs、axios 等也拆分出来，现在更安全了
-        if (id.includes('/node_modules/dayjs/')) {
-          return 'vendor-dayjs';
+        // 3. @mui/icons-material 和 @mui/system 继续打包，但可以尝试拆分
+        if (id.includes('/node_modules/@mui/icons-material/')) {
+          return 'vendor-mui-icons';
         }
-        if (id.includes('/node_modules/axios/')) {
-          return 'vendor-axios';
-        }
-        // 其他所有模块（包括你的业务代码、@mui/x-* 等）留在主包
+        // 其他留在主包（包括react-router, @mui/x-*, 你的业务代码等）
         return;
       }
     }
