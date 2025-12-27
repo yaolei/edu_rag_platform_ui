@@ -24,7 +24,8 @@ export default defineConfig(({ mode }) => {
           'react-dom': { singleton: true, eager: true },
           'react-router': { singleton: true, eager: true },
           '@workspace/shared-util': { singleton: true, requiredVersion: '1.0.0', eager: true },
-        }
+        },
+        filename: 'federation-entry.js'
       }),
     ],
     optimizeDeps: {
@@ -42,8 +43,53 @@ export default defineConfig(({ mode }) => {
       target: 'esnext',
       minify: 'esbuild',
       cssCodeSplit: true,
-      chunkSizeWarningLimit: 1000,
+      emptyOutDir: true,
+      modulePreload: { 
+        polyfill: true,
+        // 强制预加载 Federation 模块
+        resolveDependencies: (url, deps, context) => {
+          // 确保 Federation 模块优先加载
+          const federationDeps = deps.filter(dep => 
+            dep.includes('__federation') || 
+            dep.includes('virtual:__federation')
+          )
+          return [...federationDeps, ...deps.filter(d => !federationDeps.includes(d))]
+        }
+      },
       outDir,
+      rollupOptions: {
+        output: {
+          // 关键：排除 Federation 相关模块
+          manualChunks(id) {
+            // 跳过所有 Federation 相关模块 - 它们必须保持在一起
+            if (id.includes('__federation') || 
+                id.includes('virtual:__federation') ||
+                id.includes('@originjs/vite-plugin-federation')) {
+              return
+            }
+            
+            // 只拆分 MUI，其他全部保持原样
+            if (id.includes('node_modules') && id.includes('@mui')) {
+              return 'vendor-mui'
+            }
+            // 其他所有依赖都留在主包中
+          },
+          // 确保共享模块有正确的命名
+          chunkFileNames(chunkInfo) {
+            if (chunkInfo.name.includes('__federation_shared')) {
+              return 'assets/__federation_shared_[hash].js'
+            }
+            return 'assets/[name]-[hash].js'
+          }
+        },
+        // 确保 Federation 模块不会被 tree-shake
+        treeshake: {
+          moduleSideEffects: 'no-external',
+          propertyReadSideEffects: false,
+          tryCatchDeoptimization: false
+        }
+      },
+      chunkSizeWarningLimit: 1000,
     },
   }
 })
