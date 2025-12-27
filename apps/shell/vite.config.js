@@ -53,33 +53,48 @@ build: {
   outDir,
   rollupOptions: {
     output: {
-      // 极简但有效的拆分策略
+      // 精准的手动分块策略
       manualChunks(id) {
-        // 保护所有Federation和React相关模块
-        if (id.includes('__federation') || 
-            id.includes('virtual:__federation') ||
-            id.includes('/react/') || 
-            id.includes('/react-dom/') ||
-            id.includes('/react-router/')) {
-          return
+        // 1. 绝对保护：Federation 运行时和插件代码，必须留在主包
+        if (id.includes('@originjs/vite-plugin-federation') || id.includes('virtual:__federation')) {
+          return;
         }
-        
-        // 只拆分纯粹的MUI库
-        if (id.includes('node_modules/@mui/material') ||
-            id.includes('node_modules/@mui/system') ||
-            id.includes('node_modules/@mui/base')) {
-          // 最后一次检查：确保不是Federation或React
-          if (id.includes('__federation') || id.includes('virtual:') || id.includes('/react/')) {
-            return
-          }
-          return 'vendor-mui'
+
+        // 2. 绝对保护：React 核心及其直接运行时，必须在一起[citation:9]
+        // 使用精确路径匹配，防止 MUI 包里包含的 react 字符串被误判
+        if (
+          id.includes('/node_modules/react/') ||
+          id.includes('/node_modules/react-dom/') ||
+          id.includes('/node_modules/react-router/') ||
+          id.includes('/node_modules/scheduler/') ||
+          id.includes('/node_modules/@emotion/') // MUI 的样式运行时，与React实例深度绑定
+        ) {
+          return 'vendor-react';
         }
-        
-        return
+
+        // 3. 拆分 MUI 核心组件和图标库[citation:4]
+        if (id.includes('/node_modules/@mui/material/')) {
+          return 'vendor-mui-core';
+        }
+        if (id.includes('/node_modules/@mui/icons-material/')) {
+          // 图标库也可以考虑放入 vendor-mui-core，这里按需选择
+          return 'vendor-mui-core'; 
+        }
+
+        // 4. 拆分 MUI 独立的样式系统
+        if (id.includes('/node_modules/@mui/system/')) {
+          return 'vendor-mui-system';
+        }
+
+        // 5. 拆分大型独立库：ECharts
+        if (id.includes('/node_modules/echarts/')) {
+          return 'vendor-echarts';
+        }
+        return;
       }
     }
   },
-  chunkSizeWarningLimit: 2000,
-},
+  chunkSizeWarningLimit: 1000,
+}
   }
 })
