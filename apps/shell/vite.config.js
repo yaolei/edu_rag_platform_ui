@@ -44,34 +44,42 @@ export default defineConfig(({ mode }) => {
       host: true,
       cors: true
     },
-    build: {
-      target: 'esnext',
-      minify: 'esbuild',
-      cssCodeSplit: true,
-      emptyOutDir: true,
-      modulePreload: { polyfill: true },
-      outDir,
-      rollupOptions: {
-        output: {
-        manualChunks(id) {
-              // 保护 Federation
-              if (id.includes('__federation') || id.includes('virtual:__federation')) {
-                return
-              }
-              
-              // 分割 MUI（最大的包）
-              if (id.includes('node_modules/@mui') && !id.includes('@mui/icons-material')) {
-                return 'vendor-mui'
-              }
-              
-              // // 分割 icons（可选）
-              // if (id.includes('@mui/icons-material')) {
-              //   return 'vendor-icons'
-              // }
+build: {
+  target: 'esnext',
+  minify: 'esbuild',
+  cssCodeSplit: true,
+  emptyOutDir: true,
+  modulePreload: { polyfill: true },
+  outDir,
+  rollupOptions: {
+    output: {
+      // 极简但有效的拆分策略
+      manualChunks(id) {
+        // 保护所有Federation和React相关模块
+        if (id.includes('__federation') || 
+            id.includes('virtual:__federation') ||
+            id.includes('/react/') || 
+            id.includes('/react-dom/') ||
+            id.includes('/react-router/')) {
+          return
         }
+        
+        // 只拆分纯粹的MUI库
+        if (id.includes('node_modules/@mui/material') ||
+            id.includes('node_modules/@mui/system') ||
+            id.includes('node_modules/@mui/base')) {
+          // 最后一次检查：确保不是Federation或React
+          if (id.includes('__federation') || id.includes('virtual:') || id.includes('/react/')) {
+            return
+          }
+          return 'vendor-mui'
         }
-      },
-      chunkSizeWarningLimit: 1000,
-    },
+        
+        return
+      }
+    }
+  },
+  chunkSizeWarningLimit: 2000,
+},
   }
 })
