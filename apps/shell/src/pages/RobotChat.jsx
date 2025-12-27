@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
-import { useDispatch } from 'react-redux';
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 
@@ -14,15 +13,65 @@ const DEFAULT_MESSAGE = {
   timestamp: new Date().toISOString()
 }
 
-export function RobotChat({ channelId = 'default' }) {
 
-  const dispatch = useDispatch();
+const fileToStorable = async (file) => {
+  return {
+    name: file.name,
+    type: file.type,
+    size: file.size,
+    // 将文件内容转为 base64，以便存入 sessionStorage
+    data: await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result); // 结果是 data:image/png;base64,...
+      reader.readAsDataURL(file);
+    })
+  };
+};
+
+const storableToBlobUrl = (storable) => {
+  if (!storable?.data) return null;
+  // 注意：这里直接从 base64 data URL 创建 blob URL，可能不需要额外转换
+  // 但为了统一管理，我们仍创建一个新的 blob URL 并登记
+  const blob = dataURItoBlob(storable.data);
+  const url = URL.createObjectURL(blob);
+  return url;
+};
+
+
+// 将 data URL 转换为 Blob 对象（如果需要）
+const dataURItoBlob = (dataURI) => {
+  const byteString = atob(dataURI.split(',')[1]);
+  const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+  const ab = new ArrayBuffer(byteString.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+  return new Blob([ab], { type: mimeString });
+};
+
+export function RobotChat({ channelId = 'default' }) {
+ const blobUrlRegistry = useRef(new Set());
+
   const [messages, setMessages] = useState(() => {
     try {
       const saved = sessionStorage.getItem(`chat_history_${channelId}`);
       if (saved) {
         const parsed = JSON.parse(saved);
-        return parsed.length > 0 ? parsed : [DEFAULT_MESSAGE];
+        // 关键：加载历史时，为每条带图片的消息重新创建 blob URL 并登记
+        if (parsed.length > 0) {
+          parsed.forEach(msg => {
+            if (msg.type === 'user' && msg.image && msg.image._storable) {
+              const url = storableToBlobUrl(msg.image._storable);
+              if (url) {
+                msg.image.src = url; // 重新赋值 src
+                blobUrlRegistry.current.add(url); // 登记到注册表
+              }
+            }
+          });
+          return parsed;
+        }
+        return [DEFAULT_MESSAGE];
       }
     } catch (e) {
       console.error('Failed to load chat history from sessionStorage', e);
@@ -36,31 +85,36 @@ export function RobotChat({ channelId = 'default' }) {
   const [uploadedFile, setUploadedFile] = useState(null)
   const [uploadedImages, setUploadedImages] = useState([])
   const responsesEndRef = useRef(null)
-  const [imageUrls, setImageUrls] = useState({}) // 缓存 blob URLs
 
   useEffect(() => {
     return () => {
-      // 组件卸载时清理所有 blob URLs
-      Object.values(imageUrls).forEach(url => {
-        if (url && typeof url === 'string' && url.startsWith('blob:')) {
-          URL.revokeObjectURL(url);
+      blobUrlRegistry.current.forEach(url => URL.revokeObjectURL(url));
+      blobUrlRegistry.current.clear();
+      console.debug(`[RobotChat ${channelId}] 组件卸载，清理所有 Blob URL`);
+    };
+  }, [channelId]);
+
+
+  useEffect(() => {
+      // 保存时，需要先将 blob URL 替换为可存储的数据
+      const messagesToSave = messages.map(msg => {
+        if (msg.type === 'user' && msg.image && msg.image.src) {
+          // 如果已经有 _storable 数据（从历史加载的），就直接用它
+          // 如果是新消息，我们需要在创建时就保存 _storable（见下面修改的 handleSendQuestion）
+          const { src, _storable, ...restImage } = msg.image;
+          return { ...msg, image: { ...restImage, _storable: msg.image._storable } };
         }
+        return msg;
       });
-    };
-  }, []);
 
-  useEffect(() => {
-    const urlsToCleanup = [];
-    messages.forEach(msg => {
-      if (msg.type === 'user' && msg.image && msg.image.src) {
-        urlsToCleanup.push(msg.image.src);
+      if (messagesToSave.length > 1 || (messagesToSave.length === 1 && messagesToSave[0] !== DEFAULT_MESSAGE)) {
+        try {
+          sessionStorage.setItem(`chat_history_${channelId}`, JSON.stringify(messagesToSave));
+        } catch (e) {
+          console.error('Failed to save chat history to sessionStorage', e);
+        }
       }
-    });
-
-    return () => {
-      urlsToCleanup.forEach(url => URL.revokeObjectURL(url));
-    };
-  }, [messages]);
+    }, [messages, channelId]);
 
   useEffect(() => {
     responsesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -79,72 +133,76 @@ export function RobotChat({ channelId = 'default' }) {
   }, [messages, channelId]); 
 
   const handleSendQuestion = async () => {
+    if (!input.trim() && !uploadedFile && uploadedImages.length === 0) return;
 
-    if (!input.trim() && !uploadedFile && uploadedImages.length === 0) return
-    
-   const files = [
-    ...(uploadedFile ? [uploadedFile.file] : []), 
-    ...uploadedImages.map(img => img.file)
-    ]
-    
+    const files = [
+      ...(uploadedFile ? [uploadedFile.file] : []),
+      ...uploadedImages.map(img => img.file),
+    ];
+
     const userMsg = {
-        type: 'user',
-        content: input.trim(),
-        timestamp: new Date().toISOString(),
-        image: null,
-        file: null,
-        id: `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      type: 'user',
+      content: input.trim(),
+      timestamp: new Date().toISOString(),
+      image: null,
+      file: null,
+      id: `user-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
     };
 
     const firstImageFile = files.find(f => f.type.startsWith('image/'));
     const firstNonImageFile = files.find(f => !f.type.startsWith('image/'));
 
     if (firstImageFile) {
+      // 创建 blob URL 并登记
+      const blobUrl = URL.createObjectURL(firstImageFile);
+      blobUrlRegistry.current.add(blobUrl);
+
+      // 转换为可存储的格式（异步）
+      const storable = await fileToStorable(firstImageFile);
+
       userMsg.image = {
-        src: URL.createObjectURL(firstImageFile),
+        src: blobUrl, // 用于当前显示
+        _storable: storable, // 用于持久化保存
         name: firstImageFile.name,
-        id: `img-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+        id: `img-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
       };
     }
 
-    if (firstNonImageFile) {
-      userMsg.file = {
-        name: firstNonImageFile.name,
-        size: firstNonImageFile.size
-      };
-    }
-
-    setMessages((prev) => [...prev, userMsg])
-    setInput('')
-    setUploadedFile(null)
-    setUploadedImages([])
-    setError(null)
+    // ... handleSendQuestion 其余部分保持不变，直到 setMessages
+    setMessages((prev) => [...prev, userMsg]);
+    setInput('');
+    setUploadedFile(null);
+    setUploadedImages([]);
+    setError(null);
 
     try {
-      setLoading(true)
-      let res
+      setLoading(true);
+      let res;
       if (files.length !== 0) {
-        res = await askOCR(input.trim(), files)
+        res = await askOCR(input.trim(), files);
       } else {
-        res = await askRobot(input.trim())
+        res = await askRobot(input.trim());
       }
-      const { response, timestamp } = res
-      setMessages((prev) => [...prev, { 
-        type: 'ai', 
-        content: response, 
-        timestamp,
-        id: `ai-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-      }])
+      const { response, timestamp } = res;
+      setMessages((prev) => [
+        ...prev,
+        {
+          type: 'ai',
+          content: response,
+          timestamp,
+          id: `ai-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+        },
+      ]);
     } catch (err) {
-      setError(err.message || 'Failed to get response from robot')
+      setError(err.message || 'Failed to get response from robot');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const handleClearHistory = useCallback(() => {
+ const handleClearHistory = useCallback(() => {
     if (window.confirm('确定要清空当前对话的历史记录吗？')) {
-      // 1. 先收集所有需要清理的图片URL
+      // 收集所有要清理的 blob URL
       const urlsToCleanup = [];
       messages.forEach(msg => {
         if (msg.type === 'user' && msg.image && msg.image.src) {
@@ -152,12 +210,15 @@ export function RobotChat({ channelId = 'default' }) {
         }
       });
 
-      // 2. 然后更新状态和存储
+      // 从注册表中移除并清理
+      urlsToCleanup.forEach(url => {
+        URL.revokeObjectURL(url);
+        blobUrlRegistry.current.delete(url);
+      });
+
       setMessages([DEFAULT_MESSAGE]);
       sessionStorage.removeItem(`chat_history_${channelId}`);
-
-      // 3. 最后清理图片URL（放在最后确保不会影响状态更新）
-      urlsToCleanup.forEach(url => URL.revokeObjectURL(url));
+      console.debug(`[RobotChat ${channelId}] 清空历史，清理 ${urlsToCleanup.length} 个 Blob URL`);
     }
   }, [messages, channelId]);
 

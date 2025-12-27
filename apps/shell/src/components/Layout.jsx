@@ -28,7 +28,8 @@ export function Layout({ children }) {
           pb: 2,
           overflow: 'hidden', // 禁止主区域滚动
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          marginTop: '9vh',
         }}
       >
         {children}
