@@ -52,6 +52,24 @@ export default defineConfig(({ mode }) => {
       modulePreload: { polyfill: true },
       outDir,
       rollupOptions: {
+        output: {
+        manualChunks(id) {
+              // 保护 Federation
+              if (id.includes('__federation') || id.includes('virtual:__federation')) {
+                return
+              }
+              
+              // 分割 MUI（最大的包）
+              if (id.includes('node_modules/@mui') && !id.includes('@mui/icons-material')) {
+                return 'vendor-mui'
+              }
+              
+              // // 分割 icons（可选）
+              // if (id.includes('@mui/icons-material')) {
+              //   return 'vendor-icons'
+              // }
+        }
+        }
       },
       chunkSizeWarningLimit: 1000,
     },
