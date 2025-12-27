@@ -12,7 +12,7 @@ export function Layout({ children }) {
   const handleToggleSidebar = () => setSidebarCollapsed((s) => !s);
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh'}}>
       <TopBar onOpenSettings={() => setSettingsOpen(true)} />
       <Sidebar className="desktop-only" collapsed={sidebarCollapsed} onToggleCollapse={handleToggleSidebar} />
 
@@ -28,6 +28,7 @@ export function Layout({ children }) {
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
+          marginTop: '9vh' 
         }}
       >
         {children}

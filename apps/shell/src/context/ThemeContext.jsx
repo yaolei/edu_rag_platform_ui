@@ -4,8 +4,8 @@ const ThemeContext = createContext()
 
 export const ThemeProvider = ({ children }) => {
   const [themeMode, setThemeMode] = useState(() => {
-    // 从 localStorage 读取主题，默认为 'system'
-    return localStorage.getItem('themeMode') || 'system'
+    // 从 localStorage 读取主题，默认为 'dark'
+    return localStorage.getItem('themeMode') || 'dark'
   })
 
   const [systemMode, setSystemMode] = useState(() => {

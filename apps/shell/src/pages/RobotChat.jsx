@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { useDispatch } from 'react-redux';
 import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
 import Alert from '@mui/material/Alert';
 
 import { ChatMessageList } from '../components/ChatMessageList'
@@ -223,7 +222,6 @@ const handleImageUpload = useCallback((e) => {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 2 }}>
-      <Divider />
       {error && <Alert severity="error" onClose={() => setError(null)}>{error}</Alert>}
       <ChatMessageList messages={messages} loading={loading} responsesEndRef={responsesEndRef} />
 
