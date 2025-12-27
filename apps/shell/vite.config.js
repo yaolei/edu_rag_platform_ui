@@ -54,44 +54,39 @@ build: {
   rollupOptions: {
     output: {
       // 精准的手动分块策略
-      manualChunks(id) {
-        // 1. 绝对保护：Federation 运行时和插件代码，必须留在主包
-        if (id.includes('@originjs/vite-plugin-federation') || id.includes('virtual:__federation')) {
-          return;
-        }
+ manualChunks(id) {
+  // 1. 绝对保护：Federation 运行时和插件代码，必须留在主包
+  if (id.includes('@originjs/vite-plugin-federation') || id.includes('virtual:__federation')) {
+    return;
+  }
 
-        // 2. 绝对保护：React 核心及其直接运行时，必须在一起[citation:9]
-        // 使用精确路径匹配，防止 MUI 包里包含的 react 字符串被误判
-        if (
-          id.includes('/node_modules/react/') ||
-          id.includes('/node_modules/react-dom/') ||
-          id.includes('/node_modules/react-router/') ||
-          id.includes('/node_modules/scheduler/') ||
-          id.includes('/node_modules/@emotion/') // MUI 的样式运行时，与React实例深度绑定
-        ) {
-          return 'vendor-react';
-        }
+  // 2. 绝对保护：React、ReactDOM、ReactRouter 核心。
+  // *** 关键修改：移除对 `@emotion` 的绑定，它应该和 MUI 在一起 ***
+  if (
+    id.includes('/node_modules/react/') ||
+    id.includes('/node_modules/react-dom/') ||
+    id.includes('/node_modules/react-router/') ||
+    id.includes('/node_modules/scheduler/')
+  ) {
+    return 'vendor-react';
+  }
 
-        // 3. 拆分 MUI 核心组件和图标库[citation:4]
-        if (id.includes('/node_modules/@mui/material/')) {
-          return 'vendor-mui-core';
-        }
-        if (id.includes('/node_modules/@mui/icons-material/')) {
-          // 图标库也可以考虑放入 vendor-mui-core，这里按需选择
-          return 'vendor-mui-core'; 
-        }
+  // 3. 将所有 MUI 及其紧密依赖（@emotion, @mui/system）打包在一起，彻底避免循环依赖
+  if (
+    id.includes('/node_modules/@mui/') || // 包括 material, icons, system
+    id.includes('/node_modules/@emotion/') // Emotion 现在是 MUI 的一部分
+  ) {
+    return 'vendor-mui-all'; // 合并成一个包
+  }
 
-        // 4. 拆分 MUI 独立的样式系统
-        if (id.includes('/node_modules/@mui/system/')) {
-          return 'vendor-mui-system';
-        }
+  // 4. 拆分大型独立库：ECharts
+  if (id.includes('/node_modules/echarts/')) {
+    return 'vendor-echarts';
+  }
 
-        // 5. 拆分大型独立库：ECharts
-        if (id.includes('/node_modules/echarts/')) {
-          return 'vendor-echarts';
-        }
-        return;
-      }
+  // 其他所有模块（包括 @mui/x-*、业务代码等）都留在主包
+  return;
+}
     }
   },
   chunkSizeWarningLimit: 1000,
