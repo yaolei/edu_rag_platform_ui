@@ -1,98 +1,10 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <script crossorigin src="https://cdn.jsdelivr.net/npm/react@19.2.0/umd/react.production.min.js" integrity="sha256-...（可选）"></script>
-    <script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@19.2.0/umd/react-dom.production.min.js" integrity="sha256-...（可选）"></script>
-
-    <!-- 2. Emotion (MUI 的样式引擎) -->
-    <script crossorigin src="https://cdn.jsdelivr.net/npm/@emotion/react@11.14.0/dist/emotion-react.umd.min.js"></script>
-    <script crossorigin src="https://cdn.jsdelivr.net/npm/@emotion/styled@11.14.1/dist/emotion-styled.umd.min.js"></script>
-
-    <!-- 3. Material-UI 核心库 (UMD) - 这是唯一有标准UMD包的MUI库 -->
-    <script crossorigin src="https://cdn.jsdelivr.net/npm/@mui/material@7.3.5/umd/material-ui.production.min.js"></script>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Accurate Did</title>
-        <script>
-      // 开启 Federation 调试模式
-      window.federationDebug = true;
-      
-      // 存储所有错误信息
-      window.appErrors = [];
-      
-      // 捕获所有 JS 错误
-      window.addEventListener('error', function(e) {
-        const errorInfo = {
-          type: 'error',
-          message: e.message,
-          stack: e.error?.stack,
-          filename: e.filename,
-          lineno: e.lineno,
-          colno: e.colno,
-          timestamp: new Date().toISOString(),
-          url: window.location.href
-        };
-        
-        console.error('❌ JS Error:', errorInfo);
-        window.appErrors.push(errorInfo);
-        
-        // 详细输出到控制台
-        try {
-          console.group('📋 Detailed Error Info');
-          console.log('Message:', e.message);
-          console.log('Stack:', e.error?.stack);
-          console.log('Location:', e.filename + ':' + e.lineno + ':' + e.colno);
-          console.log('Error object:', e.error);
-          console.groupEnd();
-        } catch (e) {}
-      });
-      
-      // 捕获未处理的 Promise 拒绝
-      window.addEventListener('unhandledrejection', function(e) {
-        const errorInfo = {
-          type: 'unhandledrejection',
-          reason: e.reason?.message || e.reason,
-          stack: e.reason?.stack,
-          timestamp: new Date().toISOString()
-        };
-        
-        console.error('❌ Unhandled Promise Rejection:', errorInfo);
-        window.appErrors.push(errorInfo);
-      });
-      
-      // 添加全局调试函数
-      window.debugFederation = function() {
-        console.group('🔍 Federation Debug Info');
-        console.log('Window React:', window.React ? '✅ Found' : '❌ Missing');
-        console.log('Window ReactDOM:', window.ReactDOM ? '✅ Found' : '❌ Missing');
-        console.log('Federation remote object:', window.__federation_shared__ || 'Not found');
-        console.log('All registered remotes:', window.__FEDERATION__?.remotes || 'No remotes');
-        console.log('App Errors:', window.appErrors);
-        
-        // 检查资源加载
-        const resources = performance.getEntriesByType('resource');
-        const federationResources = resources.filter(r => 
-          r.name.includes('federation') || r.name.includes('eduAdmin')
-        );
-        
-        console.log('Federation-related resources:');
-        federationResources.forEach(r => {
-          console.log(`  ${r.name}: ${r.duration}ms, ${r.transferSize} bytes`);
-        });
-        
-        console.groupEnd();
-      };
-      
-      // 自动输出调试信息
-      setTimeout(() => {
-        if (window.federationDebug) {
-          console.log('🎯 Federation Debug Mode Active');
-          console.log('Type debugFederation() in console for more info');
-        }
-      }, 3000);
-    </script>
-    <!-- 🚨 监控代码结束 -->
   </head>
   <body>
     <div id="root"></div>

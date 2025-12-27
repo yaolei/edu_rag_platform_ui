@@ -44,51 +44,31 @@ export default defineConfig(({ mode }) => {
       host: true,
       cors: true
     },
-build: {
-  target: 'esnext',
-  minify: 'esbuild',
-  cssCodeSplit: true,
-  emptyOutDir: true,
-  modulePreload: { polyfill: true },
-  outDir,
-  rollupOptions: {
-    // 1. 外部化依赖：只列出你通过CDN引入了UMD包的库
-    external: [
-      'react',
-      'react-dom',
-      // 'react-router', // v6 无UMD，务必移除或注释掉！
-      '@mui/material',
-      '@emotion/react',
-      '@emotion/styled'
-    ],
-    output: {
-      // 2. 全局变量映射：告诉打包后的代码，从哪里找这些外部库
-      globals: {
-        'react': 'React', // 对应 window.React
-        'react-dom': 'ReactDOM', // 对应 window.ReactDOM
-        '@mui/material': 'window["mui"]', // 关键！MUI UMD 包暴露在 window.mui
-        '@emotion/react': 'window["emotionReact"]', // 对应 window.emotionReact
-        '@emotion/styled': 'window["emotionStyled"]' // 对应 window.emotionStyled
+    build: {
+      target: 'esnext',
+      minify: 'esbuild',
+      cssCodeSplit: true,
+      emptyOutDir: true,
+      modulePreload: { polyfill: true },
+      outDir,
+      rollupOptions: {
+        output: {
+          // 精准的手动分块策略
+            manualChunks(id) {
+              // 1. 绝对保护：Federation 运行时和插件代码，必须留在主包
+              if (id.includes('@originjs/vite-plugin-federation') || id.includes('virtual:__federation')) {
+                return;
+              }
+
+              // 2. 只拆分一个确定完全独立、无任何React/MUI依赖的库：ECharts
+              if (id.includes('/node_modules/echarts/')) {
+                return 'vendor-echarts';
+              }
+              return;
+            }
+        }
       },
-      manualChunks(id) {
-        // 1. 保护 Federation 运行时
-        if (id.includes('@originjs/vite-plugin-federation') || id.includes('virtual:__federation')) {
-          return;
-        }
-        // 2. 现在可以安全拆分其他大型库
-        if (id.includes('/node_modules/echarts/')) {
-          return 'vendor-echarts';
-        }
-        // 3. @mui/icons-material 和 @mui/system 继续打包，但可以尝试拆分
-        if (id.includes('/node_modules/@mui/icons-material/')) {
-          return 'vendor-mui-icons';
-        }
-        // 其他留在主包（包括react-router, @mui/x-*, 你的业务代码等）
-        return;
-      }
+      chunkSizeWarningLimit: 1000,
     }
-  },
-  chunkSizeWarningLimit: 1000,
-}
   }
 })
