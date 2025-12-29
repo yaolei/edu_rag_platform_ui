@@ -92,58 +92,75 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
             {/* 图片（如果有） */}
             {msg.image && (
               <Box sx={{ position: 'relative' }}>
-                {imageErrors[idx] || !msg.image.src ? (
-                  <Box
-                    sx={{
-                      width: 100,
-                      height: 100,
-                      border: '1px dashed',
-                      borderColor: 'grey.400',
-                      borderRadius: 1,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: 'grey.600',
-                      bgcolor: 'grey.100',
+                {msg.image._storable?.data && msg.image._fromHistory ? (
+                  <img
+                    key={`image-history-${msg.image.id}`}
+                    src={msg.image._storable.data}
+                    alt={msg.image.name || 'Uploaded image'}
+                    onError={() => handleImageError(idx)}
+                    style={{
+                      maxWidth: '100%',
+                      maxHeight: 300,
+                      objectFit: 'contain',
+                      borderRadius: 4,
+                      border: '1px solid #e0e0e0',
                     }}
-                  >
-                    <Box sx={{ 
-                        display: 'flex-c', 
-                        alignItems: 'center', 
-                        justifyContent: 'center',
-                        mb: 0.5 
-                      }}>
-                    <BrokenImageIcon sx={{ 
-                      fontSize: 48, 
-                      color: 'grey.400',
-                      position: 'relative',
-                      top: '2px'
-                    }} />
-                    </Box>
-                  </Box>
+                  />
                 ) : (
+                  // 新图片：使用Blob URL
                   <>
-                    <img
-                      key={`image-${msg.image.id || msg.timestamp}-${idx}`}
-                      src={msg.image.src}
-                      alt={msg.image.name || 'Uploaded image'}
-                      onError={() => handleImageError(idx)}
-                      style={{
-                        maxWidth: '100%',
-                        maxHeight: 300,
-                        objectFit: 'contain',
-                        borderRadius: 4,
-                        border: '1px solid #e0e0e0',
-                      }}
-                    />
-                    <Box sx={{ display: 'flex', gap: 1, mt: 0.5, alignItems: 'center' }}>
-                      <Typography variant="caption" color="textSecondary">
-                        {msg.image.name}
-                      </Typography>
-                    </Box>
+                    {imageErrors[idx] || !msg.image.src ? (
+                      // 图片加载失败的回退
+                      <Box
+                        sx={{
+                          width: 100,
+                          height: 100,
+                          border: '1px dashed',
+                          borderColor: 'grey.400',
+                          borderRadius: 1,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: 'grey.600',
+                          bgcolor: 'grey.100',
+                        }}
+                      >
+                        <BrokenImageIcon sx={{ fontSize: 48, color: 'grey.400' }} />
+                        <Typography variant="caption" sx={{ mt: 0.5 }}>
+                          图片加载失败
+                        </Typography>
+                      </Box>
+                    ) : (
+                      // 正常显示Blob URL
+                      <img
+                        key={`image-new-${msg.image.id}`}
+                        src={msg.image.src}
+                        alt={msg.image.name || 'Uploaded image'}
+                        onError={() => handleImageError(idx)}
+                        style={{
+                          maxWidth: '100%',
+                          maxHeight: 300,
+                          objectFit: 'contain',
+                          borderRadius: 4,
+                          border: '1px solid #e0e0e0',
+                        }}
+                      />
+                    )}
                   </>
                 )}
+                
+                {/* 图片信息 */}
+                <Box sx={{ display: 'flex', gap: 1, mt: 0.5, alignItems: 'center' }}>
+                  <Typography variant="caption" color="textSecondary">
+                    {msg.image.name}
+                  </Typography>
+                  {msg.image._fromHistory && (
+                    <Typography variant="caption" color="textSecondary">
+                      (历史图片)
+                    </Typography>
+                  )}
+                </Box>
               </Box>
             )}
 
