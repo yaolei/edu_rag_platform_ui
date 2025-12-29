@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
-
+import {useDispatch, useSelector} from 'react-redux'
+import { hasHistroy } from '../utils/stateSlice/chatHistorySlice';
 import { ChatMessageList } from '../components/ChatMessageList'
 import { UploadPreview } from '../components/UploadPreview'
 import { ChatInputBar } from '../components/ChatInputBar'
@@ -13,15 +14,28 @@ const DEFAULT_MESSAGE = {
   timestamp: new Date().toISOString()
 }
 
-// 移动设备优化：使用 Blob 存储代替 base64
 const fileToStorable = async (file) => {
-  // 移动设备优化：如果文件太大，只存储元数据
-  if (file.size > 1024 * 1024) { // 大于 1MB
+  // 如果是图片文件，即使大也保存缩略图
+  if (file.type.startsWith('image/')) {
+    // 为图片文件生成缩略图（限制大小）
+    const optimizedData = await createOptimizedImageData(file);
     return {
       name: file.name,
       type: file.type,
       size: file.size,
-      // 不存储大文件数据
+      data: optimizedData, // 总是保存优化后的数据
+      isLargeFile: file.size > 1024 * 1024,
+      lastModified: file.lastModified,
+      _isMobileOptimized: true
+    };
+  }
+  
+  // 非图片文件保持原有逻辑
+  if (file.size > 1024 * 1024) {
+    return {
+      name: file.name,
+      type: file.type,
+      size: file.size,
       data: null,
       isLargeFile: true,
       lastModified: file.lastModified,
@@ -45,6 +59,44 @@ const fileToStorable = async (file) => {
   };
 };
 
+const createOptimizedImageData = (file) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    img.onload = () => {
+      // 计算缩略图尺寸
+      const maxWidth = 800;
+      const maxHeight = 600;
+      let width = img.width;
+      let height = img.height;
+      
+      if (width > height) {
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+      } else {
+        if (height > maxHeight) {
+          width = Math.round((width * maxHeight) / height);
+          height = maxHeight;
+        }
+      }
+      
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
+      
+      // 转换为较低质量的JPEG以减小大小
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+      resolve(dataUrl);
+    };
+    
+    img.onerror = reject;
+    img.src = URL.createObjectURL(file);
+  });
+};
 // 优化的 dataURL 转 Blob
 const dataURItoBlob = (dataURI) => {
   try {
@@ -62,10 +114,10 @@ const dataURItoBlob = (dataURI) => {
   }
 };
 
-// 移动设备优化的存储
-const MOBILE_STORAGE_KEY = 'robot_chat_mobile_data';
 
 export function RobotChat({ channelId = 'default' }) {
+  const dispatch = useDispatch();
+  const reduxHasHistory = useSelector(state => state.chatHistory.hasHistroy);
   const [messages, setMessages] = useState(() => {
     try {
       const saved = sessionStorage.getItem(`chat_history_${channelId}`);
@@ -75,6 +127,10 @@ export function RobotChat({ channelId = 'default' }) {
         // 检查是否是有效的消息数组
         if (Array.isArray(parsed) && parsed.length > 0) {
           console.log(`[RobotChat ${channelId}] 加载了 ${parsed.length} 条消息`);
+          const hasUserMessages = parsed.some(msg => msg.type === 'user');
+           setTimeout(() => {
+            dispatch(hasHistroy(hasUserMessages));
+          }, 0);
           
           // 移动设备：延迟处理图片，避免同时创建多个 Blob URL
           const processedMessages = parsed.map((msg, index) => {
@@ -133,8 +189,12 @@ export function RobotChat({ channelId = 'default' }) {
     } catch (e) {
       console.error('Failed to load chat history:', e);
     }
+     setTimeout(() => {
+      dispatch(hasHistroy(false));
+    }, 0);
     return [DEFAULT_MESSAGE];
   });
+
 
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -150,7 +210,6 @@ export function RobotChat({ channelId = 'default' }) {
       // 清理当前组件创建的 Blob URL
       blobUrlRegistry.current.forEach((url, id) => {
         URL.revokeObjectURL(url);
-        console.debug(`[RobotChat ${channelId}] 清理 Blob URL: ${id}`);
       });
       blobUrlRegistry.current.clear();
     };
@@ -198,8 +257,9 @@ export function RobotChat({ channelId = 'default' }) {
       } else {
         sessionStorage.setItem(`chat_history_${channelId}`, JSON.stringify(messagesToSave));
       }
-      
-      console.debug(`[RobotChat ${channelId}] 保存了 ${messages.length} 条消息`);
+      const hasUserMessages = messages.some(msg => msg.type === 'user');
+      dispatch(hasHistroy(hasUserMessages));
+
     } catch (e) {
       console.error('保存历史记录失败:', e);
       
@@ -214,12 +274,24 @@ export function RobotChat({ channelId = 'default' }) {
         }
       }
     }
-  }, [messages, channelId]);
+  }, [messages, channelId, dispatch]);
 
   // 滚动到底部
   useEffect(() => {
     responsesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  useEffect(() => {
+    if (reduxHasHistory === false) {
+      const hasUserMessages = messages.some(msg => msg.type === 'user');
+      console.log('Checking if should clear: hasUserMessages =', hasUserMessages);
+      
+      if (hasUserMessages) {
+        console.log('Performing clear history');
+        performClearHistory();
+      }
+    }
+  }, [reduxHasHistory]); 
 
   const handleSendQuestion = async () => {
     if (!input.trim() && !uploadedFile && uploadedImages.length === 0) return;
@@ -308,24 +380,22 @@ export function RobotChat({ channelId = 'default' }) {
       setLoading(false);
     }
   };
+    const performClearHistory = useCallback(() => {
+    // 清理 Blob URL
+    blobUrlRegistry.current.forEach((url, id) => {
+      URL.revokeObjectURL(url);
+    });
+    blobUrlRegistry.current.clear();
 
-  const handleClearHistory = useCallback(() => {
-    if (window.confirm('确定要清空当前对话的历史记录吗？')) {
-      // 清理 Blob URL
-      blobUrlRegistry.current.forEach((url, id) => {
-        URL.revokeObjectURL(url);
-      });
-      blobUrlRegistry.current.clear();
-
-      // 重置消息
-      setMessages([DEFAULT_MESSAGE]);
-      
-      // 只清理当前 channel 的历史
-      sessionStorage.removeItem(`chat_history_${channelId}`);
-      
-      console.log(`[RobotChat ${channelId}] 已清空历史记录`);
-    }
+    // 重置消息
+    setMessages([DEFAULT_MESSAGE]);
+    
+    // 清理上传的文件或图片
+    setUploadedFile(null);
+    setUploadedImages([]);
+    sessionStorage.removeItem(`chat_history_${channelId}`);
   }, [channelId]);
+
 
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Enter' && !e.shiftKey && !loading) {
@@ -369,7 +439,7 @@ export function RobotChat({ channelId = 'default' }) {
     // 检查文件大小
     const largeFile = imageFiles.find(f => f.size > 5 * 1024 * 1024); // 5MB
     if (largeFile) {
-      setError(`图片 ${largeFile.name} 大小超过 5MB，请压缩后上传`);
+      setError(`图片 ${largeFile.name} 大小超过 5MB,请压缩后上传`);
       e.target.value = '';
       return;
     }
@@ -443,8 +513,6 @@ export function RobotChat({ channelId = 'default' }) {
         loading={loading}
         uploadedFile={uploadedFile}
         uploadedImages={uploadedImages}
-        onClearHistory={handleClearHistory}
-        showClearButton={messages.length > 1}
       />
     </Box>
   );

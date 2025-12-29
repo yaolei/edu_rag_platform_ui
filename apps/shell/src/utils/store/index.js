@@ -1,8 +1,8 @@
 import {configureStore} from '@reduxjs/toolkit'
-import LayoutSlice from '../stateSlice/layoutSlice'
+import chatHistoryReducer from '../stateSlice/chatHistorySlice'
 
 export default configureStore({
     reducer:{
-        layoutParamer: LayoutSlice,
+        chatHistory: chatHistoryReducer,
     }
 })

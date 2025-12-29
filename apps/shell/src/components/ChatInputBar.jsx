@@ -3,10 +3,8 @@ import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import IconButton from '@mui/material/IconButton'
 import CircularProgress from '@mui/material/CircularProgress'
-
 import SendIcon from '@mui/icons-material/Send'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
-import DeleteIcon from '@mui/icons-material/Delete'
 
 export const ChatInputBar = memo(function ChatInputBar({
   input,
@@ -18,8 +16,6 @@ export const ChatInputBar = memo(function ChatInputBar({
   loading,
   uploadedFile,
   uploadedImages,
-  onClearHistory,
-  showClearButton
 }) {
   const inputRef = useRef(null);
   
@@ -44,10 +40,6 @@ export const ChatInputBar = memo(function ChatInputBar({
     onSend();
   }, [onSend]);
 
-  const handleClearHistoryClick = useCallback(() => {
-    onClearHistory();
-  }, [onClearHistory]);
-
   const handleTextFieldChange = useCallback((e) => {
     onInputChange(e.target.value);
   }, [onInputChange]);
@@ -60,6 +52,7 @@ export const ChatInputBar = memo(function ChatInputBar({
     <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-end' }}>
       <TextField
         fullWidth
+        className="mobile-only-input"
         multiline
         maxRows={4}
         minRows={3}
@@ -73,17 +66,6 @@ export const ChatInputBar = memo(function ChatInputBar({
       />
 
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, pb: 0.5 }}>
-        {showClearButton && (
-          <IconButton
-            onClick={handleClearHistoryClick}
-            disabled={loading}
-            size="small"
-            color="error"
-          >
-            <DeleteIcon />
-          </IconButton>
-        )}
-
         <IconButton
           onClick={handleClick}
           disabled={loading}

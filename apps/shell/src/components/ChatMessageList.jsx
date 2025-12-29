@@ -1,4 +1,5 @@
-import React, {useState, useMemo, useEffect} from 'react'
+// components/ChatMessageList.jsx
+import React, {useState, useMemo} from 'react'
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
@@ -6,14 +7,12 @@ import Avatar from '@mui/material/Avatar';
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 
-
 import PersonIcon from '@mui/icons-material/Person'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
-import {MarkdownRender} from '../components/markdown'
+import {MarkdownRender} from './markdown'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import BrokenImageIcon from '@mui/icons-material/BrokenImage'
 import { useTheme } from '../context/ThemeContext' 
-
 
 export function ChatMessageList({ messages, loading, responsesEndRef }) {
   const [imageErrors, setImageErrors] = useState({})
@@ -23,16 +22,7 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
   const handleImageError = (messageIndex) => {
     setImageErrors(prev => ({ ...prev, [messageIndex]: true }))
   }
-  useEffect(() => {
-    return () => {
-      // 清理所有 blob URLs
-      messages.forEach(msg => {
-        if (msg.type === 'user' && msg.image && msg.image.src) {
-          URL.revokeObjectURL(msg.image.src)
-        }
-      })
-    }
-  }, [])
+    
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text)
   }
@@ -93,38 +83,15 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
               display: 'flex',
               flexDirection: 'column',
               alignItems: msg.type === 'user' ? 'flex-end' : 'flex-start',
-              maxWidth: '60%',
-              gap: 0.5
             }}
           >
             <Typography variant="caption" sx={{ opacity: 0.6, fontSize: '0.7rem' }}>
               {new Date(msg.timestamp).toLocaleTimeString()}
             </Typography>
 
-            {msg.content && (
-              <Paper
-                sx={{
-                  maxWidth: '100%',
-                  p: 1.5,
-                  bgcolor: msg.type === 'user' ? 'primary.main' : 'action.hover',
-                  color: msg.type === 'user' ? 'primary.contrastText' : 'text.primary',
-                  borderRadius: 2,
-                  wordBreak: 'break-word'
-                }}
-              >
-              {msg.type === 'ai' ? (
-                  <MarkdownRender content={msg.content} isDarkMode={isDarkMode}/>
-              ) : (
-                <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
-                  {msg.content}
-                </Typography>
-              )}
-              </Paper>
-            )}
-
-            {/* Image Display with Error Handling */}
+            {/* 图片（如果有） */}
             {msg.image && (
-              <Box sx={{ mt: 1, mb: 1, position: 'relative' }}>
+              <Box sx={{ position: 'relative' }}>
                 {imageErrors[idx] || !msg.image.src ? (
                   <Box
                     sx={{
@@ -170,7 +137,7 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
                         border: '1px solid #e0e0e0',
                       }}
                     />
-                    <Box sx={{ display: 'flex', gap: 1, mt: 1, alignItems: 'center' }}>
+                    <Box sx={{ display: 'flex', gap: 1, mt: 0.5, alignItems: 'center' }}>
                       <Typography variant="caption" color="textSecondary">
                         {msg.image.name}
                       </Typography>
@@ -180,8 +147,19 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
               </Box>
             )}
 
+            {/* 文件（如果有） */}
             {msg.file && (
-              <Paper sx={{ p: 1, bgcolor: msg.type === 'user' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.05)', borderRadius: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Paper sx={{ 
+                p: 1, 
+                bgcolor: msg.type === 'user' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.05)', 
+                borderRadius: 1, 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 1,
+                alignSelf: 'stretch',
+                // 如果上面有图片，添加上边距
+                mt: msg.image ? 0.5 : 0
+              }}>
                 <AttachFileIcon sx={{ fontSize: 18 }} />
                 <Box>
                   <Typography variant="caption" sx={{ display: 'block', fontWeight: 500 }}>
@@ -191,6 +169,29 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
                     {formatFileSize(msg.file.size)}
                   </Typography>
                 </Box>
+              </Paper>
+            )}
+
+            {/* 消息内容（如果有） */}
+            {msg.content && (
+              <Paper
+                sx={{
+                  maxWidth: '100%',
+                  p: 1.5,
+                  bgcolor: msg.type === 'user' ? 'primary.main' : 'action.hover',
+                  color: msg.type === 'user' ? 'primary.contrastText' : 'text.primary',
+                  borderRadius: 2,
+                  wordBreak: 'break-word',
+                  mt: (msg.image || msg.file) ? 0.5 : 0
+                }}
+              >
+              {msg.type === 'ai' ? (
+                  <MarkdownRender content={msg.content} isDarkMode={isDarkMode}/>
+              ) : (
+                <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+                  {msg.content}
+                </Typography>
+              )}
               </Paper>
             )}
 

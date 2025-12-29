@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import {useNavigate} from 'react-router'
+import React, { useState, useEffect} from 'react'
+import {useNavigate, useLocation} from 'react-router'
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
@@ -7,26 +7,55 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-
-
+import DeleteIcon from '@mui/icons-material/Delete'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import SettingsIcon from '@mui/icons-material/Settings'
 import MenuIcon from '@mui/icons-material/Menu'
 import {navigationItems} from '../config/navigation'
 import * as MuiIcons from '@mui/icons-material';
+import {useDispatch, useSelector} from 'react-redux'
+import { hasHistroy } from '../utils/stateSlice/chatHistorySlice';
 export function TopBar({ onOpenSettings }) {
   const navigate = useNavigate()
+  const location = useLocation()
+  const dispatch = useDispatch()
+  const hasHistory = useSelector(state => state.chatHistory.hasHistroy)
   const [anchorEl, setAnchorEl] = useState(null)
+  const [navAnchor, setNavAnchor] = useState(null);
+
+  useEffect(() => {
+    const checkStorage = () => {
+      try {
+        const saved = sessionStorage.getItem('chat_history_default');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          const hasUser = parsed.some(msg => msg.type === 'user');
+        }
+      } catch (e) {
+        console.error('检查sessionStorage失败:', e);
+      }
+    };
+    
+    checkStorage();
+  }, [hasHistory]);
+
+  const isRobotPage = location.pathname === '/robot';
+  const showClearButton = isRobotPage && hasHistory;
   const handleMenuOpen = (e) => setAnchorEl(e.currentTarget)
   const handleMenuClose = () => {  
-    localStorage.removeItem('token');
-    navigate('/login')
-  }
+      localStorage.removeItem('token');
+      navigate('/login')
+}
 
-  //for moblie saide
- const [navAnchor, setNavAnchor] = useState(null);
-  const handleNavOpen  = (e) => setNavAnchor(e.currentTarget);
-  const handleNavClose = () => setNavAnchor(null);
+    const handleNavOpen  = (e) => setNavAnchor(e.currentTarget);
+    const handleNavClose = () => setNavAnchor(null);
+
+    const handleClearClick = () => {
+    if (window.confirm('确定要清空当前对话的历史记录吗？')) {
+      // 分发 Redux action 更新状态
+      dispatch(hasHistroy(false));
+    }
+  };
 
   return (
     <AppBar position="fixed" elevation={1} sx={{ zIndex: (t) => t.zIndex.drawer + 2 }}>
@@ -72,6 +101,16 @@ export function TopBar({ onOpenSettings }) {
         </Box>
 
         <Box>
+          {showClearButton && (
+            <IconButton 
+              color="inherit" 
+              onClick={handleClearClick}
+              aria-label="clear chat history"
+              sx={{ mr: 1 }}
+            >
+              <DeleteIcon />
+            </IconButton>
+          )}
           <IconButton color="inherit" onClick={onOpenSettings} aria-label="settings">
             <SettingsIcon />
           </IconButton>
@@ -88,6 +127,15 @@ export function TopBar({ onOpenSettings }) {
             transformOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
             <MenuItem onClick={()=>{}}>Profile</MenuItem>
+            {showClearButton && (
+              <MenuItem 
+                onClick={handleClearClick}
+                className="desktop-only"
+              >
+                <DeleteIcon sx={{ mr: 1, fontSize: 20 }} />
+                Clear Chat History
+              </MenuItem>
+            )}
             <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
           </Menu>
         </Box>

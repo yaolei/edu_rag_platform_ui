@@ -23,13 +23,13 @@ export function Layout({ children }) {
           flex: 1,
           width: '100%',
           height: 'calc(100vh - 64px)', // 减去 AppBar 高度
-          pt: 2,
-          px: 3,
-          pb: 2,
-          overflow: 'hidden', // 禁止主区域滚动
+          pt: 0,
+          px: 0,
+          pb: 0,
+          overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
-          marginTop: '9vh',
+          marginTop: '6vh',
         }}
       >
         {children}
