@@ -12,11 +12,11 @@ const KnowledgeManger = () => {
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
     const [knowledgeItems, setKnowledgeItems] = useState([]);
-    const [allActive, setAllActive] = useState(true);
     const [isloading, setIsLoading] = useState(false);
     const [noticeOpen, setNoticeOpen] = useState(false);
     const [noticeMessage, setNoticeMessage] = useState('');
     const [noticeSeverity, setNoticeSeverity] = useState('success');
+    const [documentType, setDocumentType] = useState('document');
 
     useEffect(() => {
         fetchKnowledgeItems();
@@ -42,8 +42,6 @@ const KnowledgeManger = () => {
                     return item;
                 })
                 setKnowledgeItems(processedItems || []);
-                const allItemsActive = processedItems.length > 0 && processedItems.every(item => item.active);
-                setAllActive(allItemsActive);
             }
             
         } catch (error) {
@@ -68,6 +66,11 @@ const KnowledgeManger = () => {
         setCustomFileName(event.target.value);
     }
 
+
+    const handleDocumentTypeChange = (type) => {
+        setDocumentType(type);
+    }
+
     const showNotice = (message, severity='success') => {
         setNoticeMessage(message);
         setNoticeSeverity(severity);
@@ -89,7 +92,7 @@ const KnowledgeManger = () => {
             formData.append('file', selectedFile);
             formData.append('knowledgeName', fileName);
             formData.append('activate', true);
-
+            formData.append('document_type', documentType); 
             try {
                 const response = await uploadFile('/upload_knowledge', formData, (progressEvent) => {
                     const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -98,6 +101,7 @@ const KnowledgeManger = () => {
                 
                 showNotice(response.message ||'File uploaded successfully', 'success');
                 clearSelectedFile();
+                setDocumentType('document');
             } catch (error) {
                 console.error('Error uploading file:', error);
                 showNotice('Error uploading file '+ (error.message), 'error');
@@ -111,35 +115,14 @@ const KnowledgeManger = () => {
         }
     }
     
-    const toggleItemStatus = async (itemId, currentStatus) => {
-        try {
-            const response = await post('/knowledge/toggleStatus', {
-                id: itemId,
-                activate: !currentStatus
-            });
-            if (response && response.status === 200) {
-                setKnowledgeItems(prevItems => prevItems.map(item => 
-                    item.id === itemId ? { ...item, active: !currentStatus } : item
-                ));
-                const uploadedItems = knowledgeItems.map(item => item.id === itemId ? {...item, active: !currentStatus } : item);
-                const allItemsActive = uploadedItems.length > 0 && uploadedItems.every(item => item.active);
-                setAllActive(allItemsActive);
-                showNotice('Knowledge item status updated', 'success');
-            } else {
-                showNotice('Failed to update status', 'error');
-            }
-        } catch (error) {
-            console.error('Error toggling item status:', error);
-            showNotice('Error toggling item status', 'error');
-        }
-    }
     const deleteAllItems = async () => {
-        console.log("deleteAllItems called");
+        if (!confirm('Are you sure you want to delete all knowledge items?')) {
+            return;
+        }
         try {
             const response = await get('/del_knowledge_items');
             if (response && response.status === 200) {
                 setKnowledgeItems([]);
-                setAllActive(false);
                 showNotice('All knowledge items deleted', 'success');
             } else {
                 showNotice('Failed to delete all knowledge items', 'error');
@@ -179,31 +162,6 @@ const KnowledgeManger = () => {
         }
     }   
 
-    const toggleAllItems = async () => {
-        const newActiveStatus = !allActive;
-        if (knowledgeItems.length === 0) {
-            setAllActive(newActiveStatus);
-            return;
-        }
-        try {
-            const response = await post('/knowledge/toggleAllStatus', {
-                activate: newActiveStatus
-            });
-            if (response && response.status === 200) {
-                setKnowledgeItems(prevItems => prevItems.map(item => 
-                    ({ ...item, active: newActiveStatus })
-                ));
-                setAllActive(newActiveStatus);
-                showNotice('All knowledge items status updated', 'success');
-            } else {
-                showNotice('Failed to update all statuses', 'error');
-            }
-        } catch (error) {
-            console.error('Error toggling all items status:', error);
-            showNotice('Error toggling all items status' + (error.message), 'error');
-        }
-    }
-
     const hanleCloseNotice = (event, reason) => {
         if (reason === 'clickaway') {
             return;
@@ -216,13 +174,14 @@ const KnowledgeManger = () => {
         setCustomFileName('');
         fileInputRef.current.value = '';
         setUploadProgress(0);
+        setDocumentType('document'); 
     }
     const isUploadButtonEnabled = () => {
         return selectedFile && !isUploading;
     }
     return (
-        <div className='p-6 mt-10'>
-            <Typography variant="h5" className="mb-4">knowledge Management</Typography>
+        <div className='p-4'>
+            <Typography variant="h5" className="p-4">Knowledge Base Management</Typography>
             <KnowledegeUploader
                 fileInputRef={fileInputRef}
                 selectedFile={selectedFile}
@@ -234,15 +193,14 @@ const KnowledgeManger = () => {
                 onCustomFileNameChange={handleCustomFileNameChange}
                 isUploadingButtonEnabled={isUploadButtonEnabled}
                 submitFiles={submitFiles}
+                documentType={documentType}
+                onDocumentTypeChange={handleDocumentTypeChange}
             />
             <KnowledgeTable
                 knowledgeItems={knowledgeItems}
                 isLoading={isloading}
-                onToggleStatus={toggleItemStatus}
                 deleteItem={deleteItem}
                 deleteAllItems={deleteAllItems}
-                allActive={allActive}
-                onToggleAll={toggleAllItems}
             />
             <ResponseNotice
                 open={noticeOpen}

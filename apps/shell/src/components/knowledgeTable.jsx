@@ -6,9 +6,8 @@ import Paper from '@mui/material/Paper';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Switch from '@mui/material/Switch';
 import IconButton from '@mui/material/IconButton';
-import FormControlLabel from '@mui/material/FormControlLabel';
+import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
@@ -16,14 +15,10 @@ import TablePagination from '@mui/material/TablePagination';
 
 import DeleteIcon from '@mui/icons-material/Delete'
 
-const KnowledgeTable = ({knowledgeItems, 
-                        onToggleStatus, 
+const KnowledgeTable = ({knowledgeItems,
                         deleteItem, 
                         deleteAllItems,
-                        allActive, 
-                        onToggleAll, 
                         isLoading = false}) => {
-    const isToggleDisabled = knowledgeItems.length === 0;
     const [page, setPage] = React.useState(0);
     const [rowPerPage, setRowPerPage] = React.useState(5);
 
@@ -41,23 +36,19 @@ const KnowledgeTable = ({knowledgeItems,
     return (
         <>
         <Box className="flex justify-between items-center mb-4">
-            <FormControlLabel
-                control={
-                    <Switch
-                        checked={allActive}
-                        onChange={onToggleAll}
-                        color="primary"
-                        disabled={isToggleDisabled}/>
-                }
-                label="Enable All Knowledge Items"  
-            />
-            <button
-                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={deleteAllItems}
-                disabled={knowledgeItems.length === 0}
-                >
-                Delete All Knowledge Items
-            </button>
+            <div></div>
+            <div>
+                <Button
+                    className="bg-blue-600 text-white px-4 py-2 rounded cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed 
+                    border-2 border-red-500"
+                    onClick={deleteAllItems}
+                    disabled={knowledgeItems.length === 0}
+                    sx={{textTransform: 'none', fontWeight: 600}}
+                    startIcon={<DeleteIcon color="error" />}
+                    >
+                    Knowledge Base
+                </Button>
+            </div>
         </Box>
         {isLoading ? (
             <Box className="flex justify-center items-center py-12">
@@ -69,25 +60,19 @@ const KnowledgeTable = ({knowledgeItems,
                 <Table>
                     <TableHead className="">
                         <TableRow>
-                            <TableCell width="5%">ID</TableCell>
-                            <TableCell width="25%">Knowledge Name</TableCell>
-                            <TableCell width="15%">State</TableCell>
-                            <TableCell width="20%">Create Date</TableCell>
-                            <TableCell width="15%">Actions</TableCell>
+                            <TableCell width="40%">File Name</TableCell>
+                            <TableCell width="10%">Type</TableCell>
+                            <TableCell width="40%">Create Date</TableCell>
+                            <TableCell width="10%">Action</TableCell> 
+
                         </TableRow>
                     </TableHead>
                     <TableBody>
                     { knowledgeItems.length> 0 ? (
                         displayedItems.map((item) => (
                             <TableRow key={item.id}>
-                                <TableCell className="hover: bg-gray-500">{item.id}</TableCell>
                                 <TableCell>{item.knowledgeName}</TableCell>
-                                <TableCell>
-                                    <Switch
-                                        checked={!item.active}
-                                        onChange={() => onToggleStatus(item.id, item.active)}
-                                        color="primary"/>
-                                </TableCell>
+                                <TableCell>doc</TableCell>
                                 <TableCell>{new Date(item.created_at).toLocaleDateString()}</TableCell>
                                 <TableCell>
                                     <IconButton
