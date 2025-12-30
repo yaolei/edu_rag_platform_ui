@@ -72,7 +72,7 @@ const KnowledgeTable = ({knowledgeItems,
                         displayedItems.map((item) => (
                             <TableRow key={item.id}>
                                 <TableCell>{item.knowledgeName}</TableCell>
-                                <TableCell>doc</TableCell>
+                                <TableCell>{item.doc_type}</TableCell>
                                 <TableCell>{new Date(item.created_at).toLocaleDateString()}</TableCell>
                                 <TableCell>
                                     <IconButton
