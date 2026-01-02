@@ -425,32 +425,69 @@ export function RobotChat({ channelId = 'default' }) {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    console.log(`📤 开始处理单个文件上传: ${file.name}`);
+    
     // 文件大小检查
-    if (file.size > 20 * 1024 * 1024) { // 20MB限制
-      setError('文件大小不能超过 20MB');
+    if (file.size > 10 * 1024 * 1024) { // 10MB限制
+      console.error(`❌ ${file.name}: 文件大小超过10MB限制 (${(file.size / (1024 * 1024)).toFixed(2)}MB)`);
+      setError('文件大小不能超过 10MB');
       e.target.value = '';
       return;
     }
 
-    // 如果是图片，预压缩并显示预览
+    // 如果是图片，根据使用场景智能压缩
     if (file.type.startsWith('image/')) {
-      compressImageFile(file, {
-        maxWidth: 800,
-        maxHeight: 600,
-        quality: 0.8
-      }).then(compressedFile => {
+      // 根据文件大小决定压缩参数
+      const fileSizeMB = file.size / (1024 * 1024);
+      let compressOptions = {};
+      
+      if (fileSizeMB < 1.5) {
+        // 小于1.5MB：不压缩
+        console.log(`✅ ${file.name}: 小于1.5MB,不压缩`);
         setUploadedFile({ 
-          name: compressedFile.name, 
-          size: compressedFile.size, 
-          type: compressedFile.type,
-          file: compressedFile, // 存储压缩后的文件用于上传
+          name: file.name, 
+          size: file.size, 
+          type: file.type,
+          file: file,
           id: `file-${Date.now()}`
         });
-      }).catch(err => {
-        console.error('图片压缩失败:', err);
-        setError('图片处理失败，请重试');
-      });
+      } else {
+        // 大于等于1.5MB：智能压缩
+        console.log(`🔄 ${file.name}: 大于等于1.5MB，开始智能压缩`);
+        
+        if (fileSizeMB >= 1.5 && fileSizeMB < 5) {
+          compressOptions = { maxWidth: 1600, maxHeight: 1200, quality: 0.8 };
+        } else if (fileSizeMB >= 5 && fileSizeMB < 10) {
+          compressOptions = { maxWidth: 1200, maxHeight: 900, quality: 0.7 };
+        } else {
+          compressOptions = { maxWidth: 1024, maxHeight: 768, quality: 0.6 };
+        }
+        
+        compressImageFile(file, compressOptions).then(compressedFile => {
+          console.log(`✅ ${file.name}: 压缩成功，已添加到上传列表`);
+          setUploadedFile({ 
+            name: compressedFile.name, 
+            size: compressedFile.size, 
+            type: compressedFile.type,
+            file: compressedFile,
+            id: `file-${Date.now()}`
+          });
+        }).catch(err => {
+          console.error(`❌ ${file.name}: 图片压缩失败:`, err);
+          // 压缩失败时使用原文件
+          console.log(`⚠️ ${file.name}: 压缩失败，使用原始文件`);
+          setUploadedFile({ 
+            name: file.name, 
+            size: file.size, 
+            type: file.type,
+            file: file,
+            id: `file-${Date.now()}`
+          });
+        });
+      }
     } else {
+      // 非图片文件
+      console.log(`📄 ${file.name}: 非图片文件，直接上传`);
       setUploadedFile({ 
         name: file.name, 
         size: file.size, 
@@ -463,37 +500,76 @@ export function RobotChat({ channelId = 'default' }) {
     e.target.value = '';
   }, []);
 
-  const handleImageUpload = useCallback((e) => {
+  const handleImageUpload = useCallback(async (e) => {
     const files = Array.from(e.target.files || []);
     const imageFiles = files.filter(f => f.type.startsWith('image/'));
     
+    console.log(`📤 开始批量图片上传: ${imageFiles.length}张图片`);
+    
     // 限制数量
     if (uploadedImages.length + imageFiles.length > 3) {
+      console.error(`❌ 图片数量超过限制: 当前${uploadedImages.length}张，新增${imageFiles.length}张，最多3张`);
       setError('最多上传 3 张图片');
       e.target.value = '';
       return;
     }
     
-    // 并行压缩所有图片
-    Promise.all(
-      imageFiles.map(file => 
-        compressImageFile(file, {
-          maxWidth: 800,
-          maxHeight: 600,
-          quality: 0.8
-        }).then(compressedFile => ({
+    // 并行处理所有图片
+    const processPromises = imageFiles.map(file => {
+      const fileSizeMB = file.size / (1024 * 1024);
+      
+      // 小于1.5MB不压缩
+      if (fileSizeMB < 1.5) {
+        console.log(`✅ ${file.name}: 小于1.5MB，不压缩`);
+        return Promise.resolve({
+          file: file,
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          id: `preview-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+          previewUrl: URL.createObjectURL(file)
+        });
+      }
+
+      // 大于等于1.5MB：智能压缩
+      console.log(`🔄 ${file.name}: 大于等于1.5MB，开始压缩`);
+      let compressOptions = {};
+      if (fileSizeMB >= 1.5 && fileSizeMB < 5) {
+        compressOptions = { maxWidth: 1200, maxHeight: 900, quality: 0.9 };
+      } else if (fileSizeMB >= 5 ) {
+        compressOptions = { maxWidth: 1024, maxHeight: 768, quality: 0.5 };
+      }
+      
+      return compressImageFile(file, compressOptions).then(compressedFile => {
+        console.log(`✅ ${file.name}: 压缩成功`);
+        return {
           file: compressedFile,
           name: compressedFile.name,
           size: compressedFile.size,
           type: compressedFile.type,
           id: `preview-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-          previewUrl: URL.createObjectURL(compressedFile) // 创建预览URL
-        }))
-      )
-    ).then(newImages => {
+          previewUrl: URL.createObjectURL(compressedFile)
+        };
+      }).catch(err => {
+        console.error(`❌ ${file.name}: 图片处理失败:`, err);
+        // 压缩失败时返回原文件
+        console.log(`⚠️ ${file.name}: 压缩失败，使用原始文件`);
+        return {
+          file: file,
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          id: `preview-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+          previewUrl: URL.createObjectURL(file)
+        };
+      });
+    });
+    
+    Promise.all(processPromises).then(newImages => {
+      console.log(`✅ 批量图片处理完成: ${newImages.length}张图片已处理`);
       setUploadedImages(prev => [...prev, ...newImages]);
     }).catch(err => {
-      console.error('图片处理失败:', err);
+      console.error('❌ 图片批量处理失败:', err);
       setError('图片处理失败，请重试');
     });
     
