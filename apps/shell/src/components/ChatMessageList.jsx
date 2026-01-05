@@ -46,21 +46,28 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
       variant="outlined"
       sx={{
         flex: 1,
-        overflow: 'hidden',
+        overflowY: 'auto', // 改为 auto 而不是 hidden
+        overflowX: 'hidden',
         p: 2,
         bgcolor: 'background.default',
         display: 'flex',
         flexDirection: 'column',
         gap: 2,
+      '&::-webkit-scrollbar': { 
+        width: '6px',
+        height: '6px'
+      },
+      '&::-webkit-scrollbar-track': { 
+        background: 'transparent',
+        borderRadius: '3px'
+      },
+      '&::-webkit-scrollbar-thumb': {
+        background: isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+        borderRadius: '3px',
         '&:hover': {
-          overflowY: 'auto',
-          '&::-webkit-scrollbar': { width: '6px' },
-          '&::-webkit-scrollbar-track': { background: 'transparent' },
-          '&::-webkit-scrollbar-thumb': {
-            background: 'rgba(0,0,0,0.2)',
-            borderRadius: '3px'
-          }
+          background: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)',
         }
+      }
       }}
     >
       {memoizedMessages.map((msg, idx) => (

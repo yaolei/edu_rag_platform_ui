@@ -286,8 +286,15 @@ export function RobotChat({ channelId = 'default' }) {
 
   // 滚动到底部
   useEffect(() => {
-    responsesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+      const timer = setTimeout(() => {
+      responsesEndRef.current?.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'end'
+      });
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, [messages, loading]);
 
   useEffect(() => {
     if (reduxHasHistory === false) {
@@ -532,7 +539,7 @@ export function RobotChat({ channelId = 'default' }) {
       }
 
       // 大于等于1.5MB：智能压缩
-      console.log(`🔄 ${file.name}: 大于等于1.5MB，开始压缩`);
+      console.log(`🔄 ${file.name}: 大于等于1.5MB,开始压缩`);
       let compressOptions = {};
       if (fileSizeMB >= 1.5 && fileSizeMB < 5) {
         compressOptions = { maxWidth: 1200, maxHeight: 900, quality: 0.9 };
