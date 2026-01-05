@@ -46,28 +46,28 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
       variant="outlined"
       sx={{
         flex: 1,
-        overflowY: 'auto', // 改为 auto 而不是 hidden
+        overflowY: 'auto',
         overflowX: 'hidden',
         p: 2,
         bgcolor: 'background.default',
         display: 'flex',
         flexDirection: 'column',
         gap: 2,
-      '&::-webkit-scrollbar': { 
-        width: '6px',
-        height: '6px'
-      },
-      '&::-webkit-scrollbar-track': { 
-        background: 'transparent',
-        borderRadius: '3px'
-      },
-      '&::-webkit-scrollbar-thumb': {
-        background: isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
-        borderRadius: '3px',
-        '&:hover': {
-          background: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)',
+        '&::-webkit-scrollbar': { 
+          width: '6px',
+          height: '6px'
+        },
+        '&::-webkit-scrollbar-track': { 
+          background: 'transparent',
+          borderRadius: '3px'
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+          borderRadius: '3px',
+          '&:hover': {
+            background: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)',
+          }
         }
-      }
       }}
     >
       {memoizedMessages.map((msg, idx) => (
@@ -78,9 +78,10 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
             gap: 1.5,
             justifyContent: msg.type === 'user' ? 'flex-end' : 'flex-start',
             animation: 'fadeIn 0.3s ease-in',
-            alignItems: 'flex-end'
+            alignItems: 'flex-start'
           }}
         >
+          {/* AI头像（只在左侧显示） */}
           {msg.type === 'ai' && (
             <Avatar src="/robot1.avif" alt="AI Robot" sx={{ width: 36, height: 36, flexShrink: 0 }} />
           )}
@@ -90,15 +91,60 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
               display: 'flex',
               flexDirection: 'column',
               alignItems: msg.type === 'user' ? 'flex-end' : 'flex-start',
+              maxWidth: '80%',
+              gap: 0.5
             }}
           >
-            <Typography variant="caption" sx={{ opacity: 0.6, fontSize: '0.7rem' }}>
-              {new Date(msg.timestamp).toLocaleTimeString()}
-            </Typography>
+            {/* 时间显示 */}
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center',
+              justifyContent: msg.type === 'user' ? 'space-between' : 'flex-start',
+              width: '100%',
+              gap: 1
+            }}>
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  opacity: 0.6, 
+                  fontSize: '0.7rem',
+                  flexShrink: 0
+                }}
+              >
+                {new Date(msg.timestamp).toLocaleTimeString([], { 
+                  hour: '2-digit', 
+                  minute: '2-digit' 
+                })}
+              </Typography>
+              
+              {/* AI消息的复制按钮 */}
+              {msg.type === 'ai' && msg.content && (
+                <IconButton 
+                  size="small" 
+                  onClick={() => handleCopy(msg.content)}
+                  sx={{ 
+                    p: 0.25,
+                    color: 'text.secondary',
+                    '&:hover': {
+                      color: 'text.primary',
+                      backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                    }
+                  }}
+                >
+                  <ContentCopyIcon fontSize="inherit" sx={{ fontSize: '0.9rem' }} />
+                </IconButton>
+              )}
+            </Box>
 
             {/* 图片（如果有） */}
             {msg.image && (
-              <Box sx={{ position: 'relative' }}>
+              <Box sx={{ 
+                position: 'relative', 
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: msg.type === 'user' ? 'flex-end' : 'flex-start'
+              }}>
                 {msg.image._storable?.data && msg.image._fromHistory ? (
                   <img
                     key={`image-history-${msg.image.id}`}
@@ -114,10 +160,8 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
                     }}
                   />
                 ) : (
-                  // 新图片：使用Blob URL
                   <>
                     {imageErrors[idx] || !msg.image.src ? (
-                      // 图片加载失败的回退
                       <Box
                         sx={{
                           width: 100,
@@ -139,7 +183,6 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
                         </Typography>
                       </Box>
                     ) : (
-                      // 正常显示Blob URL
                       <img
                         key={`image-new-${msg.image.id}`}
                         src={msg.image.src}
@@ -158,7 +201,13 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
                 )}
                 
                 {/* 图片信息 */}
-                <Box sx={{ display: 'flex', gap: 1, mt: 0.5, alignItems: 'center' }}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  gap: 1, 
+                  mt: 0.5, 
+                  alignItems: 'center',
+                  flexDirection: msg.type === 'user' ? 'row-reverse' : 'row'
+                }}>
                   <Typography variant="caption" color="textSecondary">
                     {msg.image.name}
                   </Typography>
@@ -180,12 +229,15 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: 1,
-                alignSelf: 'stretch',
-                // 如果上面有图片，添加上边距
-                mt: msg.image ? 0.5 : 0
+                maxWidth: '100%',
+                alignSelf: msg.type === 'user' ? 'flex-end' : 'flex-start'
               }}>
                 <AttachFileIcon sx={{ fontSize: 18 }} />
-                <Box>
+                <Box sx={{ 
+                  display: 'flex', 
+                  flexDirection: 'column',
+                  alignItems: msg.type === 'user' ? 'flex-end' : 'flex-start'
+                }}>
                   <Typography variant="caption" sx={{ display: 'block', fontWeight: 500 }}>
                     {msg.file.name}
                   </Typography>
@@ -206,38 +258,28 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
                   color: msg.type === 'user' ? 'primary.contrastText' : 'text.primary',
                   borderRadius: 2,
                   wordBreak: 'break-word',
-                  mt: (msg.image || msg.file) ? 0.5 : 0
+                  alignSelf: msg.type === 'user' ? 'flex-end' : 'flex-start'
                 }}
               >
-              {msg.type === 'ai' ? (
+                {msg.type === 'ai' ? (
                   <MarkdownRender content={msg.content} isDarkMode={isDarkMode}/>
-              ) : (
-                <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
-                  {msg.content}
-                </Typography>
-              )}
+                ) : (
+                  <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+                    {msg.content}
+                  </Typography>
+                )}
               </Paper>
             )}
-
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
-              <Typography variant="caption" color="textSecondary">
-                {new Date(msg.timestamp).toLocaleTimeString([], { 
-                  hour: '2-digit', 
-                  minute: '2-digit' 
-                })}
-              </Typography>
-              
-              {msg.type === 'ai' && msg.content && (
-                  <IconButton size="small" onClick={() => handleCopy(msg.content)}>
-                    <ContentCopyIcon fontSize="small" />
-                  </IconButton>
-              )}
-            </Box>
-
           </Box>
 
+          {/* 用户头像（只在右侧显示） */}
           {msg.type === 'user' && (
-            <Avatar sx={{ bgcolor: 'secondary.main', width: 36, height: 36, flexShrink: 0 }}>
+            <Avatar sx={{ 
+              bgcolor: 'secondary.main', 
+              width: 36, 
+              height: 36, 
+              flexShrink: 0
+            }}>
               <PersonIcon />
             </Avatar>
           )}
