@@ -4,7 +4,6 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
-import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 
 import PersonIcon from '@mui/icons-material/Person'
@@ -285,16 +284,6 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
           )}
         </Box>
       ))}
-
-      {loading && (
-        <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-end' }}>
-          <Avatar src="/robot1.avif" alt="AI Robot" sx={{ width: 36, height: 36 }} />
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <CircularProgress size={20} />
-            <Typography variant="caption">Robot is thinking...</Typography>
-          </Box>
-        </Box>
-      )}
 
       <div ref={responsesEndRef} />
 

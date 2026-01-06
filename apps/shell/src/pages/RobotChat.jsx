@@ -6,7 +6,7 @@ import { hasHistroy } from '../utils/stateSlice/chatHistorySlice';
 import { ChatMessageList } from '../components/ChatMessageList'
 import { UploadPreview } from '../components/UploadPreview'
 import { ChatInputBar } from '../components/ChatInputBar'
-import { askRobot, askOCR } from '../services/robotApi'
+import { askRobotStream, askOCRStream} from '../services/robotApi'
 
 const DEFAULT_MESSAGE = {
   type: 'ai',
@@ -183,6 +183,7 @@ const fileToStorable = async (file) => {
 
 export function RobotChat({ channelId = 'default' }) {
   const dispatch = useDispatch();
+  const shouldScrollRef = useRef(true);
   const reduxHasHistory = useSelector(state => state.chatHistory.hasHistroy);
   const [messages, setMessages] = useState(() => {
     try {
@@ -191,7 +192,6 @@ export function RobotChat({ channelId = 'default' }) {
         const parsed = JSON.parse(saved);
         
         if (Array.isArray(parsed) && parsed.length > 0) {
-          console.log(`[RobotChat ${channelId}] 加载了 ${parsed.length} 条消息`);
           const hasUserMessages = parsed.some(msg => msg.type === 'user');
           setTimeout(() => {
             dispatch(hasHistroy(hasUserMessages));
@@ -284,9 +284,18 @@ export function RobotChat({ channelId = 'default' }) {
     }
   }, [messages, channelId, dispatch]);
 
-  // 滚动到底部
   useEffect(() => {
-      const timer = setTimeout(() => {
+    if (reduxHasHistory === false) {
+      const hasUserMessages = messages.some(msg => msg.type === 'user');
+      
+      if (hasUserMessages) {
+        performClearHistory();
+      }
+    }
+  }, [reduxHasHistory]); 
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
       responsesEndRef.current?.scrollIntoView({ 
         behavior: 'smooth',
         block: 'end'
@@ -296,19 +305,7 @@ export function RobotChat({ channelId = 'default' }) {
     return () => clearTimeout(timer);
   }, [messages, loading]);
 
-  useEffect(() => {
-    if (reduxHasHistory === false) {
-      const hasUserMessages = messages.some(msg => msg.type === 'user');
-      console.log('Checking if should clear: hasUserMessages =', hasUserMessages);
-      
-      if (hasUserMessages) {
-        console.log('Performing clear history');
-        performClearHistory();
-      }
-    }
-  }, [reduxHasHistory]); 
-
-  const handleSendQuestion = async () => {
+    const handleSendQuestion = async () => {
     if (!input.trim() && !uploadedFile && uploadedImages.length === 0) return;
 
     // 收集所有要上传的文件
@@ -372,31 +369,90 @@ export function RobotChat({ channelId = 'default' }) {
     // 发送到服务器
     try {
       setLoading(true);
-      const filesForServer = filesToUpload; // 直接使用已压缩的文件
-      let res;
-      if (filesToUpload.length !== 0) {
-        res = await askOCR(input.trim(), filesForServer);
-      } else {
-        res = await askRobot(input.trim());
-      }
+      const aiMessageId = `ai-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
       
-      const { response, timestamp } = res;
-      setMessages((prev) => [
-        ...prev,
-        {
-          type: 'ai',
-          content: response,
-          timestamp,
-          id: `ai-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
-        },
-      ]);
+      // 先添加一个空的AI消息
+      const aiMessage = {
+        type: 'ai',
+        content: '',
+        timestamp: new Date().toISOString(),
+        id: aiMessageId,
+        isLoading: true,
+      };
+      
+      setMessages((prev) => [...prev, aiMessage]);
+      setError(null);
+
+      const updateAiMessage = (fullText, isLoading = false) => {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === aiMessageId
+              ? {
+                  ...msg,
+                  content: fullText,
+                  isLoading,
+                }
+              : msg
+          )
+        );
+      };
+
+      const scrollToBottom = () => {
+        setTimeout(() => {
+          responsesEndRef.current?.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'end'
+          });
+        }, 10);
+      };
+
+      if (filesToUpload.length !== 0) {
+        await askOCRStream(
+          input.trim(),
+          filesToUpload,
+          (chunk, fullText) => {
+            updateAiMessage(fullText);
+            scrollToBottom();
+          },
+          (fullText) => {
+            updateAiMessage(fullText, false);
+            setLoading(false);
+            scrollToBottom();
+          }
+        );
+      } else {
+        await askRobotStream(
+          input.trim(),
+          (chunk, fullText) => {
+            updateAiMessage(fullText);
+            scrollToBottom();
+          },
+          (fullText) => {
+            updateAiMessage(fullText, false);
+            setLoading(false);
+            scrollToBottom();
+          }
+        );
+      }
     } catch (err) {
       setError(err.message || '获取响应失败');
       console.error('发送消息失败:', err);
-    } finally {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.isLoading
+            ? {
+                ...msg,
+                content: msg.content + '\n\n(生成中断)',
+                isLoading: false,
+              }
+            : msg
+        )
+      );
       setLoading(false);
     }
-  };
+    };
+
+
 
   const performClearHistory = useCallback(() => {
     // 清理 Blob URL

@@ -1,8 +1,80 @@
-// 预留 API 接口，后续连接真实后端
-import {uploadFile, post} from '@workspace/shared-util'
+const getBaseURL = () => {
+  if (import.meta.env.PROD) {
+    // 生产环境使用固定的 URL
+    return 'http://106.12.58.7:8000/edu_rag/api';
+  }
+  // 开发环境使用环境变量或默认值
+  return import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+};
 
 
-export async function askOCR(question, files = []) {
+export async function askRobotStream(question, onChunk, onComplete) {
+  const baseURL = getBaseURL();
+  const url = `${baseURL}/chat_with_knowledge_stream`;
+  
+  let reader = null;
+  
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ questions: question })
+    });
+
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let text = '';
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        onComplete?.(text);
+        break;
+      }
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        if (!line.startsWith('data: ')) continue;
+        
+        const dataStr = line.slice(6).trim();
+        if (dataStr === '[DONE]') {
+          onComplete?.(text);
+          return;
+        }
+
+        try {
+          const data = JSON.parse(dataStr);
+          const content = data.choices?.[0]?.delta?.content;
+          if (content) {
+            text += content;
+            onChunk?.(content, text);
+          }
+        } catch (e) {
+          // 忽略解析错误
+        }
+      }
+    }
+  } catch (error) {
+    console.error('askRobotStream error:', error);
+    throw error;
+  } finally {
+    reader?.releaseLock();
+  }
+}
+
+export async function askOCRStream(question, files = [], onChunk, onComplete) {
+  const baseURL = getBaseURL();
+  const url = `${baseURL}/chat_by_files_stream`;
+  
+  let reader = null;
+  
   try {
     const formData = new FormData();
     formData.append('questions', question);
@@ -10,43 +82,83 @@ export async function askOCR(question, files = []) {
       formData.append('files', file);
     });
 
-    const res = await uploadFile('/chat_by_files', formData);
-    if (res.status !== 200) throw new Error(`HTTP ${res.status}`);
-    return {
-      response: res.content,
-      timestamp: new Date().toISOString()
-    };
+    const response = await fetch(url, {
+      method: 'POST',
+      body: formData,
+    });
 
-  } catch (error) {
-    console.error('ask ORC Robot error:', error);
-    if (error.response) {
-          console.error("错误响应数据:", error.response.data);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
-    throw error;
-  }
-}
 
+    if (!response.body) {
+      throw new Error('响应体不支持流式读取');
+    }
 
+    reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let text = '';
+    let buffer = '';
 
-/**
- * 向 AI Robot 发送问题并获取回答
- * @param {string} question - 用户提问
- * @returns {Promise<{response: string, timestamp: string}>}
- */
-export async function askRobot(question) {
-  try {
-      // /chat
-      const res = await post('/chat_with_knowledge', {
-        "questions": question
-      });
-      const {content } = res.content;
-      if (res.status !== 200) throw new Error(`HTTP ${status}`);
-      return {
-        response: content,
-        timestamp: new Date().toISOString()
-      };
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        onComplete?.(text);
+        break;
+      }
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        
+        if (line.startsWith('data: ')) {
+          const dataStr = line.slice(6).trim();
+          if (dataStr === '[DONE]') {
+            onComplete?.(text);
+            return;
+          }
+
+          try {
+            const data = JSON.parse(dataStr);
+            const content = data.choices?.[0]?.delta?.content || 
+                          data.content || 
+                          data.response ||
+                          data.answer;
+            if (content) {
+              text += content;
+              onChunk?.(content, text);
+            }
+          } catch (e) {
+            // 忽略解析错误
+            console.warn('解析JSON失败:', e);
+          }
+        } else {
+          try {
+            const data = JSON.parse(line);
+            const content = data.choices?.[0]?.delta?.content || 
+                          data.content || 
+                          data.response ||
+                          data.answer;
+            if (content) {
+              text += content;
+              onChunk?.(content, text);
+            }
+          } catch (e) {
+            // 如果不是 JSON，忽略
+          }
+        }
+      }
+    }
   } catch (error) {
-      console.error('askRobot error:', error)
-    throw error
+    console.error('askOCRStream error:', error);
+    throw error;
+  } finally {
+    if (reader) {
+      reader.releaseLock();
+    }
   }
 }
