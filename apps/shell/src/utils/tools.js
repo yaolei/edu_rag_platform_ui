@@ -1,8 +1,8 @@
     const compressImageFile = async (file, options = {}) => {
         const {
-        maxWidth = 512,
-        maxHeight = 512,
-        quality = 0.8,
+        maxWidth = 640,
+        maxHeight = 640,
+        quality = 0.7,
         type = 'image/jpeg'
         } = options;
 
