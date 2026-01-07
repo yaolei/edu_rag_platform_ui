@@ -1,8 +1,8 @@
     const compressImageFile = async (file, options = {}) => {
         const {
-        maxWidth = 1024,
-        maxHeight = 768,
-        quality = 0.7,
+        maxWidth = 512,
+        maxHeight = 512,
+        quality = 0.8,
         type = 'image/jpeg'
         } = options;
 
@@ -182,15 +182,15 @@
 
     const processImageFile = async (file, compressOptions, createPreview = false) => {
       const fileSizeMB = file.size / (1024 * 1024);
-      
-      // 小于2MB不压缩
-      if (fileSizeMB < 2) {
-        console.log(`✅ ${file.name}: 小于2MB，不压缩`);
+
+      // 小于1MB不压缩
+      if (fileSizeMB <= 1) {
+        console.log(`✅ ${file.name}: 小于1MB，不压缩`);
         return createFileInfo(file, createPreview);
       }
 
-      // 大于等于2MB：智能压缩
-      console.log(`🔄 ${file.name}: 大于等于2MB，开始压缩`);
+      // 大于等于1MB：智能压缩
+      console.log(`🔄 ${file.name}: 大于等于1MB，开始压缩`);
       
       try {
         const compressedFile = await compressImageFile(file, compressOptions);
