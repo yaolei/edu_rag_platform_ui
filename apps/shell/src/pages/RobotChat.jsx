@@ -6,13 +6,15 @@ import { hasHistroy } from '../utils/stateSlice/chatHistorySlice';
 import { ChatMessageList } from '../components/ChatMessageList'
 import { UploadPreview } from '../components/UploadPreview'
 import { ChatInputBar } from '../components/ChatInputBar'
-import { askRobotStream, askOCRStream} from '../services/robotApi'
+import { askRobotStream, askOCRStream, getOrCreateConversationId, clearConversationId } from '../services/robotApi'
 import { fileToStorable, processImageFile} from '../utils/tools'
 
 const DEFAULT_MESSAGE = {
   type: 'ai',
   content: 'Hello! 👋 I\'m an AI Robot here to help you. Feel free to ask me any questions!',
-  timestamp: new Date().toISOString()
+  timestamp: new Date().toISOString(),
+  isSystemGenerated: true,
+  isWelcome: true
 };
 
 export function RobotChat({ channelId = 'default' }) {
@@ -65,29 +67,35 @@ export function RobotChat({ channelId = 'default' }) {
   const responsesEndRef = useRef(null)
   const blobUrlRegistry = useRef(new Map());
 
-  // 清理函数
-    useEffect(() => {
-      return () => {
-        blobUrlRegistry.current.forEach((url, id) => {
-          URL.revokeObjectURL(url);
-        });
-        blobUrlRegistry.current.clear();
-      };
-    }, [channelId]);
+  // 初始化时获取或创建conversationId
+  useEffect(() => {
+    const conversationId = getOrCreateConversationId(channelId);
+    console.log(`🔗 当前对话ID: ${conversationId} (channel: ${channelId})`);
+  }, [channelId]);
 
-    // 自动保存到 sessionStorage
-    useEffect(() => {
-      if (!messages || messages.length === 0) return;
-      
-      // 准备要保存的消息
-      const messagesToSave = messages.map(msg => {
-        if (msg.type === 'user' && msg.image) {
-          const { src, ...restImage } = msg.image;
-          return { ...msg, image: restImage };
-        }
-        return msg;
+  // 清理函数
+  useEffect(() => {
+    return () => {
+      blobUrlRegistry.current.forEach((url, id) => {
+        URL.revokeObjectURL(url);
       });
+      blobUrlRegistry.current.clear();
+    };
+  }, [channelId]);
+
+  // 自动保存到 sessionStorage
+  useEffect(() => {
+    if (!messages || messages.length === 0) return;
     
+    // 准备要保存的消息
+    const messagesToSave = messages.map(msg => {
+      if (msg.type === 'user' && msg.image) {
+        const { src, ...restImage } = msg.image;
+        return { ...msg, image: restImage };
+      }
+      return msg;
+    });
+  
     try {
       const messageString = JSON.stringify(messagesToSave);
       // 如果超过1.5MB，只保存最近20条
@@ -137,7 +145,7 @@ export function RobotChat({ channelId = 'default' }) {
     return () => clearTimeout(timer);
   }, [messages, loading]);
 
-    const handleSendQuestion = async () => {
+  const handleSendQuestion = async () => {
     if (!input.trim() && !uploadedFile && uploadedImages.length === 0) return;
 
     // 收集所有要上传的文件
@@ -191,12 +199,12 @@ export function RobotChat({ channelId = 'default' }) {
       };
     }
 
-      // 添加用户消息
-      setMessages((prev) => [...prev, userMsg]);
-      setInput('');
-      setUploadedFile(null);
-      setUploadedImages([]);
-      setError(null);
+    // 添加用户消息
+    setMessages((prev) => [...prev, userMsg]);
+    setInput('');
+    setUploadedFile(null);
+    setUploadedImages([]);
+    setError(null);
 
     // 发送到服务器
     try {
@@ -237,10 +245,15 @@ export function RobotChat({ channelId = 'default' }) {
         }, 10);
       };
 
+      // 获取当前所有已完成的对话历史（包括刚刚添加的用户消息）
+      // 这里不传递空白的AI消息
+      const completedMessages = messages.concat(userMsg).filter(msg => !msg.isLoading);
+
       if (filesToUpload.length !== 0) {
         await askOCRStream(
           input.trim(),
           filesToUpload,
+          channelId,
           (chunk, fullText) => {
             updateAiMessage(fullText);
             scrollToBottom();
@@ -252,8 +265,10 @@ export function RobotChat({ channelId = 'default' }) {
           }
         );
       } else {
+        // 关键修改：传递所有已完成的消息
         await askRobotStream(
-          input.trim(),
+          completedMessages,
+          channelId,
           (chunk, fullText) => {
             updateAiMessage(fullText);
             scrollToBottom();
@@ -281,7 +296,7 @@ export function RobotChat({ channelId = 'default' }) {
       );
       setLoading(false);
     }
-    };
+  };
 
   const performClearHistory = useCallback(() => {
     // 清理 Blob URL
@@ -303,8 +318,16 @@ export function RobotChat({ channelId = 'default' }) {
     setUploadedFile(null);
     setUploadedImages([]);
     sessionStorage.removeItem(`chat_history_${channelId}`);
-  }, [channelId]);
+    // 清理对话ID，重新生成
+    clearConversationId(channelId);
+    const newConversationId = getOrCreateConversationId(channelId);
+    console.log(`🔄 生成新对话ID: ${newConversationId}`);
 
+    // 重置Redux状态
+    setTimeout(() => {
+      dispatch(hasHistroy(false));
+    }, 0);
+  }, [channelId, dispatch]);
 
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Enter' && !e.shiftKey && !loading) {
@@ -313,98 +336,93 @@ export function RobotChat({ channelId = 'default' }) {
     }
   }, [input, uploadedFile, uploadedImages, loading]);
 
-const handleFileUpload = useCallback(async (e) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+  const handleFileUpload = useCallback(async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  console.log(`📤 开始处理单个文件上传: ${file.name}`);
-  
-  // 文件大小检查
-  if (file.size > 10 * 1024 * 1024) {
-    console.error(`❌ ${file.name}: 文件大小超过10MB限制 (${(file.size / (1024 * 1024)).toFixed(2)}MB)`);
-    setError('文件大小不能超过 10MB');
-    e.target.value = '';
-    return;
-  }
-
-  // 如果是图片文件，复用图片处理逻辑
-  if (file.type.startsWith('image/')) {
-    const fileSizeMB = file.size / (1024 * 1024);
-    let compressOptions = {};
+    console.log(`📤 开始处理单个文件上传: ${file.name}`);
     
-    if (fileSizeMB >= 1.5 && fileSizeMB < 5) {
-      compressOptions = { maxWidth: 1600, maxHeight: 1200, quality: 0.8 };
-    } else if (fileSizeMB >= 5 && fileSizeMB < 10) {
-      compressOptions = { maxWidth: 1200, maxHeight: 900, quality: 0.7 };
-    } else if (fileSizeMB >= 10) {
-      compressOptions = { maxWidth: 1024, maxHeight: 768, quality: 0.6 };
+    // 文件大小检查
+    if (file.size > 10 * 1024 * 1024) {
+      console.error(`❌ ${file.name}: 文件大小超过10MB限制 (${(file.size / (1024 * 1024)).toFixed(2)}MB)`);
+      setError('文件大小不能超过 10MB');
+      e.target.value = '';
+      return;
+    }
+
+    // 如果是图片文件，复用图片处理逻辑
+    if (file.type.startsWith('image/')) {
+      const fileSizeMB = file.size / (1024 * 1024);
+      let compressOptions = {};
+      
+      if (fileSizeMB >= 1.5 && fileSizeMB < 5) {
+        compressOptions = { maxWidth: 1600, maxHeight: 1200, quality: 0.8 };
+      } else if (fileSizeMB >= 5 && fileSizeMB < 10) {
+        compressOptions = { maxWidth: 1200, maxHeight: 900, quality: 0.7 };
+      } else if (fileSizeMB >= 10) {
+        compressOptions = { maxWidth: 1024, maxHeight: 768, quality: 0.6 };
+      }
+      
+      // 使用图片处理逻辑，不创建预览URL
+      const processedFile = await processImageFile(file, compressOptions, false);
+      setUploadedFile(processedFile);
+    } else {
+      // 非图片文件
+      console.log(`📄 ${file.name}: 非图片文件，直接上传`);
+      setUploadedFile(createFileInfo(file));
     }
     
-    // 使用图片处理逻辑，不创建预览URL
-    const processedFile = await processImageFile(file, compressOptions, false);
-    setUploadedFile(processedFile);
-  } else {
-    // 非图片文件
-    console.log(`📄 ${file.name}: 非图片文件，直接上传`);
-    setUploadedFile(createFileInfo(file));
-  }
-  
-  e.target.value = '';
-}, []);
-
-const handleImageUpload = useCallback(async (e) => {
-  const files = Array.from(e.target.files || []);
-  const imageFiles = files.filter(f => f.type.startsWith('image/'));
-  
-  console.log(`📤 开始批量图片上传: ${imageFiles.length}张图片`);
-  
-  // 限制数量
-  if (uploadedImages.length + imageFiles.length > 3) {
-    console.error(`❌ 图片数量超过限制: 当前${uploadedImages.length}张，新增${imageFiles.length}张，最多3张`);
-    setError('最多上传 3 张图片');
     e.target.value = '';
-    return;
-  }
-  
-  // 并行处理所有图片
-  const processPromises = imageFiles.map(file => {
-    const fileSizeMB = file.size / (1024 * 1024);
-    let compressOptions = {};
+  }, []);
+
+  const handleImageUpload = useCallback(async (e) => {
+    const files = Array.from(e.target.files || []);
+    const imageFiles = files.filter(f => f.type.startsWith('image/'));
     
-    if (fileSizeMB >= 1.5 && fileSizeMB < 5) {
-      compressOptions = { maxWidth: 1200, maxHeight: 900, quality: 0.9 };
-    } else if (fileSizeMB >= 5) {
-      compressOptions = { maxWidth: 1024, maxHeight: 768, quality: 0.5 };
+    console.log(`📤 开始批量图片上传: ${imageFiles.length}张图片`);
+    
+    // 限制数量
+    if (uploadedImages.length + imageFiles.length > 3) {
+      console.error(`❌ 图片数量超过限制: 当前${uploadedImages.length}张，新增${imageFiles.length}张，最多3张`);
+      setError('最多上传 3 张图片');
+      e.target.value = '';
+      return;
     }
     
-    return processImageFile(file, compressOptions, true);
-  });
-  
-  Promise.all(processPromises).then(newImages => {
-    console.log(`✅ 批量图片处理完成: ${newImages.length}张图片已处理`);
-    setUploadedImages(prev => [...prev, ...newImages]);
-  }).catch(err => {
-    console.error('❌ 图片批量处理失败:', err);
-    setError('图片处理失败，请重试');
-  });
-  
-  e.target.value = '';
-}, [uploadedImages.length]);
+    // 并行处理所有图片
+    const processPromises = imageFiles.map(file => {
+      const fileSizeMB = file.size / (1024 * 1024);
+      let compressOptions = {};
+      
+      if (fileSizeMB >= 1.5 && fileSizeMB < 5) {
+        compressOptions = { maxWidth: 1200, maxHeight: 900, quality: 0.9 };
+      } else if (fileSizeMB >= 5) {
+        compressOptions = { maxWidth: 1024, maxHeight: 768, quality: 0.5 };
+      }
+      
+      return processImageFile(file, compressOptions, true);
+    });
+    
+    Promise.all(processPromises).then(newImages => {
+      console.log(`✅ 批量图片处理完成: ${newImages.length}张图片已处理`);
+      setUploadedImages(prev => [...prev, ...newImages]);
+    }).catch(err => {
+      console.error('❌ 图片批量处理失败:', err);
+      setError('图片处理失败，请重试');
+    });
+    
+    e.target.value = '';
+  }, [uploadedImages.length]);
 
-
-
-
-
-
-const handleRemoveImage = useCallback((idx) => {
-  const imageToRemove = uploadedImages[idx];
-  if (imageToRemove.previewUrl) {
-    const urlId = imageToRemove.id || `preview-${idx}`;
-    blobUrlRegistry.current.delete(urlId);
-    URL.revokeObjectURL(imageToRemove.previewUrl);
-  }
-  setUploadedImages(prev => prev.filter((_, i) => i !== idx));
-}, [uploadedImages]);
+  const handleRemoveImage = useCallback((idx) => {
+    const imageToRemove = uploadedImages[idx];
+    if (imageToRemove.previewUrl) {
+      const urlId = imageToRemove.id || `preview-${idx}`;
+      blobUrlRegistry.current.delete(urlId);
+      URL.revokeObjectURL(imageToRemove.previewUrl);
+    }
+    setUploadedImages(prev => prev.filter((_, i) => i !== idx));
+  }, [uploadedImages]);
 
   const handleRemoveFile = useCallback(() => {
     setUploadedFile(null);

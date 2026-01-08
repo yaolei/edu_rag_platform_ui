@@ -5,6 +5,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import PersonIcon from '@mui/icons-material/Person'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
@@ -117,7 +118,7 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
               </Typography>
               
               {/* AI消息的复制按钮 */}
-              {msg.type === 'ai' && msg.content && (
+              {msg.type === 'ai' && msg.content && !msg.isLoading && (
                 <IconButton 
                   size="small" 
                   onClick={() => handleCopy(msg.content)}
@@ -248,7 +249,7 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
             )}
 
             {/* 消息内容（如果有） */}
-            {msg.content && (
+            {msg.content || msg.isLoading ? (
               <Paper
                 sx={{
                   maxWidth: '100%',
@@ -257,18 +258,28 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
                   color: msg.type === 'user' ? 'primary.contrastText' : 'text.primary',
                   borderRadius: 2,
                   wordBreak: 'break-word',
-                  alignSelf: msg.type === 'user' ? 'flex-end' : 'flex-start'
+                  alignSelf: msg.type === 'user' ? 'flex-end' : 'flex-start',
+                  minWidth: msg.isLoading ? '80px' : 'auto'
                 }}
               >
                 {msg.type === 'ai' ? (
-                  <MarkdownRender content={msg.content} isDarkMode={isDarkMode}/>
+                  <>
+                    {msg.isLoading ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <CircularProgress size={16} />
+                        <Typography variant="body2">正在思考...</Typography>
+                      </Box>
+                    ) : (
+                      <MarkdownRender content={msg.content} isDarkMode={isDarkMode}/>
+                    )}
+                  </>
                 ) : (
                   <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
                     {msg.content}
                   </Typography>
                 )}
               </Paper>
-            )}
+            ) : null}
           </Box>
 
           {/* 用户头像（只在右侧显示） */}
