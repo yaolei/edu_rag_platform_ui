@@ -2,16 +2,32 @@ import React from 'react'
 import Drawer from '@mui/material/Drawer'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import IconButton from '@mui/material/IconButton'
-
-
-import CloseIcon from '@mui/icons-material/Close'
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import ArticleIcon from '@mui/icons-material/Article';
+import PersonIcon from '@mui/icons-material/Person';
+import CodeIcon from '@mui/icons-material/Code';
+import ImageIcon from '@mui/icons-material/Image';
 import LightModeIcon from '@mui/icons-material/LightMode'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import { useTheme } from '../context/ThemeContext'
+import {useSelector, useDispatch } from 'react-redux'
+import { setChatTopicValue } from '../utils/stateSlice/chatTopicSlice';
 
 export function SettingsDrawer({ open, onClose }) {
   const { themeMode, setThemeMode } = useTheme()
+  const isDarkMode = themeMode === 'dark';
+  const textPrimary = isDarkMode ? '#e2e8f0' : '#2d3748';
+  const textSecondary = isDarkMode ? '#a0aec0' : '#718096';
+  const cardBorder = isDarkMode ? '#4a5568' : '#edf2f7';
+
+  const hasChatTopic = useSelector(state => state.chatTopics.chatTopiceValue)
+  const dispatch = useDispatch()
+  const handleDocumentTypeChange = (event) => {
+    dispatch(setChatTopicValue(event.target.value))
+  };
 
   const options = [
     { value: 'light', label: 'Light', Icon: LightModeIcon },
@@ -28,19 +44,14 @@ export function SettingsDrawer({ open, onClose }) {
           width: 320,
           display: 'flex',
           flexDirection: 'column',
-          // 保证 Drawer 自身不引起页面滚动，内部可滚动
+          marginTop: '55px',
           overflow: 'hidden',
           transition: 'width 300ms cubic-bezier(0.4,0,0.2,1)'
         },
         className: 'bg-white dark:bg-gray-800'
       }}
     >
-      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: 1, borderColor: 'divider' }}>
-        <Typography variant="h6" sx={{ fontWeight: 600 }}>Settings</Typography>
-        <IconButton size="small" onClick={onClose}><CloseIcon /></IconButton>
-      </Box>
 
-      {/* 内容区：允许内部滚动但不超过 Drawer 高度 */}
       <Box sx={{ p: 2, overflowY: 'auto' }}>
         <Typography sx={{ mb: 2, fontWeight: 500 }}>Theme</Typography>
 
@@ -74,17 +85,79 @@ export function SettingsDrawer({ open, onClose }) {
           })}
         </Box>
 
-        <Typography variant="caption" sx={{ display: 'block', mt: 2, color: 'text.secondary' }}>
+        <Typography variant="caption" sx={{ display: 'block', mt: 2, color: 'text.secondary', fontSize: 16,
+          fontWeight: 500 }}>
             The theme will take effect immediately after being changed
         </Typography>
       </Box>
+     <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
+      </Box>
+        <Box sx={{ p: 2, pt: 0, overflowY: 'auto' }}>
+          <Typography sx={{pb:2}}>Chat Topic</Typography>
+            <Box>
+                <FormControl fullWidth size="small">
+                    <Select
+                        value={hasChatTopic}
+                        onChange={handleDocumentTypeChange}
+                        displayEmpty
+                        sx={{
+                            '& .MuiSelect-select': {
+                                py: 1.5,
+                                fontSize: '0.875rem',
+                                color: textPrimary,
+                                backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : '#f7fafc'
+                            },
+                            '& .MuiOutlinedInput-notchedOutline': {
+                                borderColor: cardBorder
+                            },
+                            '&:hover .MuiOutlinedInput-notchedOutline': {
+                                borderColor: isDarkMode ? '#718096' : '#cbd5e0'
+                            }
+                        }}
+                    >
+                      <MenuItem value="chat">
+                            <Box className="flex items-center space-x-2">
+                                <ChatBubbleOutlineIcon fontSize="small" sx={{ color: textSecondary }} />
+                                <span style={{ color: textPrimary }}>Chat</span>
+                            </Box>
+                        </MenuItem>
+                        <MenuItem value="document">
+                            <Box className="flex items-center space-x-2">
+                                <ArticleIcon fontSize="small" sx={{ color: textSecondary }} />
+                                <span style={{ color: textPrimary }}>Document</span>
+                            </Box>
+                        </MenuItem>
+                        <MenuItem value="resume">
+                            <Box className="flex items-center space-x-2">
+                                <PersonIcon fontSize="small" sx={{ color: textSecondary }} />
+                                <span style={{ color: textPrimary }}>Resume</span>
+                            </Box>
+                        </MenuItem>
+                        <MenuItem value="code">
+                            <Box className="flex items-center space-x-2">
+                                <CodeIcon fontSize="small" sx={{ color: textSecondary }} />
+                                <span style={{ color: textPrimary }}>Code</span>
+                            </Box>
+                        </MenuItem>
+                        <MenuItem value="image">
+                            <Box className="flex items-center space-x-2">
+                                <ImageIcon fontSize="small" sx={{ color: textSecondary }} />
+                                <span style={{ color: textPrimary }}>Image Description</span>
+                            </Box>
+                        </MenuItem>
+                    </Select>
+                </FormControl>
+            </Box>
+            <Typography variant="caption" sx={{ display: 'block', mt: 2, color: 'text.secondary', fontSize: 16,
+        fontWeight: 500 }}>
+                When you choose a chat topic from the system, all the knowledge base resources will change accordingly, making your conversations more accurate.
+            </Typography>
+        </Box>
 
-      {/* 底部占位避免滚动条出现（屏幕较小时内部滚动） */}
       <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
         <Typography variant="caption" color="text.secondary">More settings will be added gradually.</Typography>
       </Box>
 
-      {/* 局部样式（用于 active/inactive） */}
       <style>{`
         .active-theme-btn {
           background: var(--mui-palette-primary-main, #1976d2);

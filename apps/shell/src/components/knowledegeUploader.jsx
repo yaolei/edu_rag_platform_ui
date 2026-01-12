@@ -339,7 +339,7 @@ const KnowledgeUploader = ({
                                         <span style={{ color: textPrimary }}>Code</span>
                                     </Box>
                                 </MenuItem>
-                                <MenuItem value="image_desc">
+                                <MenuItem value="image">
                                     <Box className="flex items-center space-x-2">
                                         <ImageIcon fontSize="small" sx={{ color: textSecondary }} />
                                         <span style={{ color: textPrimary }}>Image Description</span>

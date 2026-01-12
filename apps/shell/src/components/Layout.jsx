@@ -22,7 +22,7 @@ export function Layout({ children }) {
         sx={{
           flex: 1,
           width: '100%',
-          height: 'calc(100vh - 64px)', // 减去 AppBar 高度
+          height: 'calc(100vh - 55px)', // 减去 AppBar 高度
           pt: 0,
           px: 0,
           pb: 0,

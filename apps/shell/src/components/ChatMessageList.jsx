@@ -46,6 +46,7 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
       variant="outlined"
       sx={{
         flex: 1,
+        border: 'none',
         overflowY: 'auto',
         overflowX: 'hidden',
         p: 2,
@@ -213,7 +214,7 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
                   </Typography>
                   {msg.image._fromHistory && (
                     <Typography variant="caption" color="textSecondary">
-                      (历史图片)
+                      (History)
                     </Typography>
                   )}
                 </Box>
@@ -267,7 +268,7 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
                     {msg.isLoading ? (
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <CircularProgress size={16} />
-                        <Typography variant="body2">正在思考...</Typography>
+                        <Typography variant="body2">Think...</Typography>
                       </Box>
                     ) : (
                       <MarkdownRender content={msg.content} isDarkMode={isDarkMode}/>

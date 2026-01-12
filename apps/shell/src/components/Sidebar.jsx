@@ -41,7 +41,7 @@ export function Sidebar({className, collapsed, onToggleCollapse }) {
           left: 0,
           height: 'calc(100vh - 64px)',
           transition: 'width 300ms cubic-bezier(0.4,0,0.2,1), background-color 200ms',
-          overflowX: 'hidden' // 防止内部水平溢出引发换行
+          overflowX: 'hidden'
         }
       }}
     >

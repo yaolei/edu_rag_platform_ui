@@ -143,9 +143,7 @@ export async function askRobotStream(messages = [], channelId = 'default', onChu
   const baseURL = getBaseURL();
   const conversationId = getOrCreateConversationId(channelId);
   const url = `${baseURL}/chat_with_knowledge_stream`;
-  
-  console.log(`🤖 发送对话历史 (channel: ${channelId}, conversation_id: ${conversationId})`);
-  
+
   try {
     // 构建FormData
     const formData = new FormData();
@@ -154,9 +152,6 @@ export async function askRobotStream(messages = [], channelId = 'default', onChu
     
     const messagesArray = convertMessagesToMessagesArray(messages);
     const messagesJson = JSON.stringify(messagesArray);
-    
-    console.log('📜 发送messages数组:', messagesArray);
-    console.log('📜 消息数量:', messagesArray.length);
     
     formData.append('messages_json', messagesJson);
     
@@ -180,25 +175,29 @@ export async function askRobotStream(messages = [], channelId = 'default', onChu
 }
 
 // OCR对话API - 暂时保持原有格式
-export async function askOCRStream(question, files = [], channelId = 'default', onChunk, onComplete) {
-  const baseURL = getBaseURL();
-  const conversationId = getOrCreateConversationId(channelId);
-  const url = `${baseURL}/chat_by_files_stream`;
-  
-  console.log(`📷 OCR处理 (channel: ${channelId}, conversation_id: ${conversationId}):`, question, files.map(f => f.name));
-  
+export async function askOCRStream(messages = [], files = [], channelId = 'default', onChunk, onComplete) {
+    const baseURL = getBaseURL();
+    const conversationId = getOrCreateConversationId(channelId);
+    const url = `${baseURL}/chat_by_files_stream`;
+    
   try {
     const formData = new FormData();
-
-    if (question && question.trim()) {
-      formData.append('questions', question.trim());
-    } else {
-      formData.append('questions', '');
-    }
+    
+    // 构建消息数组
+    const messagesArray = convertMessagesToMessagesArray(messages);
+    const messagesJson = JSON.stringify(messagesArray);
+    
+    formData.append('messages_json', messagesJson);
     formData.append('conversation_id', conversationId);
 
     files.forEach((file) => {
       formData.append('files', file);
+    });
+
+    console.log('📤 OCR请求参数:', {
+      messagesArray,
+      conversationId,
+      filesCount: files.length
     });
 
     const response = await fetch(url, {

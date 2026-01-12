@@ -251,7 +251,7 @@ export function RobotChat({ channelId = 'default' }) {
 
       if (filesToUpload.length !== 0) {
         await askOCRStream(
-          input.trim(),
+          completedMessages,
           filesToUpload,
           channelId,
           (chunk, fullText) => {
