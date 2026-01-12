@@ -112,7 +112,6 @@ export function TopBar({ onOpenSettings }) {
               overflow: 'visible',
             }}
           >
-            {/* 状态指示点 */}
             <Box 
               sx={{ 
                 width: 8, 
