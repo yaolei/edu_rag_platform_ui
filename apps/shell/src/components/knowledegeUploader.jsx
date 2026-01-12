@@ -108,7 +108,6 @@ const KnowledgeUploader = ({
             </DialogActions>
         </Dialog>
 
-        {/* 主内容区 */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 flex-col-mobile">
             <div className="flex-1">
                 <div className="flex items-center gap-2">
