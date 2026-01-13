@@ -64,33 +64,29 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           manualChunks(id) {
-            // 1. 不分割Federation运行时
+            // *** 核心：将所有 Federation 相关的代码（包括共享依赖）都排除在自定义分块之外 ***
+            // 这确保了插件能独立管理 React、ReactDOM 等共享包的打包和加载。
             if (id.includes('@originjs/vite-plugin-federation') || 
-                id.includes('virtual:__federation')) {
+                id.includes('virtual:__federation') ||
+                id.includes('__federation_shared') || // 明确排除共享依赖块
+                id.includes('shared') && id.includes('node_modules')) { // 根据路径特征排除
               return;
             }
             
-            // 2. 让Federation共享依赖生成自己的chunk
-            // 这会导致生成 __federation_shared_*.js 文件
-            // 并且它们会被正确加载
-            if (id.includes('/node_modules/react/') && !id.includes('/node_modules/react-dom/')) {
-              return; // 让Federation处理
-            }
-            
-            // 3. 拆分其他大库
+            // 以下仅对非Federation、非共享依赖的普通依赖进行分块
+            // 1. MUI（最大的部分）
             if (id.includes('/node_modules/@mui/')) {
               return 'vendor-mui';
             }
-            
+            // 2. ECharts
             if (id.includes('/node_modules/echarts/')) {
               return 'vendor-echarts';
             }
-            
+            // 3. KaTeX
             if (id.includes('/node_modules/katex/')) {
               return 'vendor-katex';
             }
-            
-            // 4. 其他库放一起
+            // 4. 其他第三方依赖可以打包在一起，或继续细分
             if (id.includes('node_modules')) {
               return 'vendor-other';
             }
