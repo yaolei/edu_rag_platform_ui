@@ -53,7 +53,7 @@ export function SettingsDrawer({ open, onClose }) {
     >
 
       <Box sx={{ p: 2, overflowY: 'auto' }}>
-        <Typography sx={{ mb: 2, fontWeight: 500 }}>Theme</Typography>
+        <Typography sx={{ mb: 2, fontWeight: 500 }}>Themes</Typography>
 
         <Box sx={{ display: 'flex', gap: 1 }}>
           {options.map(({ value, label, Icon }) => {
