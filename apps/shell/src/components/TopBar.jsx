@@ -103,8 +103,8 @@ export function TopBar({ onOpenSettings }) {
               top: '50%',
               transform: 'translate(-50%, -50%)',
               display: 'flex',
-              alignItems: 'center', // 垂直居中
-              justifyContent: 'center', // 【核心修复】水平居中
+              alignItems: 'center',
+              justifyContent: 'center',
               maxWidth: 'calc(100vw - 400px)',
               px: 3,
               py: 1,
