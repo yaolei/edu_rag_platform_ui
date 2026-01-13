@@ -63,36 +63,47 @@ export default defineConfig(({ mode }) => {
       outDir,
       rollupOptions: {
         output: {
-          // 1. 最重要的修改：使用函数形式，强制对所有 node_modules 进行分包
           manualChunks(id) {
-            // 1.1 核心保护：所有 Federation 相关代码必须留在主包，保证运行时稳定。
-            if (id.includes('@originjs/vite-plugin-federation') || 
-                id.includes('virtual:__federation')) {
-              return; // 返回 undefined，使其保留在主包中
+            // **核心原则：所有 Federation 插件相关的代码，绝对不碰，留在主包。**
+            if (id.includes('@originjs/vite-plugin-federation') ||
+                id.includes('virtual:__federation') ||
+                id.includes('__federation_shared')) {
+              return;
             }
 
-            // 1.2 强制分包逻辑：如果模块在 node_modules 中，就按其包名拆分
+            // **关键步骤：识别并保护 Shared 依赖**
+            // 如果模块是我们在 `shared` 中声明的依赖，也排除在分块外。
             if (id.includes('node_modules')) {
-              // 提取包名。例如：/node_modules/@mui/material/index.js -> @mui/material
-              const match = id.match(/[\\/]node_modules[\\/](.+?)([\\/]|$)/);
-              if (match) {
-                const packageName = match[1];
-                // 将一些非常大或独立的包单独拆出，避免 vendor 过大
-                if (packageName.startsWith('@mui') ||
-                    packageName.startsWith('echarts') ||
-                    packageName.startsWith('katex') ||
-                    packageName.startsWith('react-syntax-highlighter')) {
-                  return `vendor-${packageName.replace('@', '').replace(/[\\/]/g, '-')}`;
+              // 使用路径精确匹配，而不是包名前缀，避免误伤
+              const libsToProtect = ['react/', 'react-dom/', 'react-router/'];
+              for (const lib of libsToProtect) {
+                if (id.includes(`/node_modules/${lib}`)) {
+                  // 返回 undefined，让 Federation 插件接管
+                  return;
                 }
-                // 其他所有第三方包打到一个 vendor 包里
-                return 'vendor';
+              }
+
+              // **只对以下确认不会破坏共享依赖的、体积巨大的库进行分块**
+              // 1. MUI 系列
+              if (id.includes('/node_modules/@mui/')) {
+                return 'vendor-mui';
+              }
+              // 2. ECharts
+              if (id.includes('/node_modules/echarts/')) {
+                return 'vendor-echarts';
+              }
+              // 3. KaTeX
+              if (id.includes('/node_modules/katex/')) {
+                return 'vendor-katex';
+              }
+              // 4. Markdown 和语法高亮相关
+              if (id.includes('/node_modules/react-syntax-highlighter/') ||
+                  id.includes('/node_modules/react-markdown/')) {
+                return 'vendor-markdown';
               }
             }
-            // 1.3 业务代码默认留在主包，也可根据 src/ 路径进一步拆分
-            // if (id.includes('src/')) { ... }
           },
-          // 2. 降低警告阈值，让你能感知到任何大文件
-          chunkSizeWarningLimit: 500,
+          chunkSizeWarningLimit: 500
         }
       }
     }
