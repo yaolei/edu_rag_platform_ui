@@ -11,12 +11,23 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 
+import Dashboard from '@mui/icons-material/Dashboard';
+import SmartToy from '@mui/icons-material/SmartToy';
+import AutoStories from '@mui/icons-material/AutoStories';
+import AdminPanelSettings from '@mui/icons-material/AdminPanelSettings';
 
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import * as MuiIcons from '@mui/icons-material'
 import { useNavigate, useLocation } from 'react-router'
 import { navigationItems } from '../config/navigation'
+
+const iconMap = {
+  Dashboard, // 对应 'Dashboard'
+  SmartToy,       // 对应 'SmartToy'
+  AutoStories,    // 对应 'AutoStories'
+  AdminPanelSettings,   // 对应 'AdminPanelSettings'
+};
+
 
 const drawerWidth = 240
 const collapsedWidth = 72
@@ -77,7 +88,7 @@ export function Sidebar({className, collapsed, onToggleCollapse }) {
 
         <List sx={{ flex: 1, overflowY: 'auto', p: 1 }}>
           {navigationItems.map((item) => {
-            const IconComponent = MuiIcons[item.icon] || MuiIcons.Dashboard
+            const IconComponent = iconMap[item.icon] || Dashboard
             const active = location.pathname === item.path
             return (
               <ListItem key={item.id} disablePadding sx={{ mb: 0.5 }}>
@@ -92,7 +103,6 @@ export function Sidebar({className, collapsed, onToggleCollapse }) {
                       borderRadius: 1,
                       '&.Mui-selected': { bgcolor: 'action.selected' },
                       transition: 'transform 200ms cubic-bezier(0.4,0,0.2,1), background-color 200ms',
-                      // 防止文字换行并显示省略号，解决“上下显示”问题
                       overflow: 'hidden'
                     }}
                   >
@@ -119,7 +129,6 @@ export function Sidebar({className, collapsed, onToggleCollapse }) {
         </List>
       </Box>
 
-      {/* 局部样式：点击反馈（按下时） */}
       <style>{`
         .MuiListItemButton-root:active {
           transform: translateY(1px);

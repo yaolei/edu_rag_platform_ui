@@ -12,9 +12,23 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import SettingsIcon from '@mui/icons-material/Settings'
 import MenuIcon from '@mui/icons-material/Menu'
 import {navigationItems} from '../config/navigation'
-import * as MuiIcons from '@mui/icons-material';
+
+import Dashboard from '@mui/icons-material/Dashboard';
+import SmartToy from '@mui/icons-material/SmartToy';
+import AutoStories from '@mui/icons-material/AutoStories';
+import AdminPanelSettings from '@mui/icons-material/AdminPanelSettings';
+
 import {useDispatch, useSelector} from 'react-redux'
 import { hasHistroy } from '../utils/stateSlice/chatHistorySlice';
+
+
+const iconMap = {
+  Dashboard, // 对应 'Dashboard'
+  SmartToy,       // 对应 'SmartToy'
+  AutoStories,    // 对应 'AutoStories'
+  AdminPanelSettings,   // 对应 'AdminPanelSettings'
+};
+
 export function TopBar({ onOpenSettings }) {
   const navigate = useNavigate()
   const location = useLocation()
@@ -78,7 +92,7 @@ export function TopBar({ onOpenSettings }) {
             anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
           >
             {navigationItems.map((item) => {
-              const Icon = MuiIcons[item.icon] || MuiIcons.Dashboard;
+              const Icon = iconMap[item.icon] || Dashboard;
               return (
                 <MenuItem
                   key={item.id}
