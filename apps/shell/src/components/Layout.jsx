@@ -7,7 +7,6 @@ import { SettingsDrawer } from './SettingsDrawer'
 export function Layout({ children }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
-
   const handleToggleSidebar = () => setSidebarCollapsed((s) => !s)
 
   return (
@@ -15,14 +14,12 @@ export function Layout({ children }) {
       <TopBar onOpenSettings={() => setSettingsOpen(true)} />
 
       <Sidebar collapsed={sidebarCollapsed} onToggleCollapse={handleToggleSidebar} />
-
-      {/* 主内容区：使用 calc 精确计算高度，避免溢出 */}
       <Box
         component="main"
         sx={{
           flex: 1,
           width: '100%',
-          height: 'calc(100vh - 55px)', // 减去 AppBar 高度
+          height: 'calc(100vh - 55px)',
           pt: 0,
           px: 0,
           pb: 0,
@@ -34,7 +31,6 @@ export function Layout({ children }) {
       >
         {children}
       </Box>
-
       <SettingsDrawer open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </Box>
   )
