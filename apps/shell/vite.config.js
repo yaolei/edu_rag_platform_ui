@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => {
           'react': { singleton: true, eager: false },
           'react-dom': { singleton: true, eager: false },
           'react-router': { singleton: true, eager: false },
-          '@workspace/shared-util': { singleton: true, requiredVersion: '1.0.0', eager: true },
+          '@workspace/shared-util': { singleton: true, requiredVersion: '1.0.0', eager: false },
         },
         filename: 'federation-entry.js'
       }),
@@ -53,21 +53,38 @@ export default defineConfig(({ mode }) => {
       outDir,
       rollupOptions: {
         output: {
-          // 精准的手动分块策略
-            manualChunks(id) {
-              // 1. 绝对保护：Federation 运行时和插件代码，必须留在主包
-              if (id.includes('@originjs/vite-plugin-federation') || id.includes('virtual:__federation')) {
-                return;
-              }
-
-              // 2. 只拆分一个确定完全独立、无任何React/MUI依赖的库：ECharts
-              if (id.includes('/node_modules/echarts/')) {
-                return 'vendor-echarts';
-              }
-              return;
+          manualChunks(id) {
+            // 1. 核心框架必须在一起
+            if (id.includes('/node_modules/react/') || 
+                id.includes('/node_modules/react-dom/') ||
+                id.includes('/node_modules/react-router/')) {
+              return 'vendor-react';
             }
+            
+            // 2. MUI是最大的，必须单独分块
+            if (id.includes('/node_modules/@mui/')) {
+              return 'vendor-mui';
+            }
+            
+            // 3. 图表库单独分块
+            if (id.includes('/node_modules/echarts/')) {
+              return 'vendor-echarts';
+            }
+            
+            // 4. KaTeX数学公式库单独分块
+            if (id.includes('/node_modules/katex/')) {
+              return 'vendor-katex';
+            }
+            
+            // 5. 其他所有node_modules包放一起
+            if (id.includes('node_modules')) {
+              return 'vendor-other';
+            }
+          }
         }
       },
+
+      
       chunkSizeWarningLimit: 1000,
     }
   }
