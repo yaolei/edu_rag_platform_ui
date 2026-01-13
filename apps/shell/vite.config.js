@@ -61,14 +61,38 @@ export default defineConfig(({ mode }) => {
         }
       },
       outDir,
-      // 核心修改：删除整个 manualChunks 函数，改用 Rollup 更稳定的自动分包策略
       rollupOptions: {
         output: {
-          // 这将激活 Rollup 内置的、基于动态导入和重复依赖检测的自动代码分割
-          // 它会自动将 node_modules 中的大型依赖拆分成独立的 chunk
-          manualChunks: undefined,
-          // 可选：可以设置 chunk 大小阈值，进一步控制分割粒度
-          chunkSizeWarningLimit: 500, // 将警告阈值降低到 500KB，促进更细粒度的分割
+          // 1. 最重要的修改：使用函数形式，强制对所有 node_modules 进行分包
+          manualChunks(id) {
+            // 1.1 核心保护：所有 Federation 相关代码必须留在主包，保证运行时稳定。
+            if (id.includes('@originjs/vite-plugin-federation') || 
+                id.includes('virtual:__federation')) {
+              return; // 返回 undefined，使其保留在主包中
+            }
+
+            // 1.2 强制分包逻辑：如果模块在 node_modules 中，就按其包名拆分
+            if (id.includes('node_modules')) {
+              // 提取包名。例如：/node_modules/@mui/material/index.js -> @mui/material
+              const match = id.match(/[\\/]node_modules[\\/](.+?)([\\/]|$)/);
+              if (match) {
+                const packageName = match[1];
+                // 将一些非常大或独立的包单独拆出，避免 vendor 过大
+                if (packageName.startsWith('@mui') ||
+                    packageName.startsWith('echarts') ||
+                    packageName.startsWith('katex') ||
+                    packageName.startsWith('react-syntax-highlighter')) {
+                  return `vendor-${packageName.replace('@', '').replace(/[\\/]/g, '-')}`;
+                }
+                // 其他所有第三方包打到一个 vendor 包里
+                return 'vendor';
+              }
+            }
+            // 1.3 业务代码默认留在主包，也可根据 src/ 路径进一步拆分
+            // if (id.includes('src/')) { ... }
+          },
+          // 2. 降低警告阈值，让你能感知到任何大文件
+          chunkSizeWarningLimit: 500,
         }
       }
     }
