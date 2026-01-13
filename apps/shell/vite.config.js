@@ -20,10 +20,10 @@ export default defineConfig(({ mode }) => {
             : 'http://localhost:5002/assets/eduAdminEntry.js',
         },
         shared: {
-          'react': { singleton: true, eager: true },
-          'react-dom': { singleton: true, eager: true },
-          'react-router': { singleton: true, eager: true },
-          '@workspace/shared-util': { singleton: true, requiredVersion: '1.0.0', eager: true },
+          'react': { singleton: true, eager: false },
+          'react-dom': { singleton: true, eager: false },
+          'react-router': { singleton: true, eager: false },
+          '@workspace/shared-util': { singleton: true, requiredVersion: '1.0.0', eager: false },
         },
         filename: 'federation-entry.js'
       }),
@@ -49,34 +49,48 @@ export default defineConfig(({ mode }) => {
       minify: 'esbuild',
       cssCodeSplit: true,
       emptyOutDir: true,
-      modulePreload: { polyfill: true },
+      modulePreload: { 
+        polyfill: true,
+         resolveDependencies: (filename, deps) => {
+          // 确保共享依赖先加载
+          return deps.sort((a, b) => {
+            if (a.includes('__federation_shared')) return -1;
+            if (b.includes('__federation_shared')) return 1;
+            return 0;
+          });
+        }
+      },
       outDir,
       rollupOptions: {
         output: {
           manualChunks(id) {
-            // 1. 核心框架必须在一起
-            if (id.includes('/node_modules/react/') || 
-                id.includes('/node_modules/react-dom/') ||
-                id.includes('/node_modules/react-router/')) {
-              return 'vendor-react';
+            // 1. 不分割Federation运行时
+            if (id.includes('@originjs/vite-plugin-federation') || 
+                id.includes('virtual:__federation')) {
+              return;
             }
             
-            // 2. MUI是最大的，必须单独分块
+            // 2. 让Federation共享依赖生成自己的chunk
+            // 这会导致生成 __federation_shared_*.js 文件
+            // 并且它们会被正确加载
+            if (id.includes('/node_modules/react/') && !id.includes('/node_modules/react-dom/')) {
+              return; // 让Federation处理
+            }
+            
+            // 3. 拆分其他大库
             if (id.includes('/node_modules/@mui/')) {
               return 'vendor-mui';
             }
             
-            // 3. 图表库单独分块
             if (id.includes('/node_modules/echarts/')) {
               return 'vendor-echarts';
             }
             
-            // 4. KaTeX数学公式库单独分块
             if (id.includes('/node_modules/katex/')) {
               return 'vendor-katex';
             }
             
-            // 5. 其他所有node_modules包放一起
+            // 4. 其他库放一起
             if (id.includes('node_modules')) {
               return 'vendor-other';
             }
