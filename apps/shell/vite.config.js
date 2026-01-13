@@ -44,15 +44,15 @@ export default defineConfig(({ mode }) => {
       host: true,
       cors: true
     },
-    build: {
+     build: {
       target: 'esnext',
       minify: 'esbuild',
       cssCodeSplit: true,
       emptyOutDir: true,
-      modulePreload: { 
+      modulePreload: {
         polyfill: true,
-         resolveDependencies: (filename, deps) => {
-          // 确保共享依赖先加载
+        // 保留此逻辑，确保共享依赖优先加载
+        resolveDependencies: (filename, deps) => {
           return deps.sort((a, b) => {
             if (a.includes('__federation_shared')) return -1;
             if (b.includes('__federation_shared')) return 1;
@@ -61,41 +61,16 @@ export default defineConfig(({ mode }) => {
         }
       },
       outDir,
+      // 核心修改：删除整个 manualChunks 函数，改用 Rollup 更稳定的自动分包策略
       rollupOptions: {
         output: {
-          manualChunks(id) {
-            // *** 核心：将所有 Federation 相关的代码（包括共享依赖）都排除在自定义分块之外 ***
-            // 这确保了插件能独立管理 React、ReactDOM 等共享包的打包和加载。
-            if (id.includes('@originjs/vite-plugin-federation') || 
-                id.includes('virtual:__federation') ||
-                id.includes('__federation_shared') || // 明确排除共享依赖块
-                id.includes('shared') && id.includes('node_modules')) { // 根据路径特征排除
-              return;
-            }
-            
-            // 以下仅对非Federation、非共享依赖的普通依赖进行分块
-            // 1. MUI（最大的部分）
-            if (id.includes('/node_modules/@mui/')) {
-              return 'vendor-mui';
-            }
-            // 2. ECharts
-            if (id.includes('/node_modules/echarts/')) {
-              return 'vendor-echarts';
-            }
-            // 3. KaTeX
-            if (id.includes('/node_modules/katex/')) {
-              return 'vendor-katex';
-            }
-            // 4. 其他第三方依赖可以打包在一起，或继续细分
-            if (id.includes('node_modules')) {
-              return 'vendor-other';
-            }
-          }
+          // 这将激活 Rollup 内置的、基于动态导入和重复依赖检测的自动代码分割
+          // 它会自动将 node_modules 中的大型依赖拆分成独立的 chunk
+          manualChunks: undefined,
+          // 可选：可以设置 chunk 大小阈值，进一步控制分割粒度
+          chunkSizeWarningLimit: 500, // 将警告阈值降低到 500KB，促进更细粒度的分割
         }
-      },
-
-      
-      chunkSizeWarningLimit: 1000,
+      }
     }
   }
 })
