@@ -32,7 +32,7 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB'
     return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
   }
-  
+
   const memoizedMessages = useMemo(() => {
     return messages.map((msg, idx) => ({
       ...msg,
@@ -95,7 +95,6 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
               gap: 0.5
             }}
           >
-            {/* 时间显示 */}
             <Box sx={{ 
               display: 'flex', 
               alignItems: 'center',
@@ -117,7 +116,6 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
                 })}
               </Typography>
               
-              {/* AI消息的复制按钮 */}
               {msg.type === 'ai' && msg.content && !msg.isLoading && (
                 <IconButton 
                   size="small" 
@@ -136,7 +134,6 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
               )}
             </Box>
 
-            {/* 图片（如果有） */}
             {msg.image && (
               <Box sx={{ 
                 position: 'relative', 
