@@ -32,12 +32,11 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB'
     return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
   }
-
-  // 使用 useMemo 记忆化消息列表
+  
   const memoizedMessages = useMemo(() => {
     return messages.map((msg, idx) => ({
       ...msg,
-      id: msg.id || `${msg.type}-${msg.timestamp}-${idx}` // 为每个消息创建唯一ID
+      id: msg.id || `${msg.type}-${msg.timestamp}-${idx}`
     }));
   }, [messages]);
 
