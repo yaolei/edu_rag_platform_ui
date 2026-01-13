@@ -81,7 +81,6 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
             alignItems: 'flex-start'
           }}
         >
-          {/* AI头像（只在左侧显示） */}
           {msg.type === 'ai' && (
             <Avatar src="/robot1.avif" alt="AI Robot" sx={{ width: 36, height: 36, flexShrink: 0 }} />
           )}
