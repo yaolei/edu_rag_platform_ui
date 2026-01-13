@@ -20,9 +20,9 @@ export default defineConfig(({ mode }) => {
             : 'http://localhost:5002/assets/eduAdminEntry.js',
         },
         shared: {
-          'react': { singleton: true, eager: true },
-          'react-dom': { singleton: true, eager: true },
-          'react-router': { singleton: true, eager: true },
+          'react': { singleton: true, eager: false },
+          'react-dom': { singleton: true, eager: false },
+          'react-router': { singleton: true, eager: false },
           '@workspace/shared-util': { singleton: true, requiredVersion: '1.0.0', eager: true },
         },
         filename: 'federation-entry.js'
