@@ -19,11 +19,27 @@ export default defineConfig(({ mode }) => {
             ? 'http://106.12.58.7/admin/assets/eduAdminEntry.js'
             : 'http://localhost:5002/assets/eduAdminEntry.js',
         },
-        shared: {
-          'react': { singleton: true, eager: false },
-          'react-dom': { singleton: true, eager: false },
-          'react-router': { singleton: true, eager: false },
-          '@workspace/shared-util': { singleton: true, requiredVersion: '1.0.0', eager: true },
+       shared: {
+          'react': { 
+            singleton: true, 
+            eager: false,
+            requiredVersion: '19.2.0' // 改为精确版本
+          },
+          'react-dom': { 
+            singleton: true, 
+            eager: false,
+            requiredVersion: '19.2.0' // 改为精确版本
+          },
+          'react-router': { 
+            singleton: true, 
+            eager: false,
+            requiredVersion: '7.9.6' // 改为精确版本
+          },
+          '@workspace/shared-util': { 
+            singleton: true, 
+            requiredVersion: '1.0.0', 
+            eager: false
+          },
         },
         filename: 'federation-entry.js'
       }),
@@ -45,32 +61,17 @@ export default defineConfig(({ mode }) => {
       cors: true
     },
     build: {
-      target: 'esnext',
-      minify: 'esbuild',
-      cssCodeSplit: true,
-      emptyOutDir: true,
-      modulePreload: { polyfill: true },
-      outDir,
-      rollupOptions: {
-        output: {
-          // 精准的手动分块策略
-            manualChunks(id) {
-              // 1. 绝对保护：Federation 运行时和插件代码，必须留在主包
-              if (id.includes('@originjs/vite-plugin-federation') || id.includes('virtual:__federation')) {
-                return;
-              }
-
-              // 2. 只拆分一个确定完全独立、无任何React/MUI依赖的库：ECharts
-              if (id.includes('/node_modules/echarts/')) {
-                return 'vendor-echarts';
-              }
-              return;
-            }
-        }
-      },
-
-      
-      chunkSizeWarningLimit: 1000,
-    }
+        target: 'esnext',
+        minify: 'esbuild',
+        cssCodeSplit: true,
+        emptyOutDir: true,
+        outDir,
+        rollupOptions: {
+          output: {
+            // 完全删除 manualChunks 函数，使用Rollup最原始的行为
+          }
+        },
+        chunkSizeWarningLimit: 2000 // 暂时调高，避免警告干扰
+      }
   }
 })
