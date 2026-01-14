@@ -8,7 +8,6 @@ import Box from '@mui/material/Box';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import DeleteIcon from '@mui/icons-material/Delete'
-// import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import SettingsIcon from '@mui/icons-material/Settings'
 import MenuIcon from '@mui/icons-material/Menu'
 import {navigationItems} from '../config/navigation'
@@ -178,10 +177,6 @@ export function TopBar({ onOpenSettings }) {
             <IconButton color="inherit" onClick={onOpenSettings} aria-label="settings">
               <SettingsIcon />
             </IconButton>
-
-            {/* <IconButton color="inherit" onClick={handleMenuOpen} aria-label="account">
-              <AccountCircleIcon sx={{ fontSize: 32 }} />
-            </IconButton> */}
 
             <Menu
               anchorEl={anchorEl}

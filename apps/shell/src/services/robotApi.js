@@ -54,7 +54,6 @@ function convertMessagesToMessagesArray(messages) {
     }
   }
   
-  console.log(`📦 前端限制：发送最近${collectedMessages.length}条消息`);
   return collectedMessages;
 }
 
@@ -139,7 +138,7 @@ async function processStreamResponse(reader, onChunk, onComplete, isOCR = false)
 }
 
 // 文本对话API - 修正的消息传递逻辑
-export async function askRobotStream(messages = [], channelId = 'default', onChunk, onComplete) {
+export async function askRobotStream(messages = [], channelId = 'default', intent_type, onChunk, onComplete) {
   const baseURL = getBaseURL();
   const conversationId = getOrCreateConversationId(channelId);
   const url = `${baseURL}/chat_with_knowledge_stream`;
@@ -149,6 +148,7 @@ export async function askRobotStream(messages = [], channelId = 'default', onChu
     const formData = new FormData();
     
     formData.append('conversation_id', conversationId || '');
+    formData.append('intent_type', intent_type || 'chat');
     
     const messagesArray = convertMessagesToMessagesArray(messages);
     const messagesJson = JSON.stringify(messagesArray);
@@ -175,7 +175,7 @@ export async function askRobotStream(messages = [], channelId = 'default', onChu
 }
 
 // OCR对话API - 暂时保持原有格式
-export async function askOCRStream(messages = [], files = [], channelId = 'default', onChunk, onComplete) {
+export async function askOCRStream(messages = [], files = [], channelId = 'default', intent_type, onChunk, onComplete) {
     const baseURL = getBaseURL();
     const conversationId = getOrCreateConversationId(channelId);
     const url = `${baseURL}/chat_by_files_stream`;
@@ -189,6 +189,7 @@ export async function askOCRStream(messages = [], files = [], channelId = 'defau
     
     formData.append('messages_json', messagesJson);
     formData.append('conversation_id', conversationId);
+    formData.append('intent_type', intent_type || 'chat');
 
     files.forEach((file) => {
       formData.append('files', file);

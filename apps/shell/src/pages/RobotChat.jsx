@@ -20,6 +20,7 @@ const DEFAULT_MESSAGE = {
 export function RobotChat({ channelId = 'default' }) {
   const dispatch = useDispatch();
   const reduxHasHistory = useSelector(state => state.chatHistory.hasHistroy);
+  const intent_type = useSelector(state => state.chatTopics.chatTopiceValue);
   const [messages, setMessages] = useState(() => {
     try {
       const saved = sessionStorage.getItem(`chat_history_${channelId}`);
@@ -254,6 +255,7 @@ export function RobotChat({ channelId = 'default' }) {
           completedMessages,
           filesToUpload,
           channelId,
+          intent_type,
           (chunk, fullText) => {
             updateAiMessage(fullText);
             scrollToBottom();
@@ -269,6 +271,7 @@ export function RobotChat({ channelId = 'default' }) {
         await askRobotStream(
           completedMessages,
           channelId,
+          intent_type,
           (chunk, fullText) => {
             updateAiMessage(fullText);
             scrollToBottom();
@@ -438,6 +441,7 @@ export function RobotChat({ channelId = 'default' }) {
       flexDirection: 'column', 
       height: '100%', 
       gap: 2,
+      marginTop: '1.5vh',
       overflow: 'hidden'
     }}>
       {error && (

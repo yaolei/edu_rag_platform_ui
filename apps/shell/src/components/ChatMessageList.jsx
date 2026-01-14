@@ -82,7 +82,7 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
           }}
         >
           {msg.type === 'ai' && (
-            <Avatar src="/robot1.avif" alt="AI Robot" sx={{ width: 36, height: 36, flexShrink: 0 }} />
+            <Avatar src="/robot1.jpg" alt="AI Robot" sx={{ width: 36, height: 36, flexShrink: 0, border: '1px solid #e0e0e0' }} />
           )}
 
           <Box

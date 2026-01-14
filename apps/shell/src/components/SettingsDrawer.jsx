@@ -150,7 +150,24 @@ export function SettingsDrawer({ open, onClose }) {
             </Box>
             <Typography variant="caption" sx={{ display: 'block', mt: 2, color: 'text.secondary', fontSize: 16,
         fontWeight: 500 }}>
-                When you choose a chat topic from the system, all the knowledge base resources will change accordingly, making your conversations more accurate.
+                   {(() => {
+                    switch (hasChatTopic) {
+                      case 'chat':
+                        return 'When you select a chat topic, the system will automatically switch to the relevant knowledge base resources, ensuring your conversations are more focused and contextually accurate.';
+                      
+                      case 'document':
+                        return 'Choosing a document type allows the system to apply specialized parsing and analysis algorithms, enhancing document processing accuracy and extracting key information more effectively.';
+                      
+                      case 'image':
+                        return 'Selecting an image processing type enables advanced computer vision models to analyze visual content, providing detailed insights and improved image understanding capabilities.';
+                      
+                      case 'resume':
+                        return 'When you choose resume analysis, the system will apply CV-specific parsing techniques to extract candidate information, skills, and experience with high precision and structured output.';
+                      
+                      default:
+                        return 'Please select a processing type to access specialized features and resources.';
+                    }
+                  })()}
             </Typography>
         </Box>
 

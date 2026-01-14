@@ -10,7 +10,7 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-
+import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import Dashboard from '@mui/icons-material/Dashboard';
 import SmartToy from '@mui/icons-material/SmartToy';
 import AutoStories from '@mui/icons-material/AutoStories';
@@ -127,6 +127,24 @@ export function Sidebar({className, collapsed, onToggleCollapse }) {
             )
           })}
         </List>
+        <Box sx={{borderTop: 1, borderColor: 'divider' }}>
+          <Typography sx={{  alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between', p: 1.5 }}>
+            <IconButton  onClick={() => {}} aria-label="account"   
+              sx={{
+                transition: 'transform 240ms',
+                backgroundColor: 'transparent',
+                    '&:hover, &:focus, &.Mui-focusVisible, &:active': {
+                      backgroundColor: 'transparent',
+                    },
+              }}>
+              <AccountCircleIcon sx={{ fontSize: 32 }} />    
+              {!collapsed && (
+              <span style={{ fontSize: 14, fontWeight: 500 , marginLeft: 20}}>Admin</span>
+                    )}
+            </IconButton>
+          
+            </Typography>
+        </Box>
       </Box>
 
       <style>{`
