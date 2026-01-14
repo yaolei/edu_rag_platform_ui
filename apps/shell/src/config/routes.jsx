@@ -3,21 +3,26 @@ import React, { Suspense } from 'react';
 import { RequireAuth } from '../components/RequireAuth.jsx';
 import { LayoutWithErrorBoundary } from '../components/LayoutWithErrorBoundary.jsx';
 
-const KnowledgeManger = React.lazy(() => import('../pages/KnowledgeManger'));
+// 修复的懒加载函数
+function lazyNamed(importFn, exportName) {
+  return React.lazy(async () => {
+    const module = await importFn();
+    const component = module[exportName] || module.default;
+    
+    if (!component) {
+      throw new Error(`组件 ${exportName} 加载失败`);
+    }
+    
+    return { default: component };
+  });
+}
 
-const Dashboard = React.lazy(() => 
-  import('../pages/Dashboard').then(module => ({ default: module.Dashboard }))
-);
-const Settings = React.lazy(() => 
-  import('../pages/Settings').then(module => ({ default: module.Settings }))
-);
-const RobotChat = React.lazy(() => 
-  import('../pages/RobotChat').then(module => ({ default: module.RobotChat }))
-);
-const Login = React.lazy(() => 
-  import('../pages/Login').then(module => ({ default: module.Login }))
-);
-
+// 修复所有懒加载
+const KnowledgeManger = lazyNamed(() => import('../pages/KnowledgeManger'), 'KnowledgeManger');
+const Dashboard = lazyNamed(() => import('../pages/Dashboard'), 'Dashboard');
+const Settings = lazyNamed(() => import('../pages/Settings'), 'Settings');
+const RobotChat = lazyNamed(() => import('../pages/RobotChat'), 'RobotChat');
+const Login = lazyNamed(() => import('../pages/Login'), 'Login');
 const EduAdmin = React.lazy(() => import('eduAdmin/AdminApp'));
 
 const LoadingFallback = () => (
@@ -29,9 +34,10 @@ const LoadingFallback = () => (
   </div>
 );
 
-const LazyComponent = ({ children }) => (
+// 简化的Suspense包装
+const withSuspense = (Component) => (
   <Suspense fallback={<LoadingFallback />}>
-    {children}
+    <Component />
   </Suspense>
 );
 
@@ -39,11 +45,7 @@ export function createRoutes() {
   return [
     { 
       path: '/login', 
-      element: (
-        <LazyComponent>
-          <Login />
-        </LazyComponent>
-      ) 
+      element: withSuspense(Login)
     },
     {
       path: '/',
@@ -55,51 +57,27 @@ export function createRoutes() {
       children: [
         { 
           index: true, 
-          element: (
-            <LazyComponent>
-              <Dashboard />
-            </LazyComponent>
-          ) 
+          element: withSuspense(Dashboard)
         },
         { 
           path: 'dashboard', 
-          element: (
-            <LazyComponent>
-              <Dashboard />
-            </LazyComponent>
-          ) 
+          element: withSuspense(Dashboard)
         },
         { 
           path: 'admin',    
-          element: (
-            <LazyComponent>
-              <EduAdmin />
-            </LazyComponent>
-          ) 
+          element: withSuspense(EduAdmin)
         },
         { 
           path: 'robot',    
-          element: (
-            <LazyComponent>
-              <RobotChat />
-            </LazyComponent>
-          ) 
+          element: withSuspense(RobotChat)
         },
         { 
           path: 'klg_magement', 
-          element: (
-            <LazyComponent>
-              <KnowledgeManger />
-            </LazyComponent>
-          ) 
+          element: withSuspense(KnowledgeManger)
         },
         { 
           path: 'settings', 
-          element: (
-            <LazyComponent>
-              <Settings />
-            </LazyComponent>
-          ) 
+          element: withSuspense(Settings)
         },
       ],
     },
