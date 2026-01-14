@@ -1,4 +1,3 @@
-import React from 'react'
 export function Dashboard() {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center p-8" >

@@ -65,9 +65,9 @@ export function TopBar({ onOpenSettings }) {
               );
             })}
           </Menu>
-          <Box component="img" src="/rag.png" alt="RAG" sx={{ height: 36, width: 36 }} className="desktop-only"/>
+          <Box component="img" src="/freebsd.svg" alt="RAG" sx={{ height: 36, width: 36 }} className="desktop-only"/>
               <Typography variant="h6" component="div" sx={{ fontWeight: 600 }} className="desktop-only">
-                  Easy Rag
+                  Rag Angent
               </Typography>
           </Box>
 

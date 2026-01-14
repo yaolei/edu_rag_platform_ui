@@ -5,7 +5,7 @@ import { Sidebar } from './Sidebar'
 import { SettingsDrawer } from './SettingsDrawer'
 
 export function Layout({ children }) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const handleToggleSidebar = () => setSidebarCollapsed((s) => !s)
 

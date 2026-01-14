@@ -17,7 +17,6 @@ import AutoStories from '@mui/icons-material/AutoStories';
 import AdminPanelSettings from '@mui/icons-material/AdminPanelSettings';
 
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { useNavigate, useLocation } from 'react-router'
 import { navigationItems } from '../config/navigation'
 
@@ -35,7 +34,6 @@ const collapsedWidth = 72
 export function Sidebar({className, collapsed, onToggleCollapse }) {
   const navigate = useNavigate()
   const location = useLocation()
-
   return (
     <div className='desktop-only'>
     <Drawer
@@ -80,10 +78,9 @@ export function Sidebar({className, collapsed, onToggleCollapse }) {
             }}
             aria-label="toggle sidebar"
           >
-            {collapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+            <ChevronLeftIcon />
           </IconButton>
         </Box>
-
         <Divider />
 
         <List sx={{ flex: 1, overflowY: 'auto', p: 1 }}>
