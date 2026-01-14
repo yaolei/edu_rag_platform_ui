@@ -1,5 +1,5 @@
-import React, { useState, useEffect} from 'react'
-import {useNavigate, useLocation} from 'react-router'
+import React, { useState} from 'react'
+import {useNavigate} from 'react-router'
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
@@ -7,7 +7,6 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import DeleteIcon from '@mui/icons-material/Delete'
 import SettingsIcon from '@mui/icons-material/Settings'
 import MenuIcon from '@mui/icons-material/Menu'
 import {navigationItems} from '../config/navigation'
@@ -16,10 +15,7 @@ import Dashboard from '@mui/icons-material/Dashboard';
 import SmartToy from '@mui/icons-material/SmartToy';
 import AutoStories from '@mui/icons-material/AutoStories';
 import AdminPanelSettings from '@mui/icons-material/AdminPanelSettings';
-
-import {useDispatch, useSelector} from 'react-redux'
-import { hasHistroy } from '../utils/stateSlice/chatHistorySlice';
-
+import {useSelector} from 'react-redux'
 
 const iconMap = {
   Dashboard, // 对应 'Dashboard'
@@ -30,46 +26,12 @@ const iconMap = {
 
 export function TopBar({ onOpenSettings }) {
   const navigate = useNavigate()
-  const location = useLocation()
-  const dispatch = useDispatch()
-  const hasHistory = useSelector(state => state.chatHistory.hasHistroy)
   const currrentTopic = useSelector(state => state.chatTopics.chatTopiceValue)
-  const [anchorEl, setAnchorEl] = useState(null)
   const [navAnchor, setNavAnchor] = useState(null);
   const theme = localStorage.getItem('themeMode') || 'dark';
 
-  useEffect(() => {
-    const checkStorage = () => {
-      try {
-        const saved = sessionStorage.getItem('chat_history_default');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          const hasUser = parsed.some(msg => msg.type === 'user');
-        }
-      } catch (e) {
-        console.error('检查sessionStorage失败:', e);
-      }
-    };
-    
-    checkStorage();
-  }, [hasHistory]);
-
-  const isRobotPage = location.pathname === '/robot';
-  const showClearButton = isRobotPage && hasHistory;
-  const handleMenuOpen = (e) => setAnchorEl(e.currentTarget)
-  const handleMenuClose = () => {  
-      localStorage.removeItem('token');
-      navigate('/login')
-}
-
-    const handleNavOpen  = (e) => setNavAnchor(e.currentTarget);
-    const handleNavClose = () => setNavAnchor(null);
-
-    const handleClearClick = () => {
-    if (window.confirm('Do you want to clear the history list ?')) {
-      dispatch(hasHistroy(false));
-    }
-  };
+  const handleNavOpen  = (e) => setNavAnchor(e.currentTarget);
+  const handleNavClose = () => setNavAnchor(null);
 
   return (
     <AppBar position="fixed" elevation={1} sx={{ zIndex: (t) => t.zIndex.drawer + 2 }}>
@@ -162,41 +124,10 @@ export function TopBar({ onOpenSettings }) {
               {currrentTopic}
             </Typography>
           </Box>
-
           <Box>
-            {showClearButton && (
-              <IconButton 
-                color="inherit" 
-                onClick={handleClearClick}
-                aria-label="clear chat history"
-                sx={{ mr: 1 }}
-              >
-                <DeleteIcon />
-              </IconButton>
-            )}
             <IconButton color="inherit" onClick={onOpenSettings} aria-label="settings">
               <SettingsIcon />
             </IconButton>
-
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleMenuClose}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            >
-              <MenuItem onClick={()=>{}}>Profile</MenuItem>
-              {showClearButton && (
-                <MenuItem 
-                  onClick={handleClearClick}
-                  className="desktop-only"
-                >
-                  <DeleteIcon sx={{ mr: 1, fontSize: 20 }} />
-                  Clear Chat History
-                </MenuItem>
-              )}
-              <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
-            </Menu>
           </Box>
       </Toolbar>
     </AppBar>

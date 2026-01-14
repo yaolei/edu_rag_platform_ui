@@ -1,7 +1,6 @@
 // shell/config/routes.jsx
 import React, { Suspense } from 'react';
 import { Dashboard } from '../pages/Dashboard';
-import { Settings } from '../pages/Settings';
 import { RobotChat } from '../pages/RobotChat';
 import KnowledgeManger from '../pages/KnowledgeManger';
 import Login from '../pages/Login';
@@ -35,7 +34,6 @@ export function createRoutes() {
         { path: 'admin',    element: <Suspense fallback={<LoadingFallback />}><EduAdmin /></Suspense> },
         { path: 'robot',    element: <RobotChat /> },
         { path: 'klg_magement', element: <KnowledgeManger /> },
-        { path: 'settings', element: <Settings /> },
       ],
     },
   ];

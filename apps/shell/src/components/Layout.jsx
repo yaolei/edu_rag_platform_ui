@@ -11,7 +11,7 @@ export function Layout({ children }) {
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-      <TopBar onOpenSettings={() => setSettingsOpen(true)} />
+      <TopBar onOpenSettings={() => setSettingsOpen(!settingsOpen)} />
 
       <Sidebar collapsed={sidebarCollapsed} onToggleCollapse={handleToggleSidebar} />
       <Box

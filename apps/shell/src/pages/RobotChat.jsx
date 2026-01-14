@@ -246,8 +246,6 @@ export function RobotChat({ channelId = 'default' }) {
         }, 10);
       };
 
-      // 获取当前所有已完成的对话历史（包括刚刚添加的用户消息）
-      // 这里不传递空白的AI消息
       const completedMessages = messages.concat(userMsg).filter(msg => !msg.isLoading);
 
       if (filesToUpload.length !== 0) {
@@ -267,7 +265,6 @@ export function RobotChat({ channelId = 'default' }) {
           }
         );
       } else {
-        // 关键修改：传递所有已完成的消息
         await askRobotStream(
           completedMessages,
           channelId,
@@ -291,7 +288,7 @@ export function RobotChat({ channelId = 'default' }) {
           msg.isLoading
             ? {
                 ...msg,
-                content: msg.content + '\n\n(生成中断)',
+                content: msg.content + '\n\n(generation failed)',
                 isLoading: false,
               }
             : msg
@@ -308,7 +305,7 @@ export function RobotChat({ channelId = 'default' }) {
     });
     blobUrlRegistry.current.clear();
 
-    const currentImages = [...uploadedImages]; // 创建副本
+    const currentImages = [...uploadedImages]; 
     currentImages.forEach(img => {
       if (img.previewUrl) {
         URL.revokeObjectURL(img.previewUrl);
