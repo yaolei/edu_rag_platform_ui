@@ -16,7 +16,6 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import ArticleIcon from '@mui/icons-material/Article';
 import PersonIcon from '@mui/icons-material/Person';
 import CodeIcon from '@mui/icons-material/Code';
-import ImageIcon from '@mui/icons-material/Image';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -336,12 +335,6 @@ const KnowledgeUploader = ({
                                     <Box className="flex items-center space-x-2">
                                         <CodeIcon fontSize="small" sx={{ color: textSecondary }} />
                                         <span style={{ color: textPrimary }}>Code</span>
-                                    </Box>
-                                </MenuItem>
-                                <MenuItem value="image">
-                                    <Box className="flex items-center space-x-2">
-                                        <ImageIcon fontSize="small" sx={{ color: textSecondary }} />
-                                        <span style={{ color: textPrimary }}>Image Description</span>
                                     </Box>
                                 </MenuItem>
                             </Select>
