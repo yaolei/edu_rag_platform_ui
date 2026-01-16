@@ -121,7 +121,7 @@ export function SettingsDrawer({ open, onClose }) {
                           <MenuItem value="image">
                               <Box className="flex items-center space-x-2">
                                   <ImageIcon fontSize="small" sx={{ color: textSecondary }} />
-                                  <span style={{ color: textPrimary }}>Image Description</span>
+                                  <span style={{ color: textPrimary }}>Image Analysis</span>
                               </Box>
                           </MenuItem>
                       </Select>
