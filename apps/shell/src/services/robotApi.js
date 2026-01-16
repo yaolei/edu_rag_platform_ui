@@ -195,11 +195,6 @@ export async function askOCRStream(messages = [], files = [], channelId = 'defau
       formData.append('files', file);
     });
 
-    console.log('📤 OCR请求参数:', {
-      messagesArray,
-      conversationId,
-      filesCount: files.length
-    });
 
     const response = await fetch(url, {
       method: 'POST',

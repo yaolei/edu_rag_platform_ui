@@ -18,6 +18,7 @@ const MarkdownContainer = styled('div', {
     margin: theme.spacing(1, 0),
     fontWeight: 600
   },
+
   '& h1': { fontSize: '1.8rem' },
   '& h2': { fontSize: '1.5rem' },
   '& h3': { fontSize: '1.3rem' },
@@ -92,7 +93,15 @@ const MarkdownRender = ({ content, isDarkMode: propIsDarkMode }) => {
     ? propIsDarkMode 
     : muiTheme.palette.mode === 'dark'
   
-  const processedContent = (content || '').replace(/\\n/g, '\n')
+
+ const processContent = (text) => {
+    if (!text) return '';
+    // 移除转义的<ocr>标签及其内容
+    return text.replace(/<ocr>[\s\S]*?<\ocr>/gi, '');
+  };
+
+  console.log(content, "###")
+  const processedContent = processContent((content || '').replace(/\\n/g, '\n'))
   
   // 根据主题选择语法高亮样式
   const codeStyle = isDarkMode ? vscDarkPlus : vs
