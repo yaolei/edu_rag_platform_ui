@@ -60,7 +60,6 @@ export function RobotChat({ channelId = 'default' }) {
     return [DEFAULT_MESSAGE];
   });
 
-  const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [uploadedFile, setUploadedFile] = useState(null)
@@ -146,8 +145,8 @@ export function RobotChat({ channelId = 'default' }) {
     return () => clearTimeout(timer);
   }, [messages, loading]);
 
-  const handleSendQuestion = async () => {
-    if (!input.trim() && !uploadedFile && uploadedImages.length === 0) return;
+  const handleSendQuestion = async (inputContent) => {
+    if (!inputContent.trim() && !uploadedFile && uploadedImages.length === 0) return;
 
     // 收集所有要上传的文件
     const filesToUpload = [
@@ -158,7 +157,7 @@ export function RobotChat({ channelId = 'default' }) {
     // 处理用户消息
     const userMsg = {
       type: 'user',
-      content: input.trim(),
+      content: inputContent.trim(),
       timestamp: new Date().toISOString(),
       image: null,
       id: `user-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
@@ -202,7 +201,6 @@ export function RobotChat({ channelId = 'default' }) {
 
     // 添加用户消息
     setMessages((prev) => [...prev, userMsg]);
-    setInput('');
     setUploadedFile(null);
     setUploadedImages([]);
     setError(null);
@@ -329,12 +327,6 @@ export function RobotChat({ channelId = 'default' }) {
     }, 0);
   }, [channelId, dispatch]);
 
-  const handleKeyDown = useCallback((e) => {
-    if (e.key === 'Enter' && !e.shiftKey && !loading) {
-      e.preventDefault();
-      handleSendQuestion();
-    }
-  }, [input, uploadedFile, uploadedImages, loading]);
 
   const handleFileUpload = useCallback(async (e) => {
     const file = e.target.files?.[0];
@@ -428,9 +420,6 @@ export function RobotChat({ channelId = 'default' }) {
     setUploadedFile(null);
   }, []);
 
-  const handleInputChange = useCallback((value) => {
-    setInput(value);
-  }, []);
 
   return (
     <Box sx={{ 
@@ -465,9 +454,6 @@ export function RobotChat({ channelId = 'default' }) {
       />
 
       <ChatInputBar
-        input={input}
-        onInputChange={handleInputChange}
-        onKeyDown={handleKeyDown}
         onSend={handleSendQuestion}
         onFileUpload={handleFileUpload}
         onImageUpload={handleImageUpload}

@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, memo } from 'react'
+import React, { useRef, useCallback, memo, useState } from 'react'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import IconButton from '@mui/material/IconButton'
@@ -7,9 +7,6 @@ import SendIcon from '@mui/icons-material/Send'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 
 export const ChatInputBar = memo(function ChatInputBar({
-  input,
-  onInputChange,
-  onKeyDown,
   onSend,
   onFileUpload,
   onImageUpload,
@@ -17,11 +14,13 @@ export const ChatInputBar = memo(function ChatInputBar({
   uploadedFile,
   uploadedImages,
 }) {
-  const inputRef = useRef(null);
+
+ const [input, setInput] = useState('')
+  const fileInputRef = useRef(null)
   
   const handleClick = useCallback(() => {
-    inputRef.current?.click();
-  }, []);
+    fileInputRef.current?.click()
+  }, [])
 
   const handleChange = useCallback((e) => {
     const files = Array.from(e.target.files || [])
@@ -36,17 +35,25 @@ export const ChatInputBar = memo(function ChatInputBar({
     e.target.value = ''
   }, [onFileUpload, onImageUpload]);
 
-  const handleSendClick = useCallback(() => {
-    onSend();
-  }, [onSend]);
+  const handleSend = useCallback(() => {
+    const currentInput = input.trim()
+    const canSend = currentInput || uploadedFile || uploadedImages.length > 0
+    if (!canSend || loading) return
+
+    onSend(currentInput)
+    setInput('')
+  }, [input, onSend, uploadedFile, uploadedImages.length, loading]);
+
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'Enter' && !e.shiftKey && !loading) {
+      e.preventDefault()
+      handleSend()
+    }
+  }, [handleSend, loading])
 
   const handleTextFieldChange = useCallback((e) => {
-    onInputChange(e.target.value);
-  }, [onInputChange]);
-
-  const handleTextFieldKeyDown = useCallback((e) => {
-    onKeyDown(e);
-  }, [onKeyDown]);
+    setInput(e.target.value)
+  }, [])
 
   return (
     <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-end' }}>
@@ -59,7 +66,7 @@ export const ChatInputBar = memo(function ChatInputBar({
         placeholder="Ask your question here... (Press Enter to send, Shift+Enter for new line)"
         value={input}
         onChange={handleTextFieldChange}
-        onKeyDown={handleTextFieldKeyDown}
+        onKeyDown={handleKeyDown}
         disabled={loading}
         variant="outlined"
         size="small"
@@ -77,7 +84,7 @@ export const ChatInputBar = memo(function ChatInputBar({
         </IconButton>
 
         <IconButton
-          onClick={handleSendClick}
+          onClick={handleSend}
           disabled={(!input.trim() && !uploadedFile && uploadedImages.length === 0) || loading}
           color="primary"
           size="small"
@@ -92,7 +99,7 @@ export const ChatInputBar = memo(function ChatInputBar({
         </IconButton>
       </Box>
       <input
-        ref={inputRef}
+        ref={fileInputRef}
         type="file"
         hidden
         onChange={handleChange}

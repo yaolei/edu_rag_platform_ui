@@ -1,5 +1,5 @@
 // components/ChatMessageList.jsx
-import React, {useState, useMemo} from 'react'
+import React, {useState, useMemo, memo} from 'react'
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
@@ -14,7 +14,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import BrokenImageIcon from '@mui/icons-material/BrokenImage'
 import { useTheme } from '../context/ThemeContext' 
 
-export function ChatMessageList({ messages, loading, responsesEndRef }) {
+const ChatMessageListComponent = memo(function ChatMessageList({ messages, loading, responsesEndRef }) {
   const [imageErrors, setImageErrors] = useState({})
   const themeContext = useTheme() 
   const isDarkMode = themeContext.currentMode === 'dark'
@@ -38,6 +38,7 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
       ...msg,
       id: msg.id || `${msg.type}-${msg.timestamp}-${idx}`
     }));
+
   }, [messages]);
 
   return (
@@ -302,4 +303,5 @@ export function ChatMessageList({ messages, loading, responsesEndRef }) {
       `}</style>
     </Paper>
   )
-}
+})
+export { ChatMessageListComponent as ChatMessageList };
