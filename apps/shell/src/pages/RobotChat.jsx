@@ -17,6 +17,11 @@ const DEFAULT_MESSAGE = {
   isWelcome: true
 };
 
+const MemoizedChatMessageList = React.memo(ChatMessageList);
+const MemoizedUploadPreview = React.memo(UploadPreview);
+const MemoizedChatInputBar = React.memo(ChatInputBar);
+const EMPTY_ARRAY = Object.freeze([]);
+
 export function RobotChat({ channelId = 'default' }) {
   const dispatch = useDispatch();
   const reduxHasHistory = useSelector(state => state.chatHistory.hasHistroy);
@@ -66,12 +71,6 @@ export function RobotChat({ channelId = 'default' }) {
   const [uploadedImages, setUploadedImages] = useState([])
   const responsesEndRef = useRef(null)
   const blobUrlRegistry = useRef(new Map());
-
-  // 初始化时获取或创建conversationId
-  useEffect(() => {
-    const conversationId = getOrCreateConversationId(channelId);
-    console.log(`🔗 当前对话ID: ${conversationId} (channel: ${channelId})`);
-  }, [channelId]);
 
   // 清理函数
   useEffect(() => {
@@ -134,16 +133,18 @@ export function RobotChat({ channelId = 'default' }) {
     }
   }, [reduxHasHistory]); 
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      responsesEndRef.current?.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'end'
-      });
-    }, 100);
-    
-    return () => clearTimeout(timer);
-  }, [messages, loading]);
+    useEffect(() => {
+      getOrCreateConversationId(channelId);
+      // 页面加载时滚动到底部
+      const timer = setTimeout(() => {
+        responsesEndRef.current?.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'end'
+        });
+      }, 300);
+       console.log("????")
+      return () => clearTimeout(timer);
+    }, [channelId]);
 
   const handleSendQuestion = async (inputContent) => {
     if (!inputContent.trim() && !uploadedFile && uploadedImages.length === 0) return;
@@ -188,7 +189,7 @@ export function RobotChat({ channelId = 'default' }) {
       } catch (e) {
           console.error('创建图片预览失败:', e);
       }
-  }
+    }
 
     // 处理非图片文件
     if (firstNonImageFile && !firstImageFile) {
@@ -201,8 +202,19 @@ export function RobotChat({ channelId = 'default' }) {
 
     // 添加用户消息
     setMessages((prev) => [...prev, userMsg]);
-    setUploadedFile(null);
-    setUploadedImages([]);
+    setTimeout(() => {
+      console.log("🚀")
+      responsesEndRef.current?.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'end'
+      });
+    }, 10);
+    if (uploadedFile) {
+        setUploadedFile(null);
+    }
+    if (uploadedImages !== EMPTY_ARRAY) {
+      setUploadedImages(EMPTY_ARRAY);
+    }
     setError(null);
 
     // 发送到服务器
@@ -238,14 +250,14 @@ export function RobotChat({ channelId = 'default' }) {
       const scrollToBottom = () => {
         setTimeout(() => {
           responsesEndRef.current?.scrollIntoView({ 
-            behavior: 'smooth',
+            behavior: 'auto',
             block: 'end'
           });
-        }, 10);
+        }, 0);
       };
 
       const completedMessages = messages.concat(userMsg).filter(msg => !msg.isLoading);
-
+      let scrollCounter = 0;
       if (filesToUpload.length !== 0) {
         await askOCRStream(
           completedMessages,
@@ -254,7 +266,10 @@ export function RobotChat({ channelId = 'default' }) {
           intent_type,
           (chunk, fullText) => {
             updateAiMessage(fullText);
-            scrollToBottom();
+            scrollCounter++;
+             if (scrollCounter % 5 === 0) {  // 每5个chunk滚动一次
+                scrollToBottom();
+              }
           },
           (fullText) => {
             updateAiMessage(fullText, false);
@@ -269,7 +284,9 @@ export function RobotChat({ channelId = 'default' }) {
           intent_type,
           (chunk, fullText) => {
             updateAiMessage(fullText);
-            scrollToBottom();
+             if (scrollCounter % 5 === 0) {  // 每5个chunk滚动一次
+                scrollToBottom();
+              }
           },
           (fullText) => {
             updateAiMessage(fullText, false);
@@ -440,20 +457,20 @@ export function RobotChat({ channelId = 'default' }) {
         </Alert>
       )}
       
-      <ChatMessageList 
+      <MemoizedChatMessageList 
         messages={messages} 
         loading={loading} 
         responsesEndRef={responsesEndRef} 
       />
 
-      <UploadPreview
+      <MemoizedUploadPreview
         uploadedImages={uploadedImages}
         uploadedFile={uploadedFile}
         onRemoveImage={handleRemoveImage}
         onRemoveFile={handleRemoveFile}
       />
 
-      <ChatInputBar
+      <MemoizedChatInputBar
         onSend={handleSendQuestion}
         onFileUpload={handleFileUpload}
         onImageUpload={handleImageUpload}

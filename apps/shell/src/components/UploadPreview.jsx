@@ -3,13 +3,11 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 
-
 import CloseIcon from '@mui/icons-material/Close'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 
 export function UploadPreview({ uploadedImages = [], uploadedFile, onRemoveImage, onRemoveFile }) {
   const [previewUrls, setPreviewUrls] = useState({})
-  
   const formatFileSize = useCallback((bytes) => {
     if (bytes < 1024) return bytes + ' B'
     if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB'
