@@ -141,7 +141,7 @@ export function RobotChat({ channelId = 'default' }) {
           behavior: 'smooth',
           block: 'end'
         });
-      }, 300);
+      }, 100);
       return () => clearTimeout(timer);
     }, [channelId]);
 
@@ -248,10 +248,10 @@ export function RobotChat({ channelId = 'default' }) {
       const scrollToBottom = () => {
         setTimeout(() => {
           responsesEndRef.current?.scrollIntoView({ 
-            behavior: 'auto',
+            behavior: 'smooth',
             block: 'end'
           });
-        }, 5);
+        }, 10);
       };
 
       const completedMessages = messages.concat(userMsg).filter(msg => !msg.isLoading);
