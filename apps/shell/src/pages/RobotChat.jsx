@@ -142,7 +142,6 @@ export function RobotChat({ channelId = 'default' }) {
           block: 'end'
         });
       }, 300);
-       console.log("????")
       return () => clearTimeout(timer);
     }, [channelId]);
 
@@ -203,7 +202,6 @@ export function RobotChat({ channelId = 'default' }) {
     // 添加用户消息
     setMessages((prev) => [...prev, userMsg]);
     setTimeout(() => {
-      console.log("🚀")
       responsesEndRef.current?.scrollIntoView({ 
         behavior: 'smooth',
         block: 'end'
@@ -253,11 +251,10 @@ export function RobotChat({ channelId = 'default' }) {
             behavior: 'auto',
             block: 'end'
           });
-        }, 0);
+        }, 5);
       };
 
       const completedMessages = messages.concat(userMsg).filter(msg => !msg.isLoading);
-      let scrollCounter = 0;
       if (filesToUpload.length !== 0) {
         await askOCRStream(
           completedMessages,
@@ -266,10 +263,8 @@ export function RobotChat({ channelId = 'default' }) {
           intent_type,
           (chunk, fullText) => {
             updateAiMessage(fullText);
-            scrollCounter++;
-             if (scrollCounter % 5 === 0) {  // 每5个chunk滚动一次
-                scrollToBottom();
-              }
+            scrollToBottom();
+              
           },
           (fullText) => {
             updateAiMessage(fullText, false);
@@ -284,9 +279,8 @@ export function RobotChat({ channelId = 'default' }) {
           intent_type,
           (chunk, fullText) => {
             updateAiMessage(fullText);
-             if (scrollCounter % 5 === 0) {  // 每5个chunk滚动一次
-                scrollToBottom();
-              }
+            scrollToBottom();
+              
           },
           (fullText) => {
             updateAiMessage(fullText, false);
